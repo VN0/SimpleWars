@@ -1,0 +1,13 @@
+//NOTE: Since we are compiling ClassA, ClassB does not need "css_import ClassA.cs" as ClassA is already known. In fact, adding "css_import ClassA.cs" will result in an error as ClassA is already present
+//We could however use "css_import ClassA.cs, rename_namespace(null, SomeNameSpace);" to import ClassA under a new namespace.
+//More info on this topic can be found here http://www.csscript.net/help/Importing_scripts.html
+using System;
+using UnityEngine;
+
+public class ClassB{
+	ClassA blassAInstance; //Reference to ClassA just for the sake of it.
+
+	public ClassB(){
+        Debug.Log("Created a ClassB instance");
+	}	
+}

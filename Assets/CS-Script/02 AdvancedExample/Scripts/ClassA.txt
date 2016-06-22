@@ -1,0 +1,14 @@
+//NOTE: css_import ClassB.cs is IMPORTANT! Otherwise ClassA will not know about ClassB, which is also stored in a script file!
+//More info here http://www.csscript.net/help/Importing_scripts.html
+
+//css_import ClassB.txt
+using System;
+using UnityEngine;
+
+public class ClassA{
+	ClassB classBInstance = new ClassB(); //Create an instance of ClassB. ClassB is also stored inside a CS-Script
+
+	public ClassA(){
+		Debug.Log("Created a ClassA instance");
+	}	
+}

@@ -1,0 +1,75 @@
+2D Terrain Creator
+
+2D Terrain Creator is a useful and easy to use tool that allows you to randomly generate or edit 2D terrains. You can also place different 
+prefabs along the terrain. This will allow you to insert trees, bushes, coins, etc. 2D Terrain Creator is an incredible unity extension that 
+will be needed in your 2D games.
+
+Features:
+-Create 2D bezier curves in the Scene View (Editable Terrain 2D).
+-Endless procedural generated terrain (Random Terrain 2D). 
+-Add prefabs to the terrain.
+-Render just what is on screen.
+-Undo all operations if needed.
+
+
+How to use 2D Terrain Creator:
+
+2D Terrain Creator has two parts.
+
+
+-Editable Terrain 2D:
+
+In order to modify the terrain shape, you can modify the positions of the dots found along the terrain; you can give it whatever shape you want. 
+In addition, you can easily add or delete curves when the dot selected is blue.
+
+Settings Display:
+You can select which graphics you want to use (2D or 3D) and you can modify the height and width (in case you are using 3D graphics) of the terrain. 
+You can enable the cap and change his height as well. In order to change the materials just drag the new ones in their corresponding fields.
+
+Generation Display:
+Here is where you can expand your terrain. If you want to add new curves to the terrain, just click on the "Add Curve" button (curves are always 
+added to the right of the selected dot). If you want to delete a curve just click on the "Delete Curve" button (the curve you delete is always the 
+one to the right of the selected dot). You can merge curves by deleting the dot that joins them; in order to perform this operation, just click on 
+the "Delete Point" button. Everything explained here can only be done when you select the blue dots. 
+
+Prefabs Display:
+In order to add a new type of prefab, simply click on "Add Prefab Type". Once you have created it, click on "+" in order to add a clone of that 
+prefab to the terrain. If you want to remove a type of prefab just click on the "-".
+
+Selected Control Point Display:
+Here you can see the position and the mode of the selected point, if there are any selected. You can also modify its position and mode by changing 
+those values.
+
+Selected Prefab Clone Display:
+Here you can see the position of the selected prefab clone, if there are any selected. You can also modify its position by changing those values.
+
+
+-Random Terrain 2D:
+
+Settings Display:
+You can select which graphics you want to use (2D or 3D) and you can modify the height and width (in case you are using 3D graphics) of the terrain. 
+You can enable the cap and change his height as well. In order to change the materials just drag the new ones in their corresponding fields.
+
+Generation Display:
+Terrain is randomly generated between "Min Width" and "Max Width" and between "Min Height" and "Max Height" (in each terrain curve). "Preview Curves" 
+are the curves generated in edit mode. Terrain is generated based on the assumption that the camera moves to the right (during play mode).
+
+Prefabs Display: 
+In order to add a new type of prefab, you can click on "Add Prefab Type". Once you have created it, you can modify the way its clones are generated 
+along the terrain by changing some parameters. Prefab Clones are randomly generated between "Min Repeated Distance" and "Max Repeated Distance". 
+You can also create groups of prefab clones by clicking on the "Group" toggle. The group size is randomly generated between "Min Group Size" and 
+"Max Group Size". "Group Spacing" defines the space between each prefab clone in the group;
+
+
+-Camera:
+
+Only what is on screen will be rendered (during play mode).
+
+
+I hope you enjoy this package. If you have any questions or ideas for new features, please let me know:
+
+Contact (Walon Cab):
+waloncab@gmail.com
+https://waloncab.wordpress.com
+
+

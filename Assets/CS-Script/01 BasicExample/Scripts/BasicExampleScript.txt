@@ -1,0 +1,41 @@
+using UnityEngine;
+
+//A unity component
+public class MyMonoBehaviour : MonoBehaviour {
+	void Start(){
+		InvokeRepeating("DoStuff", 0, 1);
+	}
+
+	void Update(){
+		transform.Rotate(Vector3.up, Time.deltaTime * 90);
+	}
+
+	void DoStuff()
+	{
+		Debug.Log(Time.time);
+	}
+}
+
+//A private class
+class SomePrivateClass{
+	public void SomeFunction()
+	{
+		Debug.Log(this + ": SomeFunction!");
+	}
+}
+
+//A public class which we will instantiate to use its functions. Note that it uses the IMyScript interface which we defined in CSScriptTest.cs
+public class SomePublicClass : IMyScript {
+	public void Test(){
+		Debug.Log(this + ": Test called!");
+		//Just for the sake of it, create an instance of SomePrivateClass and call a public function in SomePrivateClass
+		SomePrivateClass _somePrivateClassInstance = new SomePrivateClass(); 
+		_somePrivateClassInstance.SomeFunction();
+	}
+
+	//A static function with int return value
+	public static int Sum(int a, int b)
+	{
+		return a + b;
+	}
+}
