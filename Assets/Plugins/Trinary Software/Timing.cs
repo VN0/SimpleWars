@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 // /////////////////////////////////////////////////////////////////////////////////////////
 //                                        TIMING
@@ -34,22 +37,31 @@ namespace MovementEffects
         public int NumberOfFixedUpdateCoroutines;
         public int NumberOfLateUpdateCoroutines;
         public int NumberOfSlowUpdateCoroutines;
+        public int NumberOfEditorUpdateCoroutines;
 
-        public System.Action<System.Exception, IEnumerator<float>> OnError; 
+        public System.Action<System.Exception> OnError; 
         public static System.Func<IEnumerator<float>, Segment, IEnumerator<float>> ReplacementFunction;
         private readonly List<WaitingProcess> _waitingProcesses = new List<WaitingProcess>();
+        private readonly Queue<System.Exception> _exceptions = new Queue<System.Exception>(); 
 
         private bool _runningUpdate;
         private bool _runningFixedUpdate;
         private bool _runningLateUpdate;
         private bool _runningSlowUpdate;
+        private bool _runningEditorUpdate;
         private int _nextUpdateProcessSlot;
         private int _nextLateUpdateProcessSlot;
         private int _nextFixedUpdateProcessSlot;
         private int _nextSlowUpdateProcessSlot;
+        private int _nextEditorUpdateProcessSlot;
         private ushort _framesSinceUpdate;
 
-        private float _lastSlowUpdateCallTime;
+        private float _lastUpdateTime;
+        private float _lastFixedUpdateTime;
+        private float _lastLateUpdateTime;
+        private float _lastSlowUpdateTime;
+        private double _lastEditorUpdateTime;
+
         private const ushort FramesUntilMaintenance = 64;
         private const int ProcessArrayChunkSize = 128;
 
@@ -57,6 +69,11 @@ namespace MovementEffects
         private IEnumerator<float>[] LateUpdateProcesses = new IEnumerator<float>[ProcessArrayChunkSize];
         private IEnumerator<float>[] FixedUpdateProcesses = new IEnumerator<float>[ProcessArrayChunkSize];
         private IEnumerator<float>[] SlowUpdateProcesses = new IEnumerator<float>[ProcessArrayChunkSize];
+        private IEnumerator<float>[] EditorUpdateProcesses = new IEnumerator<float>[ProcessArrayChunkSize];
+
+        [HideInInspector]
+        public float DeltaTime;
+        public static float deltaTime { get { return Instance.DeltaTime; } }
 
         private static Timing _instance;
         public static Timing Instance
@@ -66,24 +83,27 @@ namespace MovementEffects
                 if (_instance == null || !_instance.gameObject)
                 {
                     GameObject instanceHome = GameObject.Find("Movement Effects");
+                    System.Type movementType =
+                        System.Type.GetType("MovementEffects.Movement, MovementOverTime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
 
                     if(instanceHome == null)
                     {
                         instanceHome = new GameObject { name = "Movement Effects" };
 
-                        System.Type movementType = System.Type.GetType("MovementEffects.Movement");
-                        if(movementType != null)
+                        if (movementType != null)
                             instanceHome.AddComponent(movementType);
 
                         _instance = instanceHome.AddComponent<Timing>();
                     }
                     else
                     {
-                        System.Type movementType = System.Type.GetType("MovementEffects.Movement");
-                        if(movementType != null && instanceHome.GetComponent(movementType) == null) 
+                         if (movementType != null && instanceHome.GetComponent(movementType) == null) 
                             instanceHome.AddComponent(movementType);
 
-                        _instance = instanceHome.GetComponent<Timing>() ?? instanceHome.AddComponent<Timing>();
+                        _instance = instanceHome.GetComponent<Timing>();
+                        if (_instance == null)
+                            _instance = instanceHome.AddComponent<Timing>();
+
                     }
                 }
 
@@ -95,8 +115,16 @@ namespace MovementEffects
 
         void Awake()
         {
-            if (_instance == null)
+            if(_instance == null)
+            {
                 _instance = this;
+
+                DeltaTime = Time.time;
+            }
+            else
+            {
+                DeltaTime = _instance.DeltaTime;
+            }
         }
 
         void OnDestroy()
@@ -105,73 +133,125 @@ namespace MovementEffects
                 _instance = null;
         }
 
-        void Update()
+        private void OnEditorStart()
         {
-            _runningUpdate = true;
+#if UNITY_EDITOR
+            if(_lastEditorUpdateTime == 0d)
+                _lastEditorUpdateTime = EditorApplication.timeSinceStartup;
 
-            for (int i = 0; i < _nextUpdateProcessSlot; i++)
+            EditorApplication.update -= OnEditorUpdate;
+            EditorApplication.update += OnEditorUpdate;
+#endif
+        }
+
+#if UNITY_EDITOR
+        private void OnEditorUpdate()
+        {
+            if(EditorApplication.isPlayingOrWillChangePlaymode)
             {
-                Profiler.BeginSample("Processing Coroutine");
+                for(int i = 0;i < _nextEditorUpdateProcessSlot;i++)
+                    EditorUpdateProcesses[i] = null;
 
-                if (UpdateProcesses[i] != null && !(Time.time < UpdateProcesses[i].Current))
-                {
-                    try 
-                    {
-                        if(!UpdateProcesses[i].MoveNext())
-                        {
-                            UpdateProcesses[i] = null;
-                        }
-                        else if(float.IsNaN(UpdateProcesses[i].Current))
-                        {
-                            if (ReplacementFunction == null)
-                                UpdateProcesses[i] = null;
-                            else
-                            {
-                                UpdateProcesses[i] = ReplacementFunction(UpdateProcesses[i], Segment.Update);
-
-                                ReplacementFunction = null;
-                                i--;
-                            }
-                        }
-                    }
-                    catch (System.Exception ex)
-                    {
-                        if(OnError == null)
-                            Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
-                        else
-                            OnError(ex, UpdateProcesses[i]);
-
-                        UpdateProcesses[i] = null;
-                    }
-                }
-
-                Profiler.EndSample();
+                _nextEditorUpdateProcessSlot = 0;
             }
 
-            _runningUpdate = false;
-
-
-            if(_lastSlowUpdateCallTime + TimeBetweenSlowUpdateCalls < Time.realtimeSinceStartup)
+            if (_nextEditorUpdateProcessSlot > 0)
             {
-                _runningSlowUpdate = true;
-                _lastSlowUpdateCallTime = Time.realtimeSinceStartup;
+                _runningEditorUpdate = true;
+                CalculateDeltaTime(Segment.EditorUpdate);
 
-                for(int i = 0;i < _nextSlowUpdateProcessSlot;i++)
+                for (int i = 0; i < _nextEditorUpdateProcessSlot; i++)
                 {
-                    Profiler.BeginSample("Processing Coroutine (Slow Update)");
-
-                    if(SlowUpdateProcesses[i] != null && !(Time.time < SlowUpdateProcesses[i].Current))
+                    if (EditorUpdateProcesses[i] != null && !(EditorApplication.timeSinceStartup < EditorUpdateProcesses[i].Current))
                     {
                         try
                         {
-                            if(!SlowUpdateProcesses[i].MoveNext())
+                            if (!EditorUpdateProcesses[i].MoveNext())
+                            {
+                                EditorUpdateProcesses[i] = null;
+                            }
+                            else if (float.IsNaN(EditorUpdateProcesses[i].Current))
+                            {
+                                if (ReplacementFunction == null)
+                                {
+                                    EditorUpdateProcesses[i] = null;
+                                }
+                                else
+                                {
+                                    EditorUpdateProcesses[i] = ReplacementFunction(EditorUpdateProcesses[i], Segment.EditorUpdate);
+
+                                    ReplacementFunction = null;
+                                    i--;
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if(OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
+                            EditorUpdateProcesses[i] = null;
+                        }
+                    }
+                }
+
+                _runningEditorUpdate = false;
+            }
+
+            if (++_framesSinceUpdate > FramesUntilMaintenance)
+            {
+                _framesSinceUpdate = 0;
+
+                int i, j;
+                for (i = j = 0; i < _nextEditorUpdateProcessSlot; i++)
+                {
+                    if (EditorUpdateProcesses[i] != null)
+                    {
+                        if (i != j)
+                            EditorUpdateProcesses[j] = EditorUpdateProcesses[i];
+                        j++;
+                    }
+                }
+                for (i = j; i < _nextEditorUpdateProcessSlot; i++)
+                    EditorUpdateProcesses[i] = null;
+
+                NumberOfEditorUpdateCoroutines = _nextEditorUpdateProcessSlot = j;
+            }
+
+            if (_exceptions.Count > 0)
+            {
+                throw _exceptions.Dequeue();
+            }
+        }
+#endif
+
+        private void Update()
+        {
+            if (_lastSlowUpdateTime + TimeBetweenSlowUpdateCalls < Time.realtimeSinceStartup && _nextSlowUpdateProcessSlot > 0)
+            {
+                _runningSlowUpdate = true;
+                CalculateDeltaTime(Segment.SlowUpdate);
+
+                for (int i = 0; i < _nextSlowUpdateProcessSlot; i++)
+                {
+                    if (SlowUpdateProcesses[i] != null && !(Time.realtimeSinceStartup < SlowUpdateProcesses[i].Current))
+                    {
+                        Profiler.BeginSample("Processing Coroutine (Slow Update)");
+
+                        try
+                        {
+                            if (!SlowUpdateProcesses[i].MoveNext())
                             {
                                 SlowUpdateProcesses[i] = null;
                             }
-                            else if(float.IsNaN(SlowUpdateProcesses[i].Current))
+                            else if (float.IsNaN(SlowUpdateProcesses[i].Current))
                             {
-                                if(ReplacementFunction == null)
+                                if (ReplacementFunction == null)
+                                {
                                     SlowUpdateProcesses[i] = null;
+                                }
                                 else
                                 {
                                     SlowUpdateProcesses[i] = ReplacementFunction(SlowUpdateProcesses[i], Segment.SlowUpdate);
@@ -183,22 +263,72 @@ namespace MovementEffects
                         }
                         catch (System.Exception ex)
                         {
-                            if(OnError == null)
-                                Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
+                            if (OnError != null)
+                                OnError(ex);
                             else
-                                OnError(ex, SlowUpdateProcesses[i]);
+                                _exceptions.Enqueue(ex);
 
                             SlowUpdateProcesses[i] = null;
                         }
-                    }
 
-                    Profiler.EndSample();
+                        Profiler.EndSample();
+                    }
                 }
 
                 _runningSlowUpdate = false;
             }
 
-            if (++_framesSinceUpdate > FramesUntilMaintenance)
+
+            if(_nextUpdateProcessSlot > 0)
+            {
+                _runningUpdate = true;
+                CalculateDeltaTime(Segment.Update);
+
+                for(int i = 0;i < _nextUpdateProcessSlot;i++)
+                {
+                    if(UpdateProcesses[i] != null && !(Time.time < UpdateProcesses[i].Current))
+                    {
+                        Profiler.BeginSample("Processing Coroutine");
+
+                        try
+                        {
+                            if(!UpdateProcesses[i].MoveNext())
+                            {
+                                UpdateProcesses[i] = null;
+                            }
+                            else if(float.IsNaN(UpdateProcesses[i].Current))
+                            {
+                                if(ReplacementFunction == null)
+                                {
+                                    UpdateProcesses[i] = null;
+                                }
+                                else
+                                {
+                                    UpdateProcesses[i] = ReplacementFunction(UpdateProcesses[i], Segment.Update);
+
+                                    ReplacementFunction = null;
+                                    i--;
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if(OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
+                            UpdateProcesses[i] = null;
+                        }
+
+                        Profiler.EndSample();
+                    }
+                }
+
+                _runningUpdate = false;
+            }
+
+            if(++_framesSinceUpdate > FramesUntilMaintenance)
             {
                 _framesSinceUpdate = 0;
 
@@ -208,98 +338,171 @@ namespace MovementEffects
 
                 Profiler.EndSample();
             }
+
+            if (_exceptions.Count > 0)
+            {
+                 throw _exceptions.Dequeue();
+            }
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
-            _runningFixedUpdate = true;
-
-            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++)
+            if(_nextFixedUpdateProcessSlot > 0)
             {
-                Profiler.BeginSample("Processing Coroutine");
+                _runningFixedUpdate = true;
+                CalculateDeltaTime(Segment.FixedUpdate);
 
-                if (FixedUpdateProcesses[i] != null && !(Time.time < FixedUpdateProcesses[i].Current))
+                for(int i = 0;i < _nextFixedUpdateProcessSlot;i++)
                 {
-                    try 
+                    if(FixedUpdateProcesses[i] != null && !(Time.time < FixedUpdateProcesses[i].Current))
                     {
-                        if (!FixedUpdateProcesses[i].MoveNext())
+                        Profiler.BeginSample("Processing Coroutine");
+
+                        try
                         {
+                            if(!FixedUpdateProcesses[i].MoveNext())
+                            {
+                                FixedUpdateProcesses[i] = null;
+                            }
+                            else if(float.IsNaN(FixedUpdateProcesses[i].Current))
+                            {
+                                if(ReplacementFunction == null)
+                                {
+                                    FixedUpdateProcesses[i] = null;
+                                }
+                                else
+                                {
+                                    FixedUpdateProcesses[i] = ReplacementFunction(FixedUpdateProcesses[i], Segment.FixedUpdate);
+
+                                    ReplacementFunction = null;
+                                    i--;
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if(OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
                             FixedUpdateProcesses[i] = null;
                         }
-                        else if (float.IsNaN(FixedUpdateProcesses[i].Current))
-                        {
-                            if (ReplacementFunction == null)
-                                FixedUpdateProcesses[i] = null;
-                            else
-                            {
-                                FixedUpdateProcesses[i] = ReplacementFunction(FixedUpdateProcesses[i], Segment.FixedUpdate);
 
-                                ReplacementFunction = null;
-                                i--;
-                            }
-                        }
-                    }
-                    catch (System.Exception ex)
-                    {
-                        if (OnError == null)
-                            Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
-                        else
-                            OnError(ex, FixedUpdateProcesses[i]);
-
-                        FixedUpdateProcesses[i] = null;
+                        Profiler.EndSample();
                     }
                 }
 
-                Profiler.EndSample();
+                _runningFixedUpdate = false;
             }
 
-            _runningFixedUpdate = false;
+            if (_exceptions.Count > 0)
+            {
+                throw _exceptions.Dequeue();
+            }
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
-            _runningLateUpdate = true;
-
-            for (int i = 0; i < _nextLateUpdateProcessSlot; i++)
+            if(_nextLateUpdateProcessSlot > 0)
             {
-                Profiler.BeginSample("Processing Coroutine");
+                _runningLateUpdate = true;
+                CalculateDeltaTime(Segment.LateUpdate);
 
-                if (LateUpdateProcesses[i] != null && !(Time.time < LateUpdateProcesses[i].Current))
+                for(int i = 0;i < _nextLateUpdateProcessSlot;i++)
                 {
-                    try 
+                    if(LateUpdateProcesses[i] != null && !(Time.time < LateUpdateProcesses[i].Current))
                     {
-                        if (!LateUpdateProcesses[i].MoveNext())
-                        {
-                            LateUpdateProcesses[i] = null;
-                        }
-                        else if (float.IsNaN(LateUpdateProcesses[i].Current))
-                        {
-                            if(ReplacementFunction == null)
-                                LateUpdateProcesses[i] = null;
-                            else
-                            {
-                                LateUpdateProcesses[i] = ReplacementFunction(LateUpdateProcesses[i], Segment.LateUpdate);
+                        Profiler.BeginSample("Processing Coroutine");
 
-                                ReplacementFunction = null;
-                                i--;
+                        try
+                        {
+                            if(!LateUpdateProcesses[i].MoveNext())
+                            {
+                                LateUpdateProcesses[i] = null;
+                            }
+                            else if(float.IsNaN(LateUpdateProcesses[i].Current))
+                            {
+                                if(ReplacementFunction == null)
+                                {
+                                    LateUpdateProcesses[i] = null;
+                                }
+                                else
+                                {
+                                    LateUpdateProcesses[i] = ReplacementFunction(LateUpdateProcesses[i], Segment.LateUpdate);
+
+                                    ReplacementFunction = null;
+                                    i--;
+                                }
                             }
                         }
-                    }
-                    catch (System.Exception ex)
-                    {
-                        if (OnError == null)
-                            Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
-                        else
-                            OnError(ex, LateUpdateProcesses[i]);
+                        catch (System.Exception ex)
+                        {
+                            if(OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
 
-                        LateUpdateProcesses[i] = null;
+                            LateUpdateProcesses[i] = null;
+                        }
+
+                        Profiler.EndSample();
                     }
                 }
 
-                Profiler.EndSample();
+                _runningLateUpdate = false;
             }
 
-            _runningLateUpdate = false;
+            if (_exceptions.Count > 0)
+            {
+                throw _exceptions.Dequeue();
+            }
+        }
+
+        private void CalculateDeltaTime(Segment segment)
+        {
+            switch(segment)
+            {
+                case Segment.Update:
+                    DeltaTime = Time.time - _lastUpdateTime;
+
+                    if(DeltaTime > Time.maximumDeltaTime)
+                        DeltaTime = Time.maximumDeltaTime;
+
+                    _lastUpdateTime = Time.time;
+                    break;
+                case Segment.LateUpdate:
+                    DeltaTime = Time.time - _lastLateUpdateTime;
+
+                    if (DeltaTime > Time.maximumDeltaTime)
+                        DeltaTime = Time.maximumDeltaTime;
+
+                    _lastLateUpdateTime = Time.time;
+                    break;
+                case Segment.FixedUpdate:
+                    DeltaTime = Time.time - _lastFixedUpdateTime;
+
+                    if (DeltaTime > Time.maximumDeltaTime)
+                        DeltaTime = Time.maximumDeltaTime;
+
+                    _lastFixedUpdateTime = Time.time;
+                    break;
+                case Segment.SlowUpdate:
+                    DeltaTime = Time.realtimeSinceStartup - _lastSlowUpdateTime;
+
+                    _lastSlowUpdateTime = Time.realtimeSinceStartup;
+                    break;
+#if UNITY_EDITOR
+                    case Segment.EditorUpdate:
+                    DeltaTime = (float)(EditorApplication.timeSinceStartup - _lastEditorUpdateTime);
+
+                    if (DeltaTime > Time.maximumDeltaTime)
+                        DeltaTime = Time.maximumDeltaTime;
+
+                    _lastEditorUpdateTime = EditorApplication.timeSinceStartup;
+                    break;
+#endif
+            }
         }
 
         /// <summary>
@@ -416,217 +619,307 @@ namespace MovementEffects
         /// <param name="coroutine">The new coroutine's handle.</param>
         /// <param name="timing">Whether to run it in the Update, FixedUpdate, or LateUpdate loop.</param>
         /// <returns>The coroutine's handle, which can be used for Wait and Kill operations.</returns>
-        public IEnumerator<float> RunCoroutineOnInstance(IEnumerator<float> coroutine, Segment timing) 
+        public IEnumerator<float> RunCoroutineOnInstance(IEnumerator<float> coroutine, Segment timing)
         {
-            if(timing == Segment.Update)
+            int currentSlot;
+            switch(timing)
             {
-                if(_nextUpdateProcessSlot >= UpdateProcesses.Length)
-                {
-                    IEnumerator<float>[] oldArray = UpdateProcesses;
-                    UpdateProcesses = new IEnumerator<float>[UpdateProcesses.Length + ProcessArrayChunkSize];
-                    for(int i = 0;i < oldArray.Length;i++)
-                        UpdateProcesses[i] = oldArray[i];
-                }
-
-                int currentSlot = _nextUpdateProcessSlot;
-                _nextUpdateProcessSlot++;
-
-                UpdateProcesses[currentSlot] = coroutine;
-
-                if(!_runningUpdate)
-                {
-                    try
+                case Segment.Update:
+                    if(_nextUpdateProcessSlot >= UpdateProcesses.Length)
                     {
-                        if(!UpdateProcesses[currentSlot].MoveNext())
+                        IEnumerator<float>[] oldArray = UpdateProcesses;
+                        UpdateProcesses = new IEnumerator<float>[UpdateProcesses.Length + ProcessArrayChunkSize];
+                        for(int i = 0;i < oldArray.Length;i++)
+                            UpdateProcesses[i] = oldArray[i];
+                    }
+
+                    currentSlot = _nextUpdateProcessSlot;
+                    _nextUpdateProcessSlot++;
+
+                    UpdateProcesses[currentSlot] = coroutine;
+
+                    if(!_runningUpdate)
+                    {
+                        try
                         {
+                            _runningUpdate = true;
+
+                            if(!UpdateProcesses[currentSlot].MoveNext())
+                            {
+                                UpdateProcesses[currentSlot] = null;
+                            }
+                            else if(float.IsNaN(UpdateProcesses[currentSlot].Current))
+                            {
+                                if(ReplacementFunction == null)
+                                {
+                                    UpdateProcesses[currentSlot] = null;
+                                }
+                                else
+                                {
+                                    UpdateProcesses[currentSlot] = ReplacementFunction(UpdateProcesses[currentSlot], timing);
+
+                                    ReplacementFunction = null;
+
+                                    if(UpdateProcesses[currentSlot] != null)
+                                        UpdateProcesses[currentSlot].MoveNext();
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if (OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
                             UpdateProcesses[currentSlot] = null;
                         }
-                        else if(float.IsNaN(UpdateProcesses[currentSlot].Current))
+                        finally
                         {
-                            if(ReplacementFunction == null)
-                                UpdateProcesses[currentSlot] = null;
-                            else
-                            {
-                                UpdateProcesses[currentSlot] = ReplacementFunction(UpdateProcesses[currentSlot], timing);
-
-                                ReplacementFunction = null;
-
-                                if(UpdateProcesses[currentSlot] != null)
-                                    UpdateProcesses[currentSlot].MoveNext();
-                            }
+                            _runningUpdate = false;
                         }
                     }
-                    catch (System.Exception ex)
-                    {
-                        if (OnError == null)
-                            Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
-                        else
-                            OnError(ex, UpdateProcesses[currentSlot]);
 
-                        UpdateProcesses[currentSlot] = null;
+                    return coroutine;
+
+                case Segment.FixedUpdate:
+
+                    if(_nextFixedUpdateProcessSlot >= FixedUpdateProcesses.Length)
+                    {
+                        IEnumerator<float>[] oldArray = FixedUpdateProcesses;
+                        FixedUpdateProcesses = new IEnumerator<float>[FixedUpdateProcesses.Length + ProcessArrayChunkSize];
+                        for(int i = 0;i < oldArray.Length;i++)
+                            FixedUpdateProcesses[i] = oldArray[i];
                     }
-                }
 
-                return coroutine;
-            }
-            
-            if(timing == Segment.FixedUpdate)
-            {
-                if (_nextFixedUpdateProcessSlot >= FixedUpdateProcesses.Length)
-                {
-                    IEnumerator<float>[] oldArray = FixedUpdateProcesses;
-                    FixedUpdateProcesses = new IEnumerator<float>[FixedUpdateProcesses.Length + ProcessArrayChunkSize];
-                    for (int i = 0; i < oldArray.Length; i++)
-                        FixedUpdateProcesses[i] = oldArray[i];
-                }
+                    currentSlot = _nextFixedUpdateProcessSlot;
+                    _nextFixedUpdateProcessSlot++;
 
-                int currentSlot = _nextFixedUpdateProcessSlot;
-                _nextFixedUpdateProcessSlot++;
+                    FixedUpdateProcesses[currentSlot] = coroutine;
 
-                FixedUpdateProcesses[currentSlot] = coroutine;
-
-                if(!_runningFixedUpdate)
-                {
-                    try
+                    if(!_runningFixedUpdate)
                     {
-                        if(!FixedUpdateProcesses[currentSlot].MoveNext())
+                        try
                         {
+                            _runningFixedUpdate = true;
+
+                            if(!FixedUpdateProcesses[currentSlot].MoveNext())
+                            {
+                                FixedUpdateProcesses[currentSlot] = null;
+                            }
+                            else if(float.IsNaN(FixedUpdateProcesses[currentSlot].Current))
+                            {
+                                if(ReplacementFunction == null)
+                                {
+                                    FixedUpdateProcesses[currentSlot] = null;
+                                }
+                                else
+                                {
+                                    FixedUpdateProcesses[currentSlot] = ReplacementFunction(FixedUpdateProcesses[currentSlot], timing);
+
+                                    ReplacementFunction = null;
+
+                                    if(FixedUpdateProcesses[currentSlot] != null)
+                                        FixedUpdateProcesses[currentSlot].MoveNext();
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if (OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
                             FixedUpdateProcesses[currentSlot] = null;
                         }
-                        else if(float.IsNaN(FixedUpdateProcesses[currentSlot].Current))
+                        finally
                         {
-                            if(ReplacementFunction == null)
-                                FixedUpdateProcesses[currentSlot] = null;
-                            else
-                            {
-                                FixedUpdateProcesses[currentSlot] = ReplacementFunction(FixedUpdateProcesses[currentSlot], timing);
-
-                                ReplacementFunction = null;
-
-                                if(FixedUpdateProcesses[currentSlot] != null)
-                                    FixedUpdateProcesses[currentSlot].MoveNext();
-                            }
+                            _runningFixedUpdate = false;
                         }
                     }
-                    catch (System.Exception ex)
-                    {
-                        if (OnError == null)
-                            Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
-                        else
-                            OnError(ex, FixedUpdateProcesses[currentSlot]);
 
-                        FixedUpdateProcesses[currentSlot] = null;
+                    return coroutine;
+
+                case Segment.LateUpdate:
+                    if(_nextLateUpdateProcessSlot >= LateUpdateProcesses.Length)
+                    {
+                        IEnumerator<float>[] oldArray = LateUpdateProcesses;
+                        LateUpdateProcesses = new IEnumerator<float>[LateUpdateProcesses.Length + ProcessArrayChunkSize];
+                        for(int i = 0;i < oldArray.Length;i++)
+                            LateUpdateProcesses[i] = oldArray[i];
                     }
-                }
 
-                return coroutine;
-            }
-            
-            if (timing == Segment.LateUpdate)
-            {
-                if (_nextLateUpdateProcessSlot >= LateUpdateProcesses.Length)
-                {
-                    IEnumerator<float>[] oldArray = LateUpdateProcesses;
-                    LateUpdateProcesses = new IEnumerator<float>[LateUpdateProcesses.Length + ProcessArrayChunkSize];
-                    for (int i = 0; i < oldArray.Length; i++)
-                        LateUpdateProcesses[i] = oldArray[i];
-                }
+                    currentSlot = _nextLateUpdateProcessSlot;
+                    _nextLateUpdateProcessSlot++;
 
-                int currentSlot = _nextLateUpdateProcessSlot;
-                _nextLateUpdateProcessSlot++;
+                    LateUpdateProcesses[currentSlot] = coroutine;
 
-                LateUpdateProcesses[currentSlot] = coroutine;
-
-                if(!_runningLateUpdate)
-                {
-                    try
+                    if(!_runningLateUpdate)
                     {
-                        if(!LateUpdateProcesses[currentSlot].MoveNext())
+                        try
                         {
+                            _runningLateUpdate = true;
+
+                            if(!LateUpdateProcesses[currentSlot].MoveNext())
+                            {
+                                LateUpdateProcesses[currentSlot] = null;
+                            }
+                            else if(float.IsNaN(LateUpdateProcesses[currentSlot].Current))
+                            {
+                                if(ReplacementFunction == null)
+                                {
+                                    LateUpdateProcesses[currentSlot] = null;
+                                }
+                                else
+                                {
+                                    LateUpdateProcesses[currentSlot] = ReplacementFunction(LateUpdateProcesses[currentSlot], timing);
+
+                                    ReplacementFunction = null;
+
+                                    if(LateUpdateProcesses[currentSlot] != null)
+                                        LateUpdateProcesses[currentSlot].MoveNext();
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if (OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
                             LateUpdateProcesses[currentSlot] = null;
                         }
-                        else if(float.IsNaN(LateUpdateProcesses[currentSlot].Current))
+                        finally
                         {
-                            if(ReplacementFunction == null)
-                                LateUpdateProcesses[currentSlot] = null;
-                            else
-                            {
-                                LateUpdateProcesses[currentSlot] = ReplacementFunction(LateUpdateProcesses[currentSlot], timing);
-
-                                ReplacementFunction = null;
-
-                                if(LateUpdateProcesses[currentSlot] != null)
-                                    LateUpdateProcesses[currentSlot].MoveNext();
-                            }
+                            _runningLateUpdate = false;
                         }
                     }
-                    catch (System.Exception ex)
-                    {
-                        if (OnError == null)
-                            Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
-                        else
-                            OnError(ex, LateUpdateProcesses[currentSlot]);
 
-                        LateUpdateProcesses[currentSlot] = null;
+                    return coroutine;
+
+                case Segment.SlowUpdate:
+                    if(_nextSlowUpdateProcessSlot >= SlowUpdateProcesses.Length)
+                    {
+                        IEnumerator<float>[] oldArray = SlowUpdateProcesses;
+                        SlowUpdateProcesses = new IEnumerator<float>[SlowUpdateProcesses.Length + ProcessArrayChunkSize];
+                        for(int i = 0;i < oldArray.Length;i++)
+                            SlowUpdateProcesses[i] = oldArray[i];
                     }
-                }
 
-                return coroutine;
-            }
+                    currentSlot = _nextSlowUpdateProcessSlot;
+                    _nextSlowUpdateProcessSlot++;
 
-            if (timing == Segment.SlowUpdate)
-            {
-                if (_nextSlowUpdateProcessSlot >= SlowUpdateProcesses.Length)
-                {
-                    IEnumerator<float>[] oldArray = SlowUpdateProcesses;
-                    SlowUpdateProcesses = new IEnumerator<float>[SlowUpdateProcesses.Length + ProcessArrayChunkSize];
-                    for (int i = 0; i < oldArray.Length; i++)
-                        SlowUpdateProcesses[i] = oldArray[i];
-                }
+                    SlowUpdateProcesses[currentSlot] = coroutine;
 
-                int currentSlot = _nextSlowUpdateProcessSlot;
-                _nextSlowUpdateProcessSlot++;
-
-                SlowUpdateProcesses[currentSlot] = coroutine;
-
-                if (!_runningSlowUpdate)
-                {
-                    try
+                    if(!_runningSlowUpdate)
                     {
-                        if (!SlowUpdateProcesses[currentSlot].MoveNext())
+                        try
                         {
+                            _runningSlowUpdate = true;
+
+                            if(!SlowUpdateProcesses[currentSlot].MoveNext())
+                            {
+                                SlowUpdateProcesses[currentSlot] = null;
+                            }
+                            else if(float.IsNaN(SlowUpdateProcesses[currentSlot].Current))
+                            {
+                                if(ReplacementFunction == null)
+                                {
+                                    SlowUpdateProcesses[currentSlot] = null;
+                                }
+                                else
+                                {
+                                    SlowUpdateProcesses[currentSlot] = ReplacementFunction(SlowUpdateProcesses[currentSlot], timing);
+
+                                    ReplacementFunction = null;
+
+                                    if(SlowUpdateProcesses[currentSlot] != null)
+                                        SlowUpdateProcesses[currentSlot].MoveNext();
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if (OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
                             SlowUpdateProcesses[currentSlot] = null;
                         }
-                        else if (float.IsNaN(SlowUpdateProcesses[currentSlot].Current))
+                        finally
                         {
-                            if (ReplacementFunction == null)
-                                SlowUpdateProcesses[currentSlot] = null;
-                            else
-                            {
-                                SlowUpdateProcesses[currentSlot] = ReplacementFunction(SlowUpdateProcesses[currentSlot], timing);
-
-                                ReplacementFunction = null;
-
-                                if (SlowUpdateProcesses[currentSlot] != null)
-                                    SlowUpdateProcesses[currentSlot].MoveNext();
-                            }
+                            _runningSlowUpdate = false;
                         }
                     }
-                    catch (System.Exception ex)
+
+                    return coroutine;
+
+                case Segment.EditorUpdate:
+                    OnEditorStart();
+
+                    if (_nextEditorUpdateProcessSlot >= EditorUpdateProcesses.Length)
                     {
-                        if (OnError == null)
-                            Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
-                        else
-                            OnError(ex, SlowUpdateProcesses[currentSlot]);
-
-                        SlowUpdateProcesses[currentSlot] = null;
+                        IEnumerator<float>[] oldArray = EditorUpdateProcesses;
+                        EditorUpdateProcesses = new IEnumerator<float>[EditorUpdateProcesses.Length + ProcessArrayChunkSize];
+                        for (int i = 0; i < oldArray.Length; i++)
+                            EditorUpdateProcesses[i] = oldArray[i];
                     }
-                }
 
-                return coroutine;
+                    currentSlot = _nextEditorUpdateProcessSlot;
+                    _nextEditorUpdateProcessSlot++;
+
+                    EditorUpdateProcesses[currentSlot] = coroutine;
+
+                    if (!_runningEditorUpdate)
+                    {
+                        try
+                        {
+                            _runningEditorUpdate = true;
+
+                            if (!EditorUpdateProcesses[currentSlot].MoveNext())
+                            {
+                                EditorUpdateProcesses[currentSlot] = null;
+                            }
+                            else if (float.IsNaN(EditorUpdateProcesses[currentSlot].Current))
+                            {
+                                if (ReplacementFunction == null)
+                                {
+                                    EditorUpdateProcesses[currentSlot] = null;
+                                }
+                                else
+                                {
+                                    EditorUpdateProcesses[currentSlot] = ReplacementFunction(EditorUpdateProcesses[currentSlot], timing);
+
+                                    ReplacementFunction = null;
+
+                                    if (EditorUpdateProcesses[currentSlot] != null)
+                                        EditorUpdateProcesses[currentSlot].MoveNext();
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            if (OnError != null)
+                                OnError(ex);
+                            else
+                                _exceptions.Enqueue(ex);
+
+                            EditorUpdateProcesses[currentSlot] = null;
+                        }
+                        finally
+                        {
+                            _runningEditorUpdate = false;
+                        }
+                    }
+
+                    return coroutine;
+                
+                default:
+                    return null;
             }
-
-            return null;
         }
 
         /// <summary>
@@ -684,6 +977,15 @@ namespace MovementEffects
                 }
             }
 
+            for (int i = 0; i < _nextSlowUpdateProcessSlot; i++)
+            {
+                if (SlowUpdateProcesses[i] != null && SlowUpdateProcesses[i].GetType().ToString() == typeString)
+                {
+                    SlowUpdateProcesses[i] = null;
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -717,6 +1019,15 @@ namespace MovementEffects
                 if (LateUpdateProcesses[i] == coroutine)
                 {
                     LateUpdateProcesses[i] = null;
+                    return true;
+                }
+            }
+
+            for (int i = 0; i < _nextSlowUpdateProcessSlot; i++)
+            {
+                if (SlowUpdateProcesses[i] == coroutine)
+                {
+                    SlowUpdateProcesses[i] = null;
                     return true;
                 }
             }
@@ -877,7 +1188,7 @@ namespace MovementEffects
             }
 
             if(warnIfNotFound)
-                Debug.LogWarning("WaitUntilDone cannot hold: The coroutine instance that was passed in was not found.");
+                Debug.LogWarning("WaitUntilDone cannot hold: The coroutine instance that was passed in was not found.\n" + otherCoroutine);
 
             return 0f;
         }
@@ -886,7 +1197,8 @@ namespace MovementEffects
         {
             processData.Instance._waitingProcesses.Add(processData);
 
-            yield return processData.Trigger.Current;
+            if (processData.Trigger.Current > Time.time)
+                yield return processData.Trigger.Current;
 
             while(processData.Trigger.MoveNext())
             {
@@ -905,7 +1217,7 @@ namespace MovementEffects
         /// Use the command "yield return Timing.WaitUntilDone(wwwObject);" to pause the current 
         /// coroutine until the wwwObject is done.
         /// </summary>
-        /// <param name="wwwObject">The www object to puase for.</param>
+        /// <param name="wwwObject">The www object to pause for.</param>
         public static float WaitUntilDone(WWW wwwObject)
         {
             ReplacementFunction = (input, timing) => _StartWhenDone(wwwObject, input);
@@ -915,6 +1227,26 @@ namespace MovementEffects
         private static IEnumerator<float> _StartWhenDone(WWW www, IEnumerator<float> pausedProc)
         {
             while (!www.isDone)
+                yield return 0f;
+
+            ReplacementFunction = (input, timing) => pausedProc;
+            yield return float.NaN;
+        }
+
+        /// <summary>
+        /// Use the command "yield return Timing.WaitUntilDone(operation);" to pause the current 
+        /// coroutine until the operation is done.
+        /// </summary>
+        /// <param name="operation">The operation variable returned.</param>
+        public static float WaitUntilDone(AsyncOperation operation)
+        {
+            ReplacementFunction = (input, timing) => _StartWhenDone(operation, input);
+            return float.NaN;
+        }
+
+        private static IEnumerator<float> _StartWhenDone(AsyncOperation operation, IEnumerator<float> pausedProc)
+        {
+            while (!operation.isDone)
                 yield return 0f;
 
             ReplacementFunction = (input, timing) => pausedProc;
@@ -932,6 +1264,27 @@ namespace MovementEffects
         }
 
         /// <summary>
+        /// Use in a yield return statement to wait for the specified number of seconds.
+        /// </summary>
+        /// <param name="waitTime">Number of seconds to wait.</param>
+        /// <param name="context">The segment that the coroutine is running in. Only needed if the segment is SlowUpdate or EditorUpdate.</param>
+        public static float WaitForSeconds(float waitTime, Segment context)
+        {
+            if (float.IsNaN(waitTime)) waitTime = 0f;
+            switch(context)
+            {
+                default:
+                    return Time.time + waitTime;
+                case Segment.SlowUpdate:
+                    return Time.realtimeSinceStartup + waitTime;
+#if UNITY_EDITOR
+                case Segment.EditorUpdate:
+                    return (float)(EditorApplication.timeSinceStartup + waitTime);
+#endif
+            }
+        }
+
+        /// <summary>
         /// Calls the specified action after a specified number of seconds.
         /// </summary>
         /// <param name="reference">A value that will be passed in to the supplied action.</param>
@@ -941,7 +1294,7 @@ namespace MovementEffects
         {
             if(action == null) return;
 
-            if (delay > 0f)
+            if (delay >= 0f)
                 RunCoroutine(_CallDelayBack(reference, delay, action));
             else
                 action(reference);
@@ -951,7 +1304,7 @@ namespace MovementEffects
         {
             yield return Time.time + delay;
 
-            CallDelayed(reference, 0f, action);
+            CallDelayed(reference, -1f, action);
         }
 
         /// <summary>
@@ -963,7 +1316,7 @@ namespace MovementEffects
         {
             if(action == null) return;
 
-            if (delay > 0f)
+            if (delay >= 0f)
                 RunCoroutine(_CallDelayBack(delay, action));
             else
                 action();
@@ -973,11 +1326,11 @@ namespace MovementEffects
         {
             yield return Time.time + delay;
 
-            CallDelayed(0f, action);
+            CallDelayed(-1f, action);
         }
 
         /// <summary>
-        /// Calls the supplied action every frame for a given number of seconds.
+        /// Calls the supplied at the given rate for a given number of seconds.
         /// </summary>
         /// <param name="timeframe">The number of seconds that this function should run.</param>
         /// <param name="period">The amount of time between calls.</param>
@@ -990,7 +1343,7 @@ namespace MovementEffects
         }
 
         /// <summary>
-        /// Calls the supplied action every frame for a given number of seconds.
+        /// Calls the supplied at the given rate for a given number of seconds.
         /// </summary>
         /// <param name="timeframe">The number of seconds that this function should run.</param>
         /// <param name="period">The amount of time between calls.</param>
@@ -1137,6 +1490,7 @@ namespace MovementEffects
         Update,
         FixedUpdate,
         LateUpdate,
-        SlowUpdate
+        SlowUpdate,
+        EditorUpdate
     }
 }
