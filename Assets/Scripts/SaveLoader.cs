@@ -8,7 +8,6 @@ using UnityEngine.UI;
 
 public class SaveLoader : MonoBehaviour
 {
-
     public GameObject content;
     public GameObject mask;
     public ModLoader modLoader;
@@ -55,9 +54,8 @@ public class SaveLoader : MonoBehaviour
             }
         }
         modLoader.Load();
-        modEnabled = modLoader.modEnabled;
-        if (modEnabled)
-            assets = modLoader.assets;
+        //modEnabled = modLoader.modEnabled;
+        assets = modLoader.assets;
         /*GameObject[] vanillaParts = Resources.LoadAll<GameObject>("Prefabs/Parts");
         foreach (GameObject asset in vanillaParts)
         {
@@ -122,8 +120,7 @@ public class SaveLoader : MonoBehaviour
         XmlDocument doc = new XmlDocument();
         doc.Load(appPath + "/Ships/" + file);
         XmlNode root = doc.DocumentElement;
-
-        XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+        
         XmlNodeList parts = root.SelectNodes("./Parts/Part");
         XmlNodeList connections = root.SelectNodes("./Connections/Connection");
 

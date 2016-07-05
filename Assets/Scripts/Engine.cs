@@ -6,16 +6,18 @@ public class Engine : PartFunction {
 	public float turn = 60f;
 	public float consumption = 1;
 	bool active;
+    public SpriteRenderer fire;
     Tank tank;
-    SpriteRenderer fire;
 
 	void Start() {
-        fire = transform.GetChild(0).GetComponent<SpriteRenderer>();
         try {
             tank = transform.GetComponentInParent<Tank>();
-            active = tank.GetFuel(consumption);
+            if(tank.fuel > 0)
+            {
+                active = true;
+            }
         } catch {
-            Destroy(GetComponent<Engine>());
+            Destroy(this);
             Destroy(fire);
         }
 	}
@@ -31,16 +33,16 @@ public class Engine : PartFunction {
 	void FixedUpdate () {
 		if (Input.GetKey(KeyCode.W) && active) {
 			try {
-				active = tank.GetFuel (consumption);
+				active = tank.GetFuel (consumption * Time.deltaTime);
 			} catch {
 				active = false;
 			}
-			GetComponent<Rigidbody2D>().AddForce (transform.up * force);
+			GetComponent<Rigidbody2D>().AddForce (transform.up * force * Time.deltaTime);
 			if (Input.GetKey(KeyCode.A)) {
-				GetComponent<Rigidbody2D>().AddTorque(turn);
+				GetComponent<Rigidbody2D>().AddTorque(turn * Time.deltaTime);
 			}
 			if (Input.GetKey(KeyCode.D)) {
-				GetComponent<Rigidbody2D>().AddTorque(-turn);
+				GetComponent<Rigidbody2D>().AddTorque(-turn * Time.deltaTime);
 			}
 		}
 	}
