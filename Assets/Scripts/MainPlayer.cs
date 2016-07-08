@@ -6,9 +6,9 @@ public class MainPlayer : MonoBehaviour {
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.Return) && SceneManager.GetActiveScene().buildIndex == 1)
+        if (Input.GetKeyDown(KeyCode.Return) && SceneManager.GetActiveScene().name != "Builder")
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("Builder");
             /*foreach (GameObject o in Object.FindObjectsOfType<GameObject>())
             {
                 Destroy(o);

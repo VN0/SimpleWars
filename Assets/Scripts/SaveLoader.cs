@@ -11,6 +11,8 @@ public class SaveLoader : MonoBehaviour
     public GameObject content;
     public GameObject mask;
     public ModLoader modLoader;
+    public Button startButton;
+    public Text massText;
 
     DirectoryInfo dirinfo;
     FileInfo[] files;
@@ -20,12 +22,10 @@ public class SaveLoader : MonoBehaviour
     Dictionary<string, GameObject> assets = new Dictionary<string, GameObject>();
     bool modEnabled;
     float alpha = 0;
-    float lastTime;
-    float currentTime;
+    bool start = false;
 
-    void Start()
+    void Awake()
     {
-        lastTime = Time.realtimeSinceStartup;
         appPath = Application.persistentDataPath;
         print(appPath);
         Directory.CreateDirectory(appPath + "/Ships");
@@ -33,6 +33,10 @@ public class SaveLoader : MonoBehaviour
         files = dirinfo.GetFiles();
         Time.timeScale = 0f;
         int i = 320;
+        startButton.onClick.AddListener(delegate
+        {
+            start = true;
+        });
         for (int j = 0; j < files.Length; j++)
         {
             FileInfo file = files[j];
@@ -50,7 +54,6 @@ public class SaveLoader : MonoBehaviour
             {
                 content.GetComponent<RectTransform>().sizeDelta = btn.GetComponent<RectTransform>().position;
                 content.GetComponent<RectTransform>().localPosition = new Vector3(content.GetComponent<RectTransform>().localPosition.x, -btn.GetComponent<RectTransform>().position.y, 0);
-                print(btn.GetComponent<RectTransform>().position);
             }
         }
         modLoader.Load();
@@ -78,10 +81,10 @@ public class SaveLoader : MonoBehaviour
 
     void Update()
     {
-        currentTime = Time.realtimeSinceStartup;
-        if (alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return))
+        if (alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start)
         {
-            alpha += (currentTime - lastTime) * 2;
+            start = false;
+            alpha += Time.unscaledDeltaTime * 2;
             mask.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
         }
         else if (alpha >= 1)
@@ -100,20 +103,21 @@ public class SaveLoader : MonoBehaviour
                 float min = Mathf.Min(bounds);
                 rocket.transform.position = new Vector3(0f, -min, 0f);
             }
-            catch { }
-            SceneManager.LoadScene(1);
+            catch {
+                Debug.LogError("Error when placing rocket");
+            }
+            SceneManager.LoadScene("Earth");
             Time.timeScale = 1f;
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
         }
-        lastTime = currentTime;
     }
 
     void LoadSave(string file)
     {
-
+        float mass = 0;
         Destroy(GameObject.Find("Rocket"));
         rocket = new GameObject();
         rocket.name = "Rocket";
@@ -150,6 +154,11 @@ public class SaveLoader : MonoBehaviour
                 Quaternion.Euler(0f, 0f, Mathf.Rad2Deg * float.Parse(attr.GetNamedItem("angle").InnerText))
             ) as GameObject;
 
+            try
+            {
+                mass += go.GetComponent<Rigidbody2D>().mass;
+            }
+            catch { }
             go.name = id;
             go.transform.SetParent(rocket.transform);
             if (id == "1")
@@ -173,6 +182,8 @@ public class SaveLoader : MonoBehaviour
                 ag.ready = true;
             }
         }
+
+        massText.text = (mass * 500).ToString("N0") + " kg";
 
         foreach (XmlNode con in connections)
         {
