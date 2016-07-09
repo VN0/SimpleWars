@@ -26,6 +26,7 @@ public class SaveLoader : MonoBehaviour
 
     void Awake()
     {
+        modLoader = FindObjectOfType<ModLoader>();
         appPath = Application.persistentDataPath;
         print(appPath);
         Directory.CreateDirectory(appPath + "/Ships");
@@ -56,7 +57,6 @@ public class SaveLoader : MonoBehaviour
                 content.GetComponent<RectTransform>().localPosition = new Vector3(content.GetComponent<RectTransform>().localPosition.x, -btn.GetComponent<RectTransform>().position.y, 0);
             }
         }
-        modLoader.Load();
         //modEnabled = modLoader.modEnabled;
         assets = modLoader.assets;
         /*GameObject[] vanillaParts = Resources.LoadAll<GameObject>("Prefabs/Parts");

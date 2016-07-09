@@ -1,5 +1,4 @@
 ﻿ using UnityEngine;
- using UnityEngine.UI;
   
  [RequireComponent (typeof (RectTransform), typeof (Collider2D))]
  public class RaycastFilter : MonoBehaviour, ICanvasRaycastFilter 

@@ -22,7 +22,7 @@ public class ModLoader : MonoBehaviour
         }
     }
 
-    public void Load()
+    public void Start()
     {
         if (!loaded)
         {
