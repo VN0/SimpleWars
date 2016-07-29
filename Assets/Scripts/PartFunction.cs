@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PartFunction : MonoBehaviour
+public abstract class PartFunction : MonoBehaviour
 {
 	
 }

@@ -1,8 +1,6 @@
 using UnityEngine;
 
-public class PartAction : MonoBehaviour
+public abstract class PartAction : MonoBehaviour
 {
-	public void Awake()
-	{
-	}
+
 }
