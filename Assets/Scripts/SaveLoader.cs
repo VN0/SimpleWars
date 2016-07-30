@@ -13,10 +13,10 @@ public class SaveLoader : MonoBehaviour
     public ModLoader modLoader;
     public Button startButton;
     public Text massText;
-
+    
     DirectoryInfo dirinfo;
     FileInfo[] files;
-    GameObject rocket;
+    GameObject vehicle;
     string appPath;
     AssetBundle mod;
     Dictionary<string, GameObject> assets = new Dictionary<string, GameObject>();
@@ -57,31 +57,12 @@ public class SaveLoader : MonoBehaviour
                 content.GetComponent<RectTransform>().localPosition = new Vector3(content.GetComponent<RectTransform>().localPosition.x, -btn.GetComponent<RectTransform>().position.y, 0);
             }
         }
-        //modEnabled = modLoader.modEnabled;
-        assets = modLoader.assets;
-        /*GameObject[] vanillaParts = Resources.LoadAll<GameObject>("Prefabs/Parts");
-        foreach (GameObject asset in vanillaParts)
-        {
-            assets.Add(asset.name, asset);
-        }
-        if (System.Environment.GetCommandLineArgs().Length > 1 || modEnabled)
-        {
-            mod = modLoader.Load();
-            GameObject[] assets_ = mod.LoadAllAssets<GameObject>();
-            foreach (GameObject asset in assets_)
-            {
-                assets[asset.name] = asset;
-            }
-            modEnabled = true;
-        }*/
-
-        
     }
 
 
     void Update()
     {
-        if (alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start)
+        if (vehicle && alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start)
         {
             start = false;
             alpha += Time.unscaledDeltaTime * 2;
@@ -89,23 +70,19 @@ public class SaveLoader : MonoBehaviour
         }
         else if (alpha >= 1)
         {
-            try
+            DontDestroyOnLoad(vehicle);
+            
+            Collider2D[] cols = FindObjectsOfType(typeof(Collider2D)) as Collider2D[];
+            float[] bounds = new float[cols.Length];
+            int i = 0;
+            foreach (Collider2D col in cols)
             {
-                DontDestroyOnLoad(rocket);
-                Collider2D[] cols = FindObjectsOfType(typeof(Collider2D)) as Collider2D[];
-                float[] bounds = new float[cols.Length];
-                int i = 0;
-                foreach (Collider2D col in cols)
-                {
-                    bounds[i] = (col.bounds.min.y);
-                    i++;
-                }
-                float min = Mathf.Min(bounds);
-                rocket.transform.position = new Vector3(0f, -min, 0f);
+                bounds[i] = (col.bounds.min.y);
+                i++;
             }
-            catch {
-                Debug.LogError("Error when placing rocket");
-            }
+            float min = Mathf.Min(bounds);
+            vehicle.transform.position = new Vector3(0f, -min, 0f);
+
             SceneManager.LoadScene("Earth");
             Time.timeScale = 1f;
         }
@@ -118,9 +95,8 @@ public class SaveLoader : MonoBehaviour
     void LoadSave(string file)
     {
         float mass = 0;
-        Destroy(GameObject.Find("Rocket"));
-        rocket = new GameObject();
-        rocket.name = "Rocket";
+        Destroy(GameObject.Find("Vehicle"));
+        vehicle = new GameObject("Vehicle");
         XmlDocument doc = new XmlDocument();
         doc.Load(appPath + "/Ships/" + file);
         XmlNode root = doc.DocumentElement;
@@ -160,10 +136,10 @@ public class SaveLoader : MonoBehaviour
             }
             catch { }
             go.name = id;
-            go.transform.SetParent(rocket.transform);
+            go.transform.SetParent(vehicle.transform);
             if (id == "1")
             {
-                go.transform.SetParent(rocket.transform);
+                go.transform.SetParent(vehicle.transform);
                 go.tag = "Player";
                 ActivationGroups ag = go.AddComponent<ActivationGroups>();
                 XmlNodeList acts = part.SelectNodes("./Pod/Staging/Step");

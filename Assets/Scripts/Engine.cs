@@ -60,7 +60,7 @@ public class Engine : PartFunction {
 	void FixedUpdate () {
 		if (Input.GetKey(KeyCode.W) && active) {
 			try {
-				active = tank.GetFuel (consumption * Time.deltaTime);
+				active = tank.Consume (consumption * Time.deltaTime);
 			} catch {
 				active = false;
 			}
