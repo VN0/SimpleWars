@@ -127,12 +127,12 @@ public class Room : RoomInfo
         {
             if (!this.Equals(PhotonNetwork.room))
             {
-                UnityEngine.Debug.LogWarning("Can't set maxPlayers when not in that room.");
+                UnityEngine.Debug.LogWarning("Can't set MaxPlayers when not in that room.");
             }
 
             if (value > 255)
             {
-                UnityEngine.Debug.LogWarning("Can't set Room.maxPlayers to: " + value + ". Using max value: 255.");
+                UnityEngine.Debug.LogWarning("Can't set Room.MaxPlayers to: " + value + ". Using max value: 255.");
                 value = 255;
             }
 
@@ -196,13 +196,13 @@ public class Room : RoomInfo
             options = new RoomOptions();
         }
 
-        this.visibleField = options.isVisible;
-        this.openField = options.isOpen;
-        this.maxPlayersField = (byte)options.maxPlayers;
+        this.visibleField = options.IsVisible;
+        this.openField = options.IsOpen;
+        this.maxPlayersField = (byte)options.MaxPlayers;
         this.autoCleanUpField = false;  // defaults to false, unless set to true when room gets created.
 
-        this.InternalCacheProperties(options.customRoomProperties);
-        this.propertiesListedInLobby = options.customRoomPropertiesForLobby;
+        this.InternalCacheProperties(options.CustomRoomProperties);
+        this.propertiesListedInLobby = options.CustomRoomPropertiesForLobby;
     }
 
 

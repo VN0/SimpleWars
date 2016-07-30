@@ -15,7 +15,7 @@ using ExitGames.Client.Photon;
 
 /// <summary>
 /// A simplified room with just the info required to list and join, used for the room listing in the lobby.
-/// The properties are not settable (open, maxPlayers, etc).
+/// The properties are not settable (open, MaxPlayers, etc).
 /// </summary>
 /// <remarks>
 /// This class resembles info about available rooms, as sent by the Master server's lobby.
@@ -181,7 +181,7 @@ public class RoomInfo
         return string.Format("Room: '{0}' {1},{2} {4}/{3} players.\ncustomProps: {5}", this.nameField, this.visibleField ? "visible" : "hidden", this.openField ? "open" : "closed", this.maxPlayersField, this.playerCount, this.customPropertiesField.ToStringFull());
     }
 
-    /// <summary>Copies "well known" properties to fields (isVisible, etc) and caches the custom properties (string-keys only) in a local hashtable.</summary>
+    /// <summary>Copies "well known" properties to fields (IsVisible, etc) and caches the custom properties (string-keys only) in a local hashtable.</summary>
     /// <param name="propertiesToCache">New or updated properties to store in this RoomInfo.</param>
     protected internal void InternalCacheProperties(Hashtable propertiesToCache)
     {

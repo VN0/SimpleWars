@@ -73,6 +73,7 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
     private ResultType result;
 
     private PunTurnManager turnManager;
+
     public Hand randomHand;    // used to show remote player's "hand" while local player didn't select anything
 
 	// keep track of when we show the results to handle game logic.
@@ -98,7 +99,7 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
     {
 		this.turnManager = this.gameObject.AddComponent<PunTurnManager>();
         this.turnManager.TurnManagerListener = this;
-        this.turnManager.TurnDuration = 5;
+        this.turnManager.TurnDuration = 5f;
         
 
         this.localSelectionImage.gameObject.SetActive(false);
@@ -141,8 +142,12 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 
 		if (PhotonNetwork.room.playerCount>1)
 		{
-			float turnEnd = this.turnManager.GetRemainingSeconds();
+			if (this.turnManager.IsOver)
+			{
+				return;
+			}
 
+			/*
 			// check if we ran out of time, in which case we loose
 			if (turnEnd<0f && !IsShowingResults)
 			{
@@ -150,6 +155,7 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 					OnTurnCompleted(-1);
 					return;
 			}
+		*/
 
             if (this.TurnText != null)
             {
@@ -159,9 +165,9 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 			if (this.turnManager.Turn > 0 && this.TimeText != null && ! IsShowingResults)
             {
                 
-                this.TimeText.text = turnEnd.ToString("F1") + " SECONDS";
+				this.TimeText.text = this.turnManager.RemainingSecondsInTurn.ToString("F1") + " SECONDS";
 
-				TimerFillImage.anchorMax = new Vector2(1f- turnEnd/this.turnManager.TurnDuration,1f);
+				TimerFillImage.anchorMax = new Vector2(1f- this.turnManager.RemainingSecondsInTurn/this.turnManager.TurnDuration,1f);
             }
 
             
@@ -274,8 +280,11 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 
     public void OnTurnTimeEnds(int obj)
     {
-		// not yet implemented.
-		Debug.Log("OnTurnTimeEnds");
+		if (!IsShowingResults)
+		{
+			Debug.Log("OnTurnTimeEnds: Calling OnTurnCompleted");
+			OnTurnCompleted(-1);
+		}
 	}
 
     private void UpdateScores()
@@ -299,19 +308,12 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
             this.turnManager.BeginTurn();
         }
     }
-
-
+	
     public void MakeTurn(Hand selection)
     {
         this.turnManager.SendMove((byte)selection, true);
     }
-
-
-    public void OnReceivedTurn()
-    {
-    }
-
-
+	
     public void OnEndTurn()
     {
         this.StartCoroutine("ShowResultsBeginNextTurnCoroutine");

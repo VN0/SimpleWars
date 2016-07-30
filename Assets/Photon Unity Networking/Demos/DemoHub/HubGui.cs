@@ -114,6 +114,14 @@ public class HubGui : MonoBehaviour
             this.webLink = new DemoBtn();
         }
 
+		if (GUILayout.Button("Turn Based Game", GUILayout.Width(280)))
+		{
+			demoDescription = "<color=orange>'Rock Paper Scissor' Turn Based Game</color>\n\nDemonstrate TurnBased Game Mechanics using PUN.\n\nIt makes use of the TurnBasedManager Utility Script";
+			this.demoBtn = new DemoBtn() { Text = "Start", Link = "DemoRPS-Scene" };
+			this.webLink = new DemoBtn();
+		}
+
+
         GUILayout.Label("Tutorial", m_Headline);
         if (GUILayout.Button("Marco Polo Tutorial", GUILayout.Width(280)))
         {

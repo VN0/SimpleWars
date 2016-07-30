@@ -55,7 +55,7 @@ public class GUIFriendFinding : MonoBehaviour
         {
             // this feature is only available on the Master Client. Check either: insideLobby or 
             // PhotonNetwork.connectionStateDetailed == PeerState.Authenticated or 
-            // PhotonNetwork.connectionStateDetailed == PeerState.JoinedLobby
+            // PhotonNetwork.inRoomLobby
 
             // for simplicity (and cause we know we WILL join the lobby, we can just check that)
             return;

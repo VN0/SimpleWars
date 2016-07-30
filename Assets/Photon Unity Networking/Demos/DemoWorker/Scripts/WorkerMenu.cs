@@ -44,7 +44,7 @@ public class WorkerMenu : MonoBehaviour
         PhotonNetwork.automaticallySyncScene = true;
 
         // the following line checks if this client was just created (and not yet online). if so, we connect
-        if (PhotonNetwork.connectionStateDetailed == PeerState.PeerCreated)
+        if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
         {
             // Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
             PhotonNetwork.ConnectUsingSettings("0.9");
@@ -121,7 +121,7 @@ public class WorkerMenu : MonoBehaviour
 
         if (GUILayout.Button("Create Room", GUILayout.Width(150)))
         {
-            PhotonNetwork.CreateRoom(this.roomName, new RoomOptions() {maxPlayers = 10}, null);
+            PhotonNetwork.CreateRoom(this.roomName, new RoomOptions() { MaxPlayers = 10 }, null);
         }
 
         GUILayout.EndHorizontal();

@@ -106,7 +106,7 @@ internal class PhotonHandler : Photon.MonoBehaviour
             return;
         }
 
-        if (PhotonNetwork.connectionStateDetailed == PeerState.PeerCreated || PhotonNetwork.connectionStateDetailed == PeerState.Disconnected || PhotonNetwork.offlineMode)
+        if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated || PhotonNetwork.connectionStateDetailed == ClientState.Disconnected || PhotonNetwork.offlineMode)
         {
             return;
         }
@@ -251,7 +251,7 @@ internal class PhotonHandler : Photon.MonoBehaviour
         BestRegionCodeCurrently = CloudRegionCode.none;
         while (PhotonNetwork.networkingPeer.AvailableRegions == null)
         {
-            if (PhotonNetwork.connectionStateDetailed != PeerState.ConnectingToNameServer && PhotonNetwork.connectionStateDetailed != PeerState.ConnectedToNameServer)
+            if (PhotonNetwork.connectionStateDetailed != ClientState.ConnectingToNameServer && PhotonNetwork.connectionStateDetailed != ClientState.ConnectedToNameServer)
             {
                 Debug.LogError("Call ConnectToNameServer to ping available regions.");
                 yield break; // break if we don't connect to the nameserver at all

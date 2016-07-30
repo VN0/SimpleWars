@@ -61,7 +61,7 @@ public class PhotonPlayer
         }
     }
 
-    /// <summary>UserId of the player, available when the room got created with RoomOptions.publishUserId = true.</summary>
+    /// <summary>UserId of the player, available when the room got created with RoomOptions.PublishUserId = true.</summary>
     /// <remarks>Useful for PhotonNetwork.FindFriends and blocking slots in a room for expected players (e.g. in PhotonNetwork.CreateRoom).</remarks>
     public string userId { get; internal set; }
 

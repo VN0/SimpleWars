@@ -78,7 +78,7 @@ public class RpsDemoConnect : PunBehaviour
 
     public override void OnPhotonRandomJoinFailed(object[] codeAndMsg)
     {
-        PhotonNetwork.CreateRoom(null, new RoomOptions() { maxPlayers = 2, PlayerTtl = 5000 }, null);
+        PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = 2, PlayerTtl = 5000 }, null);
     }
 
     public override void OnJoinedRoom()

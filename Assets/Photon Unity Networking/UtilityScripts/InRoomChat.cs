@@ -24,7 +24,7 @@ public class InRoomChat : Photon.MonoBehaviour
 
     public void OnGUI()
     {
-        if (!this.IsVisible || PhotonNetwork.connectionStateDetailed != PeerState.Joined)
+        if (!this.IsVisible || !PhotonNetwork.inRoom)
         {
             return;
         }
