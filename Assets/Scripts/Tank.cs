@@ -8,16 +8,19 @@ public class Tank : MonoBehaviour
 	float fuelMass;
 	Rigidbody2D rb;
 
-	void Start () {
+	void Awake ()
+    {
 		rb = GetComponent<Rigidbody2D> ();
 		fuelMass = (rb.mass - dryMass) / fuel;
         if (fuel == 0)
             fuel = capacity;
 	}
-	public bool Consume (float amount) {
-		if (fuel > 0) {
+
+	public bool Consume (float amount)
+    {
+        if (fuel > 0) {
 			fuel -= amount;
-			rb.mass -= fuelMass * amount;
+			rb.mass -= amount;
 			return true;
 		} else {
 			return false;

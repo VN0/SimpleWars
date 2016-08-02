@@ -7,20 +7,27 @@ public class Explosion : MonoBehaviour {
 	public float size = 10f;
 	public float force = 500f;
 	public int delay = 10;
+    public int forceToExplode = 1000;
 	float cRadius = 0f;
 
 	bool exploded = false;
 	CircleCollider2D radius;
 	PointEffector2D exploder;
+    float mass;
     GameObject ex;
 
 
 	void explode ()
 	{
-		Destroy (GetComponent<SpriteRenderer>());
-		Destroy (GetComponent<BoxCollider2D>());
-		Destroy (GetComponent<AnchoredJoint2D>());
-		Destroy (GetComponent<Rigidbody2D>());
+        try
+        {
+            Destroy(GetComponent<Joint2D>());
+            Destroy(GetComponent<Rigidbody2D>());
+            Destroy(GetComponent<SpriteRenderer>());
+            Destroy(GetComponent<Collider2D>());
+            Destroy(GetComponent<PartFunction>());
+        }
+        catch (System.NullReferenceException) { }
         Transform tr = gameObject.transform;
         //tr.DetachChildren ();
         for(int i=0;i<gameObject.transform.childCount;i++) {
@@ -40,8 +47,9 @@ public class Explosion : MonoBehaviour {
         ex.transform.SetParent(transform);
 	}
 
-	void Start ()
+	void Awake ()
 	{
+        mass = gameObject.GetComponent<Rigidbody2D>().mass;
 		if (rate == 0f)
 			rate = size;
 	}
@@ -49,10 +57,9 @@ public class Explosion : MonoBehaviour {
 
 	void Update ()
 	{
-		if (Input.GetKeyDown(KeyCode.E /*|| GetComponent<FixedJoint2D>().reactionForce */)) {
+		if (!exploded && Input.GetKeyDown(KeyCode.E)) {
 			explode ();
 		}
-		//print(GetComponent<AnchoredJoint2D> ().reactionForce);
 	}
 
 
@@ -70,4 +77,12 @@ public class Explosion : MonoBehaviour {
 			}
 		}
 	}
+
+    void OnCollisionStay2D (Collision2D col)
+    {
+        if(col.relativeVelocity.sqrMagnitude * (col.rigidbody==null? 100 : col.rigidbody.mass) * mass > forceToExplode)
+        {
+            explode();
+        }
+    }
 }

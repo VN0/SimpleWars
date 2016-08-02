@@ -27,10 +27,11 @@ public class SaveLoader : MonoBehaviour
     void Awake()
     {
         modLoader = FindObjectOfType<ModLoader>();
+        assets = modLoader.assets;
         appPath = Application.persistentDataPath;
         print(appPath);
-        Directory.CreateDirectory(appPath + "/Ships");
-        DirectoryInfo dirinfo = new DirectoryInfo(appPath + "/Ships");
+        Directory.CreateDirectory(Path.Combine(appPath, "Ships"));
+        DirectoryInfo dirinfo = new DirectoryInfo(Path.Combine(appPath, "Ships"));
         files = dirinfo.GetFiles();
         Time.timeScale = 0f;
         int i = 320;
@@ -92,13 +93,14 @@ public class SaveLoader : MonoBehaviour
         }
     }
 
+
     void LoadSave(string file)
     {
         float mass = 0;
         Destroy(GameObject.Find("Vehicle"));
         vehicle = new GameObject("Vehicle");
         XmlDocument doc = new XmlDocument();
-        doc.Load(appPath + "/Ships/" + file);
+        doc.Load(Path.Combine(Path.Combine(appPath, "Ships"), file));
         XmlNode root = doc.DocumentElement;
         
         XmlNodeList parts = root.SelectNodes("./Parts/Part");
@@ -111,14 +113,10 @@ public class SaveLoader : MonoBehaviour
             string id = attr.GetNamedItem("id").InnerText;
             GameObject go;
             GameObject prefab = null;
-            try
-            {
-                prefab = assets[type];
-            }
-            catch {}
-            if (!prefab)
+            if (!assets.TryGetValue(type, out prefab))
             {
                 prefab = new GameObject();
+                Debug.LogError("Prefab is null");
             }
 
             go = Instantiate(
@@ -137,7 +135,7 @@ public class SaveLoader : MonoBehaviour
             catch { }
             go.name = id;
             go.transform.SetParent(vehicle.transform);
-            if (id == "1")
+            if (id == "1")      //If this part is the pod
             {
                 go.transform.SetParent(vehicle.transform);
                 go.tag = "Player";
@@ -158,10 +156,9 @@ public class SaveLoader : MonoBehaviour
                 ag.ready = true;
             }
         }
-
         massText.text = (mass * 500).ToString("N0") + " kg";
-
-        foreach (XmlNode con in connections)
+        
+        foreach (XmlNode con in connections)        //Set parents and connections
         {
             XmlAttributeCollection attr = con.Attributes;
             GameObject parent = GameObject.Find(attr.GetNamedItem("parentPart").InnerText);

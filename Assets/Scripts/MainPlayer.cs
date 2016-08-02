@@ -5,7 +5,6 @@ public class MainPlayer : MonoBehaviour {
 
     void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.Return) && SceneManager.GetActiveScene().name != "Builder")
         {
             SceneManager.LoadScene("Builder");

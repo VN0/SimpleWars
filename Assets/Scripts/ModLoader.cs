@@ -44,7 +44,9 @@ public class ModLoader : MonoBehaviour
                 assets.Add(asset.name, asset);
             }
 
-            if (modEnabled == true) {
+            if (modEnabled == true)
+            {
+                print("Mod enabled");
                 mod = AssetBundle.LoadFromFile(modPath);
                 if (System.Environment.GetCommandLineArgs().Length > 1 || modEnabled)
                 {
@@ -56,10 +58,8 @@ public class ModLoader : MonoBehaviour
                 }
             }
             print(assets.Count);
-            print(assets.Keys);
             loaded = true;
         }
-        
     }
     public AssetBundle Get()
     {

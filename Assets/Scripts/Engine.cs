@@ -31,19 +31,21 @@ public class Engine : PartFunction {
 	public float force = 200;
 	public float turn = 60;
 	public float consumption = 1;
+    public SpriteRenderer fire;
     float rotation = 0;
 	bool active;
-    public SpriteRenderer fire;
     Tank tank;
+    FuelControl controller;
 
 	void Start() {
+        controller = FindObjectOfType<FuelControl>();
         try {
             tank = transform.GetComponentInParent<Tank>();
             if(tank.fuel > 0)
             {
                 active = true;
             }
-        } catch {
+        } catch (System.NullReferenceException){
             Destroy(fire);
             Destroy(this);
         }
@@ -57,14 +59,16 @@ public class Engine : PartFunction {
 			fire.enabled = false;
 		}
     }
+
 	void FixedUpdate () {
+        float allowedForce = controller.currentForce;
 		if (Input.GetKey(KeyCode.W) && active) {
 			try {
-				active = tank.Consume (consumption * Time.deltaTime);
+				active = tank.Consume (consumption * Time.deltaTime * allowedForce);
 			} catch {
 				active = false;
 			}
-			GetComponent<Rigidbody2D>().AddForce (transform.up * force * Time.deltaTime);
+			GetComponent<Rigidbody2D>().AddForce (transform.up * force * Time.deltaTime * allowedForce);
 
 			if (Input.GetKey(KeyCode.A)) {
                 rotation = -turn;

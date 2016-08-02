@@ -17,7 +17,7 @@ public class FuelControl : MonoBehaviour {
     int slider100last = 0;
     int slider10last = 0;
     
-	void Awake ()
+	void Start ()
     {
         vehicle = GameObject.Find("Vehicle");
         tanks = vehicle.GetComponentsInChildren<Tank>();
