@@ -6,17 +6,16 @@ public class ActivationGroups : MonoBehaviour
     public bool ready = false;
     int currentStage = 0;
 
-
     public void Update()
     {
-        if(ready && Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space) && ready && currentStage<steps.Length)
         {
             foreach(string part in steps[currentStage])
             {
                 try
                 {
                     GameObject.Find(part).GetComponent<PartFunction>().enabled = true;
-                } catch { }
+                } catch (System.NullReferenceException){ }
             }
             currentStage += 1;
         }

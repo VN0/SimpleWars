@@ -12,7 +12,7 @@ public class MainPlayer : MonoBehaviour {
             {
                 Destroy(o);
             }*/
-            Destroy(GameObject.Find("Rocket"));
+            Destroy(GameObject.Find("Vehicle"));
         }
     }
 }

@@ -182,8 +182,10 @@ public class SaveLoader : MonoBehaviour
                 FixedJoint2D joint = child.AddComponent<FixedJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.enableCollision = true;
-                joint.connectedAnchor = child.transform.localPosition;
-                joint.breakForce = 4000;
+                joint.autoConfigureConnectedAnchor = true;
+                //joint.anchor = Vector2.zero;// child.transform.localPosition;
+                //joint.connectedAnchor = Vector2.zero;// parent.transform.localPosition;
+                joint.breakForce = 5000;
                 joint.breakTorque = 5000;
             }
         }
