@@ -44,7 +44,7 @@ public class Explosion : MonoBehaviour {
             exploder = GetComponent<PointEffector2D>();
         }
 		exploder.forceMagnitude = force;
-		exploder.forceMode = EffectorForceMode2D.InverseSquared;
+		exploder.forceMode = EffectorForceMode2D.InverseLinear;
 		exploder.forceTarget = EffectorSelection2D.Collider;
         exploder.forceSource = EffectorSelection2D.Collider;
 		ex = Instantiate (explosion, transform.position, Quaternion.identity) as GameObject;

@@ -32,7 +32,7 @@ public class Engine : PartFunction {
 	public float turn = 60;
 	public float consumption = 1;
     public SpriteRenderer fire;
-    float rotation = 0;
+    //float rotation = 0;
 	bool active;
     Tank tank;
     FuelControl controller;
@@ -71,16 +71,16 @@ public class Engine : PartFunction {
 			GetComponent<Rigidbody2D>().AddForce (transform.up * force * Time.deltaTime * allowedForce);
 
 			if (Input.GetKey(KeyCode.A)) {
-                rotation = -turn;
+                //rotation = -turn;
 				GetComponent<Rigidbody2D>().AddTorque(turn * Time.deltaTime);
 			}
 			if (Input.GetKey(KeyCode.D)) {
-                rotation = turn;
+                //rotation = turn;
 				GetComponent<Rigidbody2D>().AddTorque(-turn * Time.deltaTime);
 			}
             else
             {
-                rotation = 0;
+                //rotation = 0;
             }
 		}
 	}

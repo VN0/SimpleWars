@@ -30,9 +30,12 @@ public class FuelControl : MonoBehaviour {
 	void FixedUpdate ()
     {
         fuel = 0;
-        foreach (Tank tank in tanks)
+        if (tanks != null)
         {
-            fuel += tank.fuel;
+            foreach (Tank tank in tanks)
+            {
+                fuel += tank.fuel;
+            }
         }
 	}
 
@@ -50,7 +53,7 @@ public class FuelControl : MonoBehaviour {
             slider100.value = Mathf.RoundToInt(currentForce * 100);
             force.text = (currentForce * 100).ToString() + "%";
         }
-        currentFuel.rectTransform.offsetMax = new Vector2(currentFuel.rectTransform.offsetMax.x, (fuel / totalFuel) * fuelHeight);
+        currentFuel.rectTransform.offsetMax = new Vector2(currentFuel.rectTransform.offsetMax.x, (fuel / totalFuel) * fuelHeight - fuelHeight);
         slider100last = (int) slider100.value;
         slider10last = (int) slider10.value;
     }
