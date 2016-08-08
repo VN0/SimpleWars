@@ -13,7 +13,7 @@ public class SaveLoader : MonoBehaviour
     public ModLoader modLoader;
     public Button startButton;
     public Text massText;
-    
+
     DirectoryInfo dirinfo;
     FileInfo[] files;
     GameObject vehicle;
@@ -24,7 +24,7 @@ public class SaveLoader : MonoBehaviour
     float alpha = 0;
     bool start = false;
 
-    void Awake()
+    void Awake ()
     {
         modLoader = FindObjectOfType<ModLoader>();
         assets = modLoader.assets;
@@ -61,7 +61,7 @@ public class SaveLoader : MonoBehaviour
     }
 
 
-    void Update()
+    void Update ()
     {
         if (vehicle && alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start)
         {
@@ -72,7 +72,7 @@ public class SaveLoader : MonoBehaviour
         else if (alpha >= 1)
         {
             DontDestroyOnLoad(vehicle);
-            
+
             Collider2D[] cols = FindObjectsOfType(typeof(Collider2D)) as Collider2D[];
             float[] bounds = new float[cols.Length];
             int i = 0;
@@ -94,7 +94,7 @@ public class SaveLoader : MonoBehaviour
     }
 
 
-    void LoadSave(string file)
+    void LoadSave (string file)
     {
         float mass = 0;
         Destroy(GameObject.Find("Vehicle"));
@@ -102,7 +102,7 @@ public class SaveLoader : MonoBehaviour
         XmlDocument doc = new XmlDocument();
         doc.Load(Path.Combine(Path.Combine(appPath, "Ships"), file));
         XmlNode root = doc.DocumentElement;
-        
+
         XmlNodeList parts = root.SelectNodes("./Parts/Part");
         XmlNodeList connections = root.SelectNodes("./Connections/Connection");
 
@@ -141,6 +141,10 @@ public class SaveLoader : MonoBehaviour
                 go.tag = "Player";
                 ActivationGroups ag = go.AddComponent<ActivationGroups>();
                 XmlNodeList acts = part.SelectNodes("./Pod/Staging/Step");
+                if (acts.Count == 0)
+                {
+                    acts = part.SelectNodes("/Ship/Staging/Step");
+                }
                 List<string[]> acts_ = new List<string[]>();
                 foreach (XmlNode act in acts)
                 {
@@ -157,7 +161,7 @@ public class SaveLoader : MonoBehaviour
             }
         }
         massText.text = (mass * 500).ToString("N0") + " kg";
-        
+
         foreach (XmlNode con in connections)        //Set parents and connections
         {
             XmlAttributeCollection attr = con.Attributes;
