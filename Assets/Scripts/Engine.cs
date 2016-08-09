@@ -68,7 +68,7 @@ public class Engine : PartFunction
     {
         if (active)
         {
-            if (Input.GetKey(KeyCode.W))
+            if (controller.currentForce > 0.01)
             {
                 flame.enabled = true;
                 if (!smoke.isPlaying)
@@ -77,7 +77,7 @@ public class Engine : PartFunction
                     sound.Play();
                 }
             }
-            if (Input.GetKeyUp(KeyCode.W))
+            else
             {
                 flame.enabled = false;
                 if (smoke.isPlaying)
@@ -89,6 +89,7 @@ public class Engine : PartFunction
         }
         else
         {
+            enabled = false;
             Destroy(flame);
             if (smoke.isPlaying)
             {
@@ -111,7 +112,7 @@ public class Engine : PartFunction
     {
         float allowedForce = controller.currentForce;
         smoke.startSpeed = smokeMax * allowedForce;
-        if (Input.GetKey(KeyCode.W) && active)
+        if (allowedForce > 0.01)
         {
             try
             {
