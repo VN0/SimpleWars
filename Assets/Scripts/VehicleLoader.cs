@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
-public class SaveLoader : MonoBehaviour
+public class VehicleLoader : MonoBehaviour
 {
     public GameObject content;
     public GameObject mask;
@@ -30,8 +30,8 @@ public class SaveLoader : MonoBehaviour
         assets = modLoader.assets;
         appPath = Application.persistentDataPath;
         print(appPath);
-        Directory.CreateDirectory(Path.Combine(appPath, "Ships"));
-        DirectoryInfo dirinfo = new DirectoryInfo(Path.Combine(appPath, "Ships"));
+        Directory.CreateDirectory(Path.Combine(appPath, "Vehicles"));
+        DirectoryInfo dirinfo = new DirectoryInfo(Path.Combine(appPath, "Vehicles"));
         files = dirinfo.GetFiles();
         Time.timeScale = 0f;
         int i = 320;
@@ -100,7 +100,7 @@ public class SaveLoader : MonoBehaviour
         Destroy(GameObject.Find("Vehicle"));
         vehicle = new GameObject("Vehicle");
         XmlDocument doc = new XmlDocument();
-        doc.Load(Path.Combine(Path.Combine(appPath, "Ships"), file));
+        doc.Load(Path.Combine(Path.Combine(appPath, "Vehicles"), file));
         XmlNode root = doc.DocumentElement;
 
         XmlNodeList parts = root.SelectNodes("./Parts/Part");

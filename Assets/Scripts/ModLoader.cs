@@ -57,7 +57,6 @@ public class ModLoader : MonoBehaviour
                     }
                 }
             }
-            print(assets.Count);
             loaded = true;
         }
     }

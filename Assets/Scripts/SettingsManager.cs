@@ -66,7 +66,6 @@ public class Settings
             formatter.Serialize(file, this);
         }
         Debug.Log(this);
-        Debug.Log("Success");
     }
 
     public override string ToString ()
