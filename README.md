@@ -8,8 +8,8 @@ __________
 <br>
 SimpleWars
 ==========
-A multiplayer sandbox game inspired by [SimpleRockets](http://jundroo.com/app/simplerockets/)<br>
-Made with [Unity](http://unity3d.com/)
+A multiplayer sandbox game inspired by _[SimpleRockets](http://jundroo.com/app/simplerockets/)_<br>
+_Made with **[Unity](http://unity3d.com/)**_
 __________
 Coming soon! ^_^
 __________
@@ -17,8 +17,8 @@ __________
 
 简单战争
 ==========
-源于 [简单火箭](http://jundroo.com/app/simplerockets/) 的联机沙盒游戏<br>
-Made with [Unity](http://unity3d.com/)
+源于 _[简单火箭](http://jundroo.com/app/simplerockets/)_ 的联机沙盒游戏<br>
+_Made with **[Unity](http://unity3d.com/)**_
 __________
 
 计划：
