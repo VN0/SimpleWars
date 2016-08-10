@@ -1,9 +1,9 @@
-![Windows desktop 32-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2032-bit)
-![Windows desktop 64-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit)
-![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal)
-![Android](http://simplewars.pythonanywhere.com/get_badge/Android)
-![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL)
-![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player)
+![Windows desktop 32-bit](http://simpleewars.pythonanywhere.com/get_badge/Windows%20desktop%2032-bit)
+![Windows desktop 64-bit](http://simpleewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit)
+![Mac desktop Universal](http://simpleewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal)
+![Android](http://simpleewars.pythonanywhere.com/get_badge/Android)
+![WebGL](http://simpleewars.pythonanywhere.com/get_badge/WebGL)
+![Web Player](http://simpleewars.pythonanywhere.com/get_badge/Web%20Player)
 __________
 <br>
 SimpleWars
@@ -28,4 +28,8 @@ __________
 + 修复bug并编译移动版
 + 加入商店系统
 
-keys
+| Action            | Key | Alter Key  |   |   |
+|-------------------|-----|------------|---|---|
+| Increase Thottle  | W   | Arrow Up   |   |   |
+| Decrease Thottole | S   | Arrow Down |   |   |
+|                   |     |            |   |   |
