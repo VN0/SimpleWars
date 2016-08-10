@@ -5,10 +5,10 @@
 ![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL)
 ![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player)
 __________
-\
+<br>
 SimpleWars
 ==========
-A multiplayer sandbox game inspired by [SimpleRockets](http://jundroo.com/app/simplerockets/)\
+A multiplayer sandbox game inspired by [SimpleRockets](http://jundroo.com/app/simplerockets/)<br>
 Made with [Unity](http://unity3d.com/)
 __________
 Coming soon! ^_^
@@ -17,7 +17,7 @@ __________
 
 简单战争
 ==========
-源于 [简单火箭](http://jundroo.com/app/simplerockets/) 的联机沙盒游戏\
+源于 [简单火箭](http://jundroo.com/app/simplerockets/) 的联机沙盒游戏<br>
 Made with [Unity](http://unity3d.com/)
 __________
 
