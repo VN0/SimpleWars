@@ -1,3 +1,11 @@
+![Windows desktop 32-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2032-bit)\
+![Windows desktop 64-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit)\
+![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal)\
+![Android](http://simplewars.pythonanywhere.com/get_badge/Android)\
+![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL)\
+![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player)
+__________
+\
 SimpleWars
 ==========
 A multiplayer sandbox game inspired by [SimpleRockets](http://jundroo.com/app/simplerockets/)\
