@@ -1,9 +1,9 @@
-![Windows desktop 32-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2032-bit?a)
-![Windows desktop 64-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit?a)
-![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal?a)
-![Android](http://simplewars.pythonanywhere.com/get_badge/Android?a)
-![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL?a)
-![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player?a)
+![Windows desktop 32-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2032-bit?b)
+![Windows desktop 64-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit?b)
+![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal?b)
+![Android](http://simplewars.pythonanywhere.com/get_badge/Android?b)
+![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL?b)
+![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player?b)
 __________
 <br>
 SimpleWars
