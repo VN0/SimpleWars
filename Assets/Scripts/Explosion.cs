@@ -25,8 +25,8 @@ public class Explosion : MonoBehaviour
             Destroy(GetComponent<SpriteRenderer>());
             Destroy(GetComponent<Collider2D>());
             Destroy(GetComponent<Joint2D>());
-            Destroy(GetComponent<Rigidbody2D>());
             Destroy(GetComponent<PartFunction>());
+            Destroy(GetComponent<Rigidbody2D>());
         }
         catch (System.NullReferenceException) { }
         Transform tr = gameObject.transform;
@@ -92,7 +92,7 @@ public class Explosion : MonoBehaviour
         }
     }
 
-    void OnCollisionStay2D (Collision2D col)
+    void OnCollisionEnter2D (Collision2D col)
     {
         float v = col.relativeVelocity.magnitude;
         if (v * (mass + (col.rigidbody != null ? col.rigidbody.mass : 100)) > forceToExplode)

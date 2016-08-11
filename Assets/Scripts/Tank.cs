@@ -12,11 +12,8 @@ public class Tank : MonoBehaviour
     void Awake ()
     {
         rb = GetComponent<Rigidbody2D>();
+        fuel = capacity;
         fuelMass = (rb.mass - dryMass) / fuel;
-        if (fuel == 0)
-            fuel = capacity;
-        else
-            rb.mass = dryMass + fuel * fuelMass;
     }
 
     public bool Consume (float amount)

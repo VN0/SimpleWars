@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -23,19 +23,25 @@ public class Vehicle
         [XmlAttribute]
         public int id;
         [XmlAttribute]
-        public int x;
+        public float x;
         [XmlAttribute]
-        public int y;
+        public float y;
         [XmlAttribute]
-        public int r;
+        public float r;
         [XmlAttribute]
         public bool flipX;
         [XmlAttribute]
         public bool flipY;
+        [XmlAttribute]
+        public float scaleX;
+        [XmlAttribute]
+        public float scaleY;
+        [XmlElement("Data")]
+        public string data;
 
         public Part () { }
 
-        public Part (string type = "pod-0", int id = 1, int x = 0, int y = 0, int rotation = 0, bool flipX = false, bool flipY = false)
+        public Part (string type = "pod-0", int id = 1, float x = 0, float y = 0, float rotation = 0, bool flipX = false, bool flipY = false, float scaleX = 1, float scaleY = 1, string data = null)
         {
             this.type = type;
             this.id = id;
@@ -44,6 +50,9 @@ public class Vehicle
             r = rotation;
             this.flipX = flipX;
             this.flipY = flipY;
+            this.scaleX = scaleX;
+            this.scaleY = scaleY;
+            this.data = data;
         }
     }
 
@@ -92,6 +101,9 @@ public class Vehicle
 
     [XmlArray("Parts")]
     public List<Part> parts = new List<Part>();
+
+    [XmlArray("Disconnecteds")]
+    public List<Part> disconnecteds = new List<Part>();
 
     [XmlArray("Connections")]
     public List<Connection> connections = new List<Connection>();
@@ -164,7 +176,8 @@ public class Vehicle
 
     public override string ToString ()
     {
-        return string.Format("name={0}, version={1}, parts={2}, connections={3}, steps={4}", name, version, parts.Count, connections.Count, stages.Count);
+        return string.Format("name={0}, version={1}, parts={2}, disconnecteds={3}, connections={4}, steps={5}",
+            name, version, parts.Count, disconnecteds.Count, connections.Count, stages.Count);
     }
     #endregion
 }
@@ -175,7 +188,7 @@ public class Vehicle
 /// </summary>
 
 [Serializable]
-[XmlRoot("Vehicle")]
+[XmlRoot("Ship")]
 public class VehicleSR
 {
     #region classes
@@ -187,11 +200,11 @@ public class VehicleSR
         [XmlAttribute]
         public int id;
         [XmlAttribute]
-        public int x;
+        public float x;
         [XmlAttribute]
-        public int y;
+        public float y;
         [XmlAttribute]
-        public int angle;
+        public float angle;
         [XmlAttribute]
         public bool flippedX;
         [XmlAttribute]
@@ -199,7 +212,7 @@ public class VehicleSR
 
         public Part () { }
 
-        public Part (string type = "pod-0", int id = 1, int x = 0, int y = 0, int rotation = 0, bool flipX = false, bool flipY = false)
+        public Part (string type = "pod-0", int id = 1, float x = 0, float y = 0, float rotation = 0, bool flipX = false, bool flipY = false)
         {
             partType = type;
             this.id = id;
@@ -216,41 +229,46 @@ public class VehicleSR
     public class Connection
     {
         [XmlAttribute]
-        public int parent;
+        public int parentPart;
         [XmlAttribute]
-        public int child;
+        public int childPart;
 
         public Connection () { }
 
         public Connection (int parent, int child)
         {
-            this.parent = parent;
-            this.child = child;
+            parentPart = parent;
+            childPart = child;
         }
     }
 
 
     [Serializable]
-    public class Activation
+    public class Activate
     {
         [XmlAttribute]
-        public int id;
+        public int Id;
 
-        public Activation () { }
+        public Activate () { }
 
-        public Activation (int partId)
+        public Activate (int partId)
         {
-            id = partId;
+            Id = partId;
         }
+    }
+
+
+    [Serializable]
+    public class Pod
+    {
+
     }
 
     #endregion
 
     #region fields
     static XmlSerializer formatter = new XmlSerializer(typeof(Vehicle));
-
-    [XmlAttribute]
-    public string name = "Vehicle";
+    
     [XmlAttribute]
     public int version = 1;
 
@@ -260,9 +278,9 @@ public class VehicleSR
     [XmlArray("Connections")]
     public List<Connection> connections = new List<Connection>();
 
-    [XmlArray("ActivationStages")]
-    [XmlArrayItem("Stage")]
-    public List<List<Activation>> stages = new List<List<Activation>>();
+    [XmlArray("Staging")]
+    [XmlArrayItem("Step")]
+    public List<List<Activate>> stages = new List<List<Activate>>();
     #endregion
 
     #region methods
@@ -328,7 +346,7 @@ public class VehicleSR
 
     public override string ToString ()
     {
-        return string.Format("name={0}, version={1}, parts={2}, connections={3}, steps={4}", name, version, parts.Count, connections.Count, stages.Count);
+        return string.Format("name={0}, version={1}, parts={2}, connections={3}, steps={4}", "null", version, parts.Count, connections.Count, stages.Count);
     }
     #endregion
 }
@@ -342,8 +360,9 @@ public class VehicleClass : MonoBehaviour
         Vehicle vehicle = new Vehicle();
         vehicle.name = "myVehicle";
         vehicle.parts.Add(new Vehicle.Part("pod-0", 1));
-        vehicle.parts.Add(new Vehicle.Part("tank-3", 5, 3, 4));
+        vehicle.parts.Add(new Vehicle.Part("tank-3", 5, 3, 4, data:"<Tank fuel=\"10\"/ >"));
         vehicle.parts.Add(new Vehicle.Part("strut-0", 2, -4, 9, 90));
+        vehicle.disconnecteds.Add(new Vehicle.Part("solar-1", 3, -2, 3, 270, true));
         vehicle.connections.Add(new Vehicle.Connection(1, 2));
         vehicle.connections.Add(new Vehicle.Connection(2, 5));
         vehicle.stages.Add(new List<Vehicle.Activation>());

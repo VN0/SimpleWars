@@ -122,8 +122,8 @@ public class VehicleLoader : MonoBehaviour
             go = Instantiate(
                 prefab,
                 new Vector3(
-                    float.Parse(attr.GetNamedItem("x").InnerText) / 5 * 3,
-                    float.Parse(attr.GetNamedItem("y").InnerText) / 5 * 3
+                    float.Parse(attr.GetNamedItem("x").InnerText) * 0.6f,
+                    float.Parse(attr.GetNamedItem("y").InnerText) * 0.6f
                 ),
                 Quaternion.Euler(0f, 0f, Mathf.Rad2Deg * float.Parse(attr.GetNamedItem("angle").InnerText))
             ) as GameObject;
