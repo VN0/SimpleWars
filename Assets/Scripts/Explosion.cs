@@ -18,7 +18,7 @@ public class Explosion : MonoBehaviour
     GameObject ex;
 
 
-    void explode ()
+    void Explode ()
     {
         try
         {
@@ -67,7 +67,7 @@ public class Explosion : MonoBehaviour
     {
         if (!exploded && Input.GetKeyDown(KeyCode.E))
         {
-            explode();
+            Explode();
         }
     }
 
@@ -95,9 +95,9 @@ public class Explosion : MonoBehaviour
     void OnCollisionEnter2D (Collision2D col)
     {
         float v = col.relativeVelocity.magnitude;
-        if (v * (mass + (col.rigidbody != null ? col.rigidbody.mass : 100)) > forceToExplode)
+        if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : mass), 2) / 2 > forceToExplode)
         {
-            explode();
+            Explode();
         }
     }
 }

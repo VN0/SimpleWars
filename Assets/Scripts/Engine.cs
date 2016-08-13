@@ -40,10 +40,12 @@ public class Engine : PartFunction
     FuelControl controller;
     float smokeMax;
     float smokeSpeed;
+    Rigidbody2D rb;
 
     void Awake ()
     {
         smokeMax = smoke.startSpeed;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Start ()
@@ -122,21 +124,19 @@ public class Engine : PartFunction
             {
                 active = false;
             }
-            GetComponent<Rigidbody2D>().AddForce(transform.up * force * Time.deltaTime * allowedForce);
+            rb.AddForce(transform.up * force * Time.deltaTime * allowedForce);
 
             if (Input.GetKey(KeyCode.A))
             {
-                //rotation = -turn;
-                GetComponent<Rigidbody2D>().AddTorque(turn * Time.deltaTime);
+                rb.AddTorque(turn * Time.deltaTime);
             }
             if (Input.GetKey(KeyCode.D))
             {
-                //rotation = turn;
-                GetComponent<Rigidbody2D>().AddTorque(-turn * Time.deltaTime);
+                rb.AddTorque(-turn * Time.deltaTime);
             }
             else
             {
-                //rotation = 0;
+                
             }
         }
     }

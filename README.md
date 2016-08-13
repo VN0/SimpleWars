@@ -3,7 +3,9 @@
 ![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal?b)
 ![Android](http://simplewars.pythonanywhere.com/get_badge/Android?b)
 ![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL?b)
+<!--Web Player is no longer supported
 ![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player?b)
+-->
 __________
 <br>
 SimpleWars

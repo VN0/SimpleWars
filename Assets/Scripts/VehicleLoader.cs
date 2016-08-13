@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,7 +12,6 @@ public class VehicleLoader : MonoBehaviour
     public ModLoader modLoader;
     public Button startButton;
     public Text massText;
-
     DirectoryInfo dirinfo;
     FileInfo[] files;
     GameObject vehicle;
@@ -48,7 +46,12 @@ public class VehicleLoader : MonoBehaviour
             btn.GetComponentInChildren<Text>().text = file.Name;
             btn.GetComponent<Button>().onClick.AddListener(delegate
             {
-                LoadSave(btn.GetComponentInChildren<Text>().text);
+                string path = Path.Combine(appPath, "Vehicles/" + btn.GetComponentInChildren<Text>().text);
+                vehicle = LoadVehicle(path);
+                if (vehicle == null)
+                {
+                    vehicle = LoadVehicleSR(path);
+                }
             });
             btn.transform.SetParent(content.transform, true);
             i -= 30;
@@ -93,27 +96,28 @@ public class VehicleLoader : MonoBehaviour
         }
     }
 
-
-    void LoadSave (string file)
+    /// <summary>
+    /// Load a legacy vehicle
+    /// </summary>
+    /// <param name="file">File to load</param>
+    /// <returns></returns>
+    public GameObject LoadVehicleSR (string file)
     {
         float mass = 0;
         Destroy(GameObject.Find("Vehicle"));
-        vehicle = new GameObject("Vehicle");
-        XmlDocument doc = new XmlDocument();
-        doc.Load(Path.Combine(Path.Combine(appPath, "Vehicles"), file));
-        XmlNode root = doc.DocumentElement;
-
-        XmlNodeList parts = root.SelectNodes("./Parts/Part");
-        XmlNodeList connections = root.SelectNodes("./Connections/Connection");
-
-        foreach (XmlNode part in parts)
+        GameObject vehicleGO = new GameObject("Vehicle");
+        VehicleSR v = VehicleSR.Load(file);
+        if (v.version != 1)
         {
-            XmlAttributeCollection attr = part.Attributes;
-            string type = attr.GetNamedItem("partType").InnerText;
-            string id = attr.GetNamedItem("id").InnerText;
+            return null;
+        }
+
+
+        foreach (VehicleSR.Part part in v.parts)
+        {
             GameObject go;
             GameObject prefab = null;
-            if (!assets.TryGetValue(type, out prefab))
+            if (!assets.TryGetValue(part.type, out prefab))
             {
                 prefab = new GameObject();
                 Debug.LogError("Prefab is null");
@@ -121,11 +125,8 @@ public class VehicleLoader : MonoBehaviour
 
             go = Instantiate(
                 prefab,
-                new Vector3(
-                    float.Parse(attr.GetNamedItem("x").InnerText) * 0.6f,
-                    float.Parse(attr.GetNamedItem("y").InnerText) * 0.6f
-                ),
-                Quaternion.Euler(0f, 0f, Mathf.Rad2Deg * float.Parse(attr.GetNamedItem("angle").InnerText))
+                new Vector3(part.x * 0.6f, part.y * 0.6f),
+                Quaternion.Euler(0f, 0f, Mathf.Rad2Deg * part.r)
             ) as GameObject;
 
             try
@@ -133,40 +134,34 @@ public class VehicleLoader : MonoBehaviour
                 mass += go.GetComponent<Rigidbody2D>().mass;
             }
             catch { }
-            go.name = id;
-            go.transform.SetParent(vehicle.transform);
-            if (id == "1")      //If this part is the pod
+            go.name = part.id.ToString();
+            go.transform.SetParent(vehicleGO.transform);
+            if (part.type.ToLower().Contains("pod"))      //If this part is the pod
             {
-                go.transform.SetParent(vehicle.transform);
                 go.tag = "Player";
                 ActivationGroups ag = go.AddComponent<ActivationGroups>();
-                XmlNodeList acts = part.SelectNodes("./Pod/Staging/Step");
-                if (acts.Count == 0)
+                List<string[]> stages = new List<string[]>();
+                foreach (List<VehicleSR.Activate> stage in part.pod.stages)
                 {
-                    acts = part.SelectNodes("/Ship/Staging/Step");
-                }
-                List<string[]> acts_ = new List<string[]>();
-                foreach (XmlNode act in acts)
-                {
-                    XmlNodeList steps = act.SelectNodes("./Activate");
-                    List<string> steps_ = new List<string>();
-                    foreach (XmlNode step in steps)
+                    List<string> _stage = new List<string>();
+                    foreach (VehicleSR.Activate act in stage)
                     {
-                        steps_.Add(step.Attributes.GetNamedItem("Id").InnerText);
+                        _stage.Add(act.id.ToString());
                     }
-                    acts_.Add(steps_.ToArray());
+                    stages.Add(_stage.ToArray());
                 }
-                ag.steps = acts_.ToArray();
+                ag.steps = stages.ToArray();
                 ag.ready = true;
             }
         }
         massText.text = (mass * 500).ToString("N0") + " kg";
 
-        foreach (XmlNode con in connections)        //Set parents and connections
+
+
+        foreach (VehicleSR.Connection con in v.connections)        //Set parents and connections
         {
-            XmlAttributeCollection attr = con.Attributes;
-            GameObject parent = GameObject.Find(attr.GetNamedItem("parentPart").InnerText);
-            GameObject child = GameObject.Find(attr.GetNamedItem("childPart").InnerText);
+            GameObject parent = GameObject.Find(con.parentPart.ToString());
+            GameObject child = GameObject.Find(con.childPart.ToString());
             child.transform.SetParent(parent.transform);
             if (child.CompareTag("Wheel"))
             {
@@ -193,5 +188,104 @@ public class VehicleLoader : MonoBehaviour
                 joint.breakTorque = 5000;
             }
         }
+        return vehicleGO;
+    }
+
+    /// <summary>
+    /// Load a vehicle
+    /// </summary>
+    /// <param name="file">File to load</param>
+    /// <returns></returns>
+    public GameObject LoadVehicle (string file)
+    {
+        float mass = 0;
+        Destroy(GameObject.Find("Vehicle"));
+        GameObject vehicleGO = new GameObject("Vehicle");
+        Vehicle v;
+        try
+        {
+            v = Vehicle.Load(file);
+        }
+        catch
+        {
+            return null;
+        }
+
+        foreach (Vehicle.Part part in v.parts)
+        {
+            GameObject go;
+            GameObject prefab = null;
+            if (!assets.TryGetValue(part.type, out prefab))
+            {
+                prefab = new GameObject();
+                Debug.LogError("Prefab is null");
+            }
+
+            go = Instantiate(
+                prefab,
+                new Vector3(part.x * 0.6f, part.y * 0.6f),
+                Quaternion.Euler(0f, 0f, part.r)
+            ) as GameObject;
+
+            try
+            {
+                mass += go.GetComponent<Rigidbody2D>().mass;
+            }
+            catch { }
+            go.name = part.id.ToString();
+            go.transform.SetParent(vehicleGO.transform);
+            if (part.type.ToLower().Contains("pod"))      //If this part is the pod
+            {
+                go.tag = "Player";
+                ActivationGroups ag = go.AddComponent<ActivationGroups>();
+                List<string[]> stages = new List<string[]>();
+                foreach (List<Vehicle.Activation> stage in v.stages)
+                {
+                    List<string> _stage = new List<string>();
+                    foreach (Vehicle.Activation act in stage)
+                    {
+                        _stage.Add(act.id.ToString());
+                    }
+                    stages.Add(_stage.ToArray());
+                }
+                ag.steps = stages.ToArray();
+                ag.ready = true;
+            }
+        }
+        massText.text = (mass * 500).ToString("N0") + " kg";
+
+
+
+        foreach (Vehicle.Connection con in v.connections)        //Set parents and connections
+        {
+            GameObject parent = GameObject.Find(con.parent.ToString());
+            GameObject child = GameObject.Find(con.child.ToString());
+            child.transform.SetParent(parent.transform);
+            if (child.CompareTag("Wheel"))
+            {
+                WheelJoint2D joint = child.AddComponent<WheelJoint2D>();
+                joint.connectedBody = parent.GetComponent<Rigidbody2D>();
+                joint.enableCollision = false;
+                joint.connectedAnchor = child.transform.localPosition;
+                JointSuspension2D sus = new JointSuspension2D();
+                sus.dampingRatio = 0.9f;
+                sus.frequency = 100;
+                sus.angle = 0;
+                joint.suspension = sus;
+                joint.breakForce = 5000;
+            }
+            else
+            {
+                FixedJoint2D joint = child.AddComponent<FixedJoint2D>();
+                joint.connectedBody = parent.GetComponent<Rigidbody2D>();
+                joint.enableCollision = true;
+                joint.autoConfigureConnectedAnchor = true;
+                //joint.anchor = Vector2.zero;// child.transform.localPosition;
+                //joint.connectedAnchor = Vector2.zero;// parent.transform.localPosition;
+                joint.breakForce = 5000;
+                joint.breakTorque = 5000;
+            }
+        }
+        return vehicleGO;
     }
 }
