@@ -4,37 +4,24 @@ public static class VectorExtension
 {
     public static Vector3 Rotate (this Vector3 v, float degrees)
     {
-        float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-
-        float tx = v.x;
-        float ty = v.y;
-        v.x = (cos * tx) - (sin * ty);
-        v.y = (sin * tx) + (cos * ty);
-        return v;
+        return Quaternion.Euler(0, 0, degrees) * v;
     }
     public static Vector2 Rotate (this Vector2 v, float degrees)
     {
-        float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
-
-        float tx = v.x;
-        float ty = v.y;
-        v.x = (cos * tx) - (sin * ty);
-        v.y = (sin * tx) + (cos * ty);
-        return v;
+        return Quaternion.Euler(0, 0, degrees) * v;
     }
 }
+
 
 public class Engine : PartFunction
 {
     public float force = 200;
-    public float turn = 60;
+    public float turnAngle = 10;
     public float consumption = 1;
     public SpriteRenderer flame;
     public ParticleSystem smoke;
     public AudioSource sound;
-    //float rotation = 0;
+    float rotation = 0;
     bool active;
     Tank tank;
     FuelControl controller;
@@ -124,19 +111,22 @@ public class Engine : PartFunction
             {
                 active = false;
             }
-            rb.AddForce(transform.up * force * Time.deltaTime * allowedForce);
+            rb.AddForce(transform.up.Rotate(rotation) * force * Time.deltaTime * allowedForce);
 
             if (Input.GetKey(KeyCode.A))
             {
-                rb.AddTorque(turn * Time.deltaTime);
+                rotation = -turnAngle;
+                flame.transform.localRotation = Quaternion.Euler(0, 0, rotation);
             }
-            if (Input.GetKey(KeyCode.D))
+            else if (Input.GetKey(KeyCode.D))
             {
-                rb.AddTorque(-turn * Time.deltaTime);
+                rotation = turnAngle;
+                flame.transform.localRotation = Quaternion.Euler(0, 0, rotation);
             }
             else
             {
-                
+                rotation = 0;
+                flame.transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
         }
     }

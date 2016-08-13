@@ -49,6 +49,7 @@ public class Explosion : MonoBehaviour
         exploder.forceMode = EffectorForceMode2D.InverseLinear;
         exploder.forceTarget = EffectorSelection2D.Collider;
         exploder.forceSource = EffectorSelection2D.Collider;
+        exploder.forceVariation = force / 5;
         ex = Instantiate(explosion, transform.position, Quaternion.Euler(0, 0, Random.Range(0, 360))) as GameObject;
         ex.transform.SetParent(transform);
     }

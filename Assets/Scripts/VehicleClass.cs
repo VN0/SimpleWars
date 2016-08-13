@@ -457,7 +457,7 @@ public class VehicleClass : MonoBehaviour
         vehicle.Save(Application.persistentDataPath, "test.xml");
         Vehicle v2 = Vehicle.Load(Application.persistentDataPath, "test.xml");
         Debug.LogFormat("v2: {{{0}}}, vehicle: {{{1}}}", v2, vehicle);
-        VehicleSR sr = VehicleSR.Load(Application.persistentDataPath, "Vehicles/Cannon1.xml");
+        VehicleSR sr = VehicleSR.Load(Application.persistentDataPath, "Vehicles/CannonT");
         print(sr);
         sr.Save(Application.persistentDataPath, "test2.xml");
         sr.Save(Application.persistentDataPath, "Vehicles/Cannon2.xml");
