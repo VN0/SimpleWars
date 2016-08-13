@@ -112,7 +112,7 @@ public class VehicleLoader : MonoBehaviour
             return null;
         }
 
-
+        print(assets.Count);
         foreach (VehicleSR.Part part in v.parts)
         {
             GameObject go;
@@ -120,7 +120,7 @@ public class VehicleLoader : MonoBehaviour
             if (!assets.TryGetValue(part.type, out prefab))
             {
                 prefab = new GameObject();
-                Debug.LogError("Prefab is null");
+                Debug.LogErrorFormat("The prefab '{0}' of part '{1}' is null.", part.type, part.id);
             }
 
             go = Instantiate(

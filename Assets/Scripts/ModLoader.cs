@@ -27,6 +27,7 @@ public class ModLoader : MonoBehaviour
         if (!loaded)
         {
             string[] args = System.Environment.GetCommandLineArgs();
+            print("Arguments: >" + string.Join(" ", args));
             args =
                 (from arg in args
                     where System.IO.File.Exists(arg)
