@@ -10,9 +10,9 @@ public class ModLoader : MonoBehaviour
     AssetBundle mod;
     bool loaded = false;
 
-    public void Awake()
+    public void Awake ()
     {
-        if(FindObjectsOfType(GetType()).Length > 1)
+        if (FindObjectsOfType(GetType()).Length > 1)
         {
             Destroy(gameObject);
         }
@@ -22,22 +22,26 @@ public class ModLoader : MonoBehaviour
         }
     }
 
-    public void Start()
+    public void Start ()
     {
         if (!loaded)
         {
             string[] args = System.Environment.GetCommandLineArgs();
-            print("Arguments: >" + string.Join(" ", args));
-            args =
-                (from arg in args
-                    where System.IO.File.Exists(arg)
-                    select arg).ToArray();
-
-            if (args.Length > 1)
+            if (args != null)
             {
-                modPath = args[1];
-                modEnabled = true;
+                print("Arguments: >" + string.Join(" ", args));
+                args =
+                    (from arg in args
+                     where System.IO.File.Exists(arg)
+                     select arg).ToArray();
+
+                if (args.Length > 1)
+                {
+                    modPath = args[1];
+                    modEnabled = true;
+                }
             }
+
 
             GameObject[] vanillaParts = Resources.LoadAll<GameObject>("Prefabs/Parts");
             foreach (GameObject asset in vanillaParts)
@@ -61,7 +65,7 @@ public class ModLoader : MonoBehaviour
             loaded = true;
         }
     }
-    public AssetBundle Get()
+    public AssetBundle Get ()
     {
         return mod;
     }

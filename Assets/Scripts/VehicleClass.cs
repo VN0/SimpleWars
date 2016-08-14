@@ -201,6 +201,21 @@ public class Vehicle
         return string.Format("name={0}, version={1}, parts={2}, disconnecteds={3}, connections={4}, steps={5}",
             name, version, parts.Count, disconnecteds.Count, connections.Count, stages.Count);
     }
+
+
+    public string ExportToString ()
+    {
+        MemoryStream stream = new MemoryStream();
+        using (XmlWriter file = XmlWriter.Create(stream, new XmlWriterSettings()
+        {
+            Indent = true,
+            Encoding = System.Text.Encoding.UTF8
+        }))
+        {
+            formatter.Serialize(file, this);
+        }
+        return new StreamReader(stream).ReadToEnd();
+    }
     #endregion
 }
 
@@ -383,6 +398,21 @@ public class VehicleSR
     public override string ToString ()
     {
         return string.Format("version={0}, parts={1}, connections={2}", version, parts.Count, connections.Count);
+    }
+
+
+    public string ExportToString ()
+    {
+        MemoryStream stream = new MemoryStream();
+        using (XmlWriter file = XmlWriter.Create(stream, new XmlWriterSettings()
+        {
+            Indent = true,
+            Encoding = System.Text.Encoding.UTF8
+        }))
+        {
+            formatter.Serialize(file, this);
+        }
+        return new StreamReader(stream).ReadToEnd();
     }
 
 
