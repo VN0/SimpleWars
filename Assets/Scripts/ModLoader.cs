@@ -26,9 +26,9 @@ public class ModLoader : MonoBehaviour
     {
         if (!loaded)
         {
-            string[] args = System.Environment.GetCommandLineArgs();
-            if (args != null)
+            try
             {
+                string[] args = System.Environment.GetCommandLineArgs();
                 print("Arguments: >" + string.Join(" ", args));
                 args =
                     (from arg in args
@@ -40,6 +40,10 @@ public class ModLoader : MonoBehaviour
                     modPath = args[1];
                     modEnabled = true;
                 }
+            }
+            catch (System.ArgumentNullException)
+            {
+                print("Argument is null");
             }
 
 
