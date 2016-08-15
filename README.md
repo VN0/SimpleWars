@@ -2,7 +2,7 @@
 ![Windows desktop 64-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit?d)
 ![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal?d)
 ![Android](http://simplewars.pythonanywhere.com/get_badge/Android?d)
-![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL?c)
+![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL?d)
 <!--Web Player is no longer supported
 ![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player?b)
 -->
