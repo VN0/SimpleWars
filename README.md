@@ -1,7 +1,7 @@
-![Windows desktop 32-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2032-bit?c)
-![Windows desktop 64-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit?c)
-![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal?c)
-![Android](http://simplewars.pythonanywhere.com/get_badge/Android?c)
+![Windows desktop 32-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2032-bit?d)
+![Windows desktop 64-bit](http://simplewars.pythonanywhere.com/get_badge/Windows%20desktop%2064-bit?d)
+![Mac desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Mac%20desktop%20Universal?d)
+![Android](http://simplewars.pythonanywhere.com/get_badge/Android?d)
 ![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL?c)
 <!--Web Player is no longer supported
 ![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player?b)
@@ -27,8 +27,9 @@ __________
 ----------
 + 加入载具建造系统
 + 加入联机系统
-+ 修复bug并编译移动版
++ 修复bug并编译移动版 (√)
 + 加入商店系统
++ ...
 
 | Action            | Key | Alter Key  |
 |-------------------|-----|------------|
