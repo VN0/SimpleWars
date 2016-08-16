@@ -3,14 +3,16 @@ guid: d38399695a909404681756bca29a1337
 timeCreated: 1467337129
 licenseType: Free
 TrueTypeFontImporter:
-  serializedVersion: 3
+  serializedVersion: 4
   fontSize: 16
   forceTextureCase: -2
-  characterSpacing: 1
-  characterPadding: 0
+  characterSpacing: 0
+  characterPadding: 1
   includeFontData: 1
-  fontNames: []
-  fallbackFontReferences: []
+  fontNames:
+  - Source Han Sans CN
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: fe3aa93060b3f1b46a7135ec0719481a, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
