@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -9,6 +11,7 @@ public class ModLoader : MonoBehaviour
     public Dictionary<string, GameObject> assets = new Dictionary<string, GameObject>();
     AssetBundle mod;
     bool loaded = false;
+    CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
 
     public void Awake ()
     {
@@ -20,6 +23,15 @@ public class ModLoader : MonoBehaviour
         {
             DontDestroyOnLoad(gameObject);
         }
+        Debug.LogFormat("Screen Size: {0} x {1}", Screen.width, Screen.height);
+        if(Application.isMobilePlatform || Screen.height < 550)
+        {
+            scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
+        }
+        SceneManager.sceneLoaded += delegate {
+            FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
+        };
     }
 
     public void Start ()
@@ -29,13 +41,13 @@ public class ModLoader : MonoBehaviour
             try
             {
                 string[] args = System.Environment.GetCommandLineArgs();
-                print("Arguments: >" + string.Join(" ", args));
+                print("Arguments: > " + string.Join(" ", args));
                 args =
                     (from arg in args
                      where System.IO.File.Exists(arg)
                      select arg).ToArray();
 
-                if (args.Length > 1)
+                if (args.Length > (Application.isMobilePlatform ? 0 : 1))
                 {
                     modPath = args[1];
                     modEnabled = true;
@@ -69,6 +81,15 @@ public class ModLoader : MonoBehaviour
             loaded = true;
         }
     }
+
+    void Update ()
+    {
+        if(Input.GetButtonDown("Cancel"))
+        {
+            Application.Quit();
+        }
+    }
+
     public AssetBundle Get ()
     {
         return mod;

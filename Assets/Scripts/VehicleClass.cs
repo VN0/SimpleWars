@@ -130,7 +130,7 @@ public class Vehicle
     [XmlArray("Connections")]
     public List<Connection> connections = new List<Connection>();
 
-    [XmlArray("ActivationStages")]
+    [XmlArray("Staging")]
     [XmlArrayItem("Stage")]
     public List<List<Activation>> stages = new List<List<Activation>>();
     #endregion

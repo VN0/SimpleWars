@@ -1,23 +1,44 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ActivationGroups : MonoBehaviour
 {
     public string[][] steps;
     public bool ready = false;
     int currentStage = 0;
+    bool firstTime = true;
 
-    public void Update()
+    public void Awake ()
     {
-        if(Input.GetKeyDown(KeyCode.Space) && ready && currentStage<steps.Length)
+        SceneManager.sceneLoaded += delegate (Scene scene, LoadSceneMode mode)
         {
-            foreach(string part in steps[currentStage])
+            if (scene.name == "Earth" && firstTime == true)
             {
-                try
-                {
-                    GameObject.Find(part).GetComponent<PartFunction>().enabled = true;
-                } catch (System.NullReferenceException){ }
+                firstTime = false;
+                GameObject.Find("ActivateButton").GetComponent<Button>().onClick.AddListener(ActivateNextStage);
             }
-            currentStage += 1;
+        };
+    }
+
+    public void Update ()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && ready && currentStage < steps.Length)
+        {
+            ActivateNextStage();
         }
+    }
+
+    public void ActivateNextStage ()
+    {
+        foreach (string part in steps[currentStage])
+        {
+            try
+            {
+                GameObject.Find(part).GetComponent<PartFunction>().enabled = true;
+            }
+            catch (System.NullReferenceException) { }
+        }
+        currentStage += 1;
     }
 }

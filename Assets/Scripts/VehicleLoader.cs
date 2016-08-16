@@ -32,7 +32,7 @@ public class VehicleLoader : MonoBehaviour
         DirectoryInfo dirinfo = new DirectoryInfo(Path.Combine(appPath, "Vehicles"));
         files = dirinfo.GetFiles();
         Time.timeScale = 0f;
-        int i = 320;
+        int i = 0;
         startButton.onClick.AddListener(delegate
         {
             start = true;
@@ -57,7 +57,7 @@ public class VehicleLoader : MonoBehaviour
             i -= 30;
             if (j == files.Length - 1)
             {
-                content.GetComponent<RectTransform>().sizeDelta = btn.GetComponent<RectTransform>().position;
+                content.GetComponent<RectTransform>().sizeDelta = -btn.GetComponent<RectTransform>().position;
                 content.GetComponent<RectTransform>().localPosition = new Vector3(content.GetComponent<RectTransform>().localPosition.x, -btn.GetComponent<RectTransform>().position.y, 0);
             }
         }
