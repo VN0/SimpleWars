@@ -18,7 +18,7 @@ public class Tank : MonoBehaviour
 
     public bool Consume (float amount)
     {
-        if (fuel > 0)
+        if (fuel > 0 && rb != null)
         {
             fuel -= amount;
             rb.mass -= fuelMass * amount;

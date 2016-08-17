@@ -13,7 +13,7 @@ public class ModLoader : MonoBehaviour
     bool loaded = false;
     CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
 
-    public void Awake ()
+    void Awake ()
     {
         if (FindObjectsOfType(GetType()).Length > 1)
         {
@@ -24,18 +24,20 @@ public class ModLoader : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         Debug.LogFormat("Screen Size: {0} x {1}", Screen.width, Screen.height);
-        if(Application.isMobilePlatform || Screen.height < 550)
+        if (Application.isMobilePlatform || Screen.height < 550)
         {
             scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
         }
-        SceneManager.sceneLoaded += delegate {
+        SceneManager.sceneLoaded += delegate
+        {
             FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
         };
     }
 
-    public void Start ()
+    void Start ()
     {
+        I18NText.SetLanguageAll(SystemLanguage.English);
         if (!loaded)
         {
             try
@@ -84,7 +86,7 @@ public class ModLoader : MonoBehaviour
 
     void Update ()
     {
-        if(Input.GetButtonDown("Cancel"))
+        if (Input.GetButtonDown("Cancel"))
         {
             Application.Quit();
         }

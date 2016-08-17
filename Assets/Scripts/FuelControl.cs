@@ -7,6 +7,8 @@ public class FuelControl : MonoBehaviour {
     public Slider slider100;
     public Slider slider10;
     public Image currentFuel;
+    public Button turnLeftButton;
+    public Button turnRightButton;
     public short fuelHeight;
     public GameObject vehicle;
     public float currentForce = 0;

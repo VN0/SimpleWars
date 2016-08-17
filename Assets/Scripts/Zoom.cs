@@ -4,22 +4,22 @@ using TouchScript.Gestures;
 
 public class Zoom : MonoBehaviour
 {
-	public float zoomSpeed = 1;
-	public float targetOrtho;
-	public float smoothSpeed = 2.0f;
-	public float minOrtho = 1.0f;
-	public float maxOrtho = 20.0f;
+    public float zoomSpeed = 1;
+    public float targetOrtho;
+    public float smoothSpeed = 2.0f;
+    public float minOrtho = 1.0f;
+    public float maxOrtho = 20.0f;
     public ScreenTransformGesture gesture;
 
     void Awake ()
     {
         gesture = FindObjectOfType<ScreenTransformGesture>();
     }
-     
-	void Start ()
-	{
-		targetOrtho = Camera.main.orthographicSize;
-	}
+
+    void Start ()
+    {
+        targetOrtho = Camera.main.orthographicSize;
+    }
 
     void Update ()
     {

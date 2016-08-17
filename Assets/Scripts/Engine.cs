@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public static class VectorExtension
 {
@@ -28,6 +29,8 @@ public class Engine : PartFunction
     float smokeMax;
     float smokeSpeed;
     Rigidbody2D rb;
+    Button leftButton;
+    Button rightButton;
 
     void Awake ()
     {
@@ -90,6 +93,11 @@ public class Engine : PartFunction
 
     void OnDestroy ()
     {
+        if (smoke.isPlaying)
+        {
+            smoke.Stop();
+            sound.Stop();
+        }
         Destroy(smoke);
         if(flame != null)
         {
@@ -101,7 +109,7 @@ public class Engine : PartFunction
     {
         float allowedForce = controller.currentForce;
         smoke.startSpeed = smokeMax * allowedForce;
-        if (allowedForce > 0.01)
+        if (allowedForce > 0.01 && active)
         {
             try
             {
