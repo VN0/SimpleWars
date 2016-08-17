@@ -32,11 +32,12 @@ public class VehicleLoader : MonoBehaviour
         DirectoryInfo dirinfo = new DirectoryInfo(Path.Combine(appPath, "Vehicles"));
         files = dirinfo.GetFiles();
         Time.timeScale = 0f;
-        int i = 0;
         startButton.onClick.AddListener(delegate
         {
             start = true;
         });
+        content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 30 * files.Length);
+        int i = -15;
         for (int j = 0; j < files.Length; j++)
         {
             FileInfo file = files[j];
@@ -55,18 +56,13 @@ public class VehicleLoader : MonoBehaviour
             });
             btn.transform.SetParent(content.transform, true);
             i -= 30;
-            if (j == files.Length - 1)
-            {
-                content.GetComponent<RectTransform>().sizeDelta = -btn.GetComponent<RectTransform>().position;
-                content.GetComponent<RectTransform>().localPosition = new Vector3(content.GetComponent<RectTransform>().localPosition.x, -btn.GetComponent<RectTransform>().position.y, 0);
-            }
         }
     }
 
 
     void Update ()
     {
-        if (vehicle && alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start)
+        if (vehicle && (alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start))
         {
             start = false;
             alpha += Time.unscaledDeltaTime * 2;
@@ -233,6 +229,7 @@ public class VehicleLoader : MonoBehaviour
             }
             catch { }
             go.name = part.id.ToString();
+            go.transform.localScale = new Vector2(part.scaleX, part.scaleY);
             go.transform.SetParent(vehicleGO.transform);
             if (part.type.ToLower().Contains("pod"))      //If this part is the pod
             {

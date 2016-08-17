@@ -96,7 +96,7 @@ public class Explosion : MonoBehaviour
     void OnCollisionEnter2D (Collision2D col)
     {
         float v = col.relativeVelocity.magnitude;
-        if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : mass), 2) / 2 > forceToExplode)
+        if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
         {
             Explode();
         }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -23,8 +24,18 @@ public class ModLoader : MonoBehaviour
         {
             DontDestroyOnLoad(gameObject);
         }
+        if (!Application.genuine)
+        {
+            var file = File.Open(
+                Path.Combine(Application.persistentDataPath, "ErrorLog.txt"), FileMode.OpenOrCreate);
+            new BinaryWriter(file, System.Text.Encoding.UTF8).Write(
+                "The application was modified after build. Please download the official version of SimpleWars." +
+                "\n此应用在编译后被修改过。请下载简单战争的官方版本。\n");
+            file.Close();
+            Application.Quit();
+        }
         Debug.LogFormat("Screen Size: {0} x {1}", Screen.width, Screen.height);
-        if (Application.isMobilePlatform || Screen.height < 550)
+        if (Screen.height < 550)
         {
             scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
@@ -37,7 +48,6 @@ public class ModLoader : MonoBehaviour
 
     void Start ()
     {
-        I18NText.SetLanguageAll(SystemLanguage.English);
         if (!loaded)
         {
             try
@@ -46,7 +56,7 @@ public class ModLoader : MonoBehaviour
                 print("Arguments: > " + string.Join(" ", args));
                 args =
                     (from arg in args
-                     where System.IO.File.Exists(arg)
+                     where File.Exists(arg)
                      select arg).ToArray();
 
                 if (args.Length > (Application.isMobilePlatform ? 0 : 1))

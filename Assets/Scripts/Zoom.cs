@@ -23,11 +23,6 @@ public class Zoom : MonoBehaviour
 
     void Update ()
     {
-        if (gesture.NumTouches == 2)
-        {
-            targetOrtho = Camera.main.orthographicSize /= gesture.DeltaScale;
-        }
-
         if (Input.mousePresent)
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -40,5 +35,11 @@ public class Zoom : MonoBehaviour
             Camera.main.orthographicSize = Mathf.MoveTowards(
                 Camera.main.orthographicSize, targetOrtho, smoothSpeed * Time.unscaledDeltaTime * Camera.main.orthographicSize / 30);
         }
+
+        if (gesture.NumTouches == 2)
+        {
+            targetOrtho = Camera.main.orthographicSize /= gesture.DeltaScale;
+        }
+
     }
 }
