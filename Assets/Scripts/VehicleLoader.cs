@@ -132,6 +132,9 @@ public class VehicleLoader : MonoBehaviour
             catch { }
             go.name = part.id.ToString();
             go.transform.SetParent(vehicleGO.transform);
+            go.transform.localScale = new Vector3(
+                (part.flipX ? -1 : 1) / go.transform.parent.localScale.x,
+                (part.flipY ? -1 : 1) / go.transform.parent.localScale.y, 1);
             if (part.type.ToLower().Contains("pod"))      //If this part is the pod
             {
                 go.tag = "Player";
@@ -229,8 +232,10 @@ public class VehicleLoader : MonoBehaviour
             }
             catch { }
             go.name = part.id.ToString();
-            go.transform.localScale = new Vector2(part.scaleX, part.scaleY);
             go.transform.SetParent(vehicleGO.transform);
+            go.transform.localScale = new Vector3(
+                part.scaleX / go.transform.parent.localScale.x * (part.flipX ? -1 : 1), 
+                part.scaleY / go.transform.parent.localScale.x * (part.flipX ? -1 : 1), 1);
             if (part.type.ToLower().Contains("pod"))      //If this part is the pod
             {
                 go.tag = "Player";

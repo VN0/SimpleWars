@@ -121,12 +121,12 @@ public class Engine : PartFunction
             }
             rb.AddForce(transform.up.Rotate(rotation) * force * Time.deltaTime * allowedForce);
 
-            if (Input.GetKey(KeyCode.A))
+            if (controller.turnLeft)
             {
                 rotation = -turnAngle;
                 flame.transform.localRotation = Quaternion.Euler(0, 0, rotation);
             }
-            else if (Input.GetKey(KeyCode.D))
+            else if (controller.turnRight)
             {
                 rotation = turnAngle;
                 flame.transform.localRotation = Quaternion.Euler(0, 0, rotation);

@@ -1,28 +1,22 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class DragObject : MonoBehaviour {
+public class DragObject : MonoBehaviour, IDragHandler
+{
+    public bool dragSelf = false;
+    public Transform objectToDrag;
+    public float dragDistance;
 
-    SpringJoint2D spring;
-	
-	void Update () {
-	    if(Input.GetMouseButtonDown(0))
+    void Awake ()
+    {
+        if (dragSelf || objectToDrag == null)
         {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Collider2D col = Physics2D.OverlapPoint(mousePos);
-            spring = col.gameObject.AddComponent<SpringJoint2D>();
-            spring.dampingRatio = 0.5f;
-            spring.frequency = 100;
-            spring.anchor = mousePos;
-            spring.distance = 1;
+            objectToDrag = transform;
         }
-        else if(Input.GetMouseButton(0))
-        {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            spring.connectedAnchor = mousePos;
-        }
-        else if(spring)
-        {
-            Destroy(spring);
-        }
-	}
+    }
+
+    public void OnDrag (PointerEventData eventData)
+    {
+        objectToDrag.position += new Vector3(eventData.delta.x, eventData.delta.y, 0);
+    }
 }
