@@ -180,11 +180,11 @@ public class VehicleLoader : MonoBehaviour
                 FixedJoint2D joint = child.AddComponent<FixedJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.enableCollision = true;
-                joint.autoConfigureConnectedAnchor = true;
-                //joint.anchor = Vector2.zero;// child.transform.localPosition;
-                //joint.connectedAnchor = Vector2.zero;// parent.transform.localPosition;
-                joint.breakForce = 5000;
-                joint.breakTorque = 5000;
+                joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
+                //joint.connectedAnchor = parent.transform.worldToLocalMatrix.MultiplyPoint3x4(parent.GetComponent<Collider2D>().bounds.ClosestPoint(child.transform.position));
+                //joint.autoConfigureConnectedAnchor = false;
+                joint.breakForce = 4000;
+                joint.breakTorque = 4000;
             }
         }
         return vehicleGO;
@@ -281,11 +281,11 @@ public class VehicleLoader : MonoBehaviour
                 FixedJoint2D joint = child.AddComponent<FixedJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.enableCollision = true;
-                joint.autoConfigureConnectedAnchor = true;
-                //joint.anchor = Vector2.zero;// child.transform.localPosition;
-                //joint.connectedAnchor = Vector2.zero;// parent.transform.localPosition;
-                joint.breakForce = 5000;
-                joint.breakTorque = 5000;
+                joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
+                //joint.connectedAnchor = parent.transform.worldToLocalMatrix.MultiplyPoint3x4(parent.GetComponent<Collider2D>().bounds.ClosestPoint(child.transform.position));
+                //joint.autoConfigureConnectedAnchor = false;
+                joint.breakForce = 4000;
+                joint.breakTorque = 4000;
             }
         }
         return vehicleGO;
