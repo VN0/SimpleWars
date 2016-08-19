@@ -3,6 +3,8 @@
 public class hardInput : MonoBehaviour
 {
 
+    public enum controllerType {PS3, PS4, XBOX1, XBOX360};
+
     public static bool GetKey(string keyName)
     {
         return hardManager.singleton.GetKey(keyName);
@@ -16,6 +18,11 @@ public class hardInput : MonoBehaviour
     public static float GetAxis(string keyName, string keyName2, float gravity)
     {
         return hardManager.singleton.GetAxis(keyName, keyName2, gravity);
+    }
+
+    public static float GetAxis(string keyName, float gravity)
+    {
+        return hardManager.singleton.GetAxis(keyName, gravity);
     }
 
     public static string GetKeyName(string keyName, bool useSecond)
@@ -36,5 +43,30 @@ public class hardInput : MonoBehaviour
     public static void MouseVisble(bool setMouseVisible)
     {
         hardManager.singleton.MouseVisble(setMouseVisible);
+    }
+
+    public static void SetControllerType(controllerType type)
+    {
+        hardManager.singleton.setControllerType(type);
+    }
+
+    public static controllerType GetControllerType()
+    {
+        switch (hardManager.singleton.controllerType)
+        {
+            default:
+                return hardInput.controllerType.PS3;
+            case 1:
+                return hardInput.controllerType.PS4;
+            case 2:
+                return hardInput.controllerType.XBOX1;
+            case 3:
+                return hardInput.controllerType.XBOX360;
+        }
+    }
+
+    public static int GetControllerTypeIndex()
+    {
+        return hardManager.singleton.controllerType;
     }
 }

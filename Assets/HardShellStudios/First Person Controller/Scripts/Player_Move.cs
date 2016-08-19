@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Hard Shell Studios/Examples/Player Move")]
 public class Player_Move : MonoBehaviour {
 
     public bool canMove;
@@ -30,9 +31,10 @@ public class Player_Move : MonoBehaviour {
             //    speed *= sprintMultiplier;
             //}
 
-            localVel = new Vector3(hardInput.GetAxis("Right", "Left", 7) * speed, rigid.velocity.y, hardInput.GetAxis("Forward", "Backward", 7) * speed);
-            rigid.velocity = transform.TransformDirection(localVel);
+            localVel = new Vector3((hardInput.GetAxis("Right", "Left", 7) + hardInput.GetAxis("ControllerLeftX", 7)) * speed, rigid.velocity.y, (hardInput.GetAxis("Forward", "Backward", 7) + hardInput.GetAxis("ControllerLeftY", 7)) * speed);
 
+
+            rigid.velocity = transform.TransformDirection(localVel);
             if (hardInput.GetKeyDown("Jump") && IsGrouneded())
             {
                 rigid.AddForceAtPosition(Vector3.up * jumpForce, Vector3.up);
@@ -46,3 +48,15 @@ public class Player_Move : MonoBehaviour {
         return Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z), -Vector3.up, distToGround + 0.1f);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

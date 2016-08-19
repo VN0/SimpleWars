@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Hard Shell Studios/Examples/Player Look")]
 public class Player_Look : MonoBehaviour
 {
 
@@ -13,13 +14,16 @@ public class Player_Look : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-        transform.parent.eulerAngles += (new Vector3(0, hardInput.GetAxis("MouseX", "MouseX", 1), 0) * speedX);
+        float lookAxisY = hardInput.GetAxis("MouseY", 1) + hardInput.GetAxis("ControllerRightY", 1);
+        float lookAxisX = hardInput.GetAxis("MouseX", 1) + hardInput.GetAxis("ControllerRightX", 1);
+
+        transform.parent.eulerAngles += (new Vector3(0, lookAxisX, 0) * speedX);
         xrot = transform.eulerAngles.y;
 
         if (inverted)
-            yrot = Mathf.Clamp(yrot + hardInput.GetAxis("MouseY", "MouseY", 1) * speedY, -80, 60);
+            yrot = Mathf.Clamp(yrot + lookAxisY * speedY, -80, 60);
         else
-            yrot = Mathf.Clamp(yrot + -hardInput.GetAxis("MouseY", "MouseY", 1) * speedY, -80, 60);
+            yrot = Mathf.Clamp(yrot + -lookAxisY * speedY, -80, 60);
 
 
         transform.rotation = Quaternion.Euler(yrot, xrot, 0);

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 
+[AddComponentMenu("Hard Shell Studios/Input Manager/Rebind Button")]
 public class hardInputUI : MonoBehaviour
 {
     public Text displayText;

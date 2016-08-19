@@ -36,13 +36,12 @@ public class VehicleLoader : MonoBehaviour
         {
             start = true;
         });
-        content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 30 * files.Length);
-        int i = -15;
+        content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * files.Length);
+        int i = -16;
         for (int j = 0; j < files.Length; j++)
         {
             FileInfo file = files[j];
             GameObject btn = Instantiate(Resources.Load<GameObject>("Prefabs/Button"));
-            //btn.transform.position = new Vector2(content.GetComponent<RectTransform>().rect.width / 2, i);
             btn.GetComponent<RectTransform>().localPosition = new Vector2(content.GetComponent<RectTransform>().rect.width / 2, i);
             btn.GetComponentInChildren<Text>().text = file.Name;
             btn.GetComponent<Button>().onClick.AddListener(delegate
@@ -55,7 +54,7 @@ public class VehicleLoader : MonoBehaviour
                 }
             });
             btn.transform.SetParent(content.transform, true);
-            i -= 30;
+            i -= 32;
         }
     }
 
@@ -66,6 +65,7 @@ public class VehicleLoader : MonoBehaviour
         {
             start = false;
             alpha += Time.unscaledDeltaTime * 2;
+            mask.SetActive(true);
             mask.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
         }
         else if (alpha >= 1)
@@ -81,14 +81,10 @@ public class VehicleLoader : MonoBehaviour
                 i++;
             }
             float min = Mathf.Min(bounds);
-            vehicle.transform.position = new Vector3(0f, -min, 0f);
+            vehicle.transform.position = new Vector3(0, -min, 0);
 
             SceneManager.LoadScene("Earth");
             Time.timeScale = 1f;
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
         }
     }
 
@@ -99,14 +95,14 @@ public class VehicleLoader : MonoBehaviour
     /// <returns></returns>
     public GameObject LoadVehicleSR (string file)
     {
-        float mass = 0;
-        Destroy(GameObject.Find("Vehicle"));
-        GameObject vehicleGO = new GameObject("Vehicle");
         VehicleSR v = VehicleSR.Load(file);
         if (v.version != 1)
         {
             return null;
         }
+        float mass = 0;
+        Destroy(GameObject.Find("Vehicle"));
+        GameObject vehicleGO = new GameObject("Vehicle");
 
         print(assets.Count);
         foreach (VehicleSR.Part part in v.parts)
@@ -183,7 +179,7 @@ public class VehicleLoader : MonoBehaviour
                 joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
                 //joint.connectedAnchor = parent.transform.worldToLocalMatrix.MultiplyPoint3x4(parent.GetComponent<Collider2D>().bounds.ClosestPoint(child.transform.position));
                 //joint.autoConfigureConnectedAnchor = false;
-                joint.breakForce = 4000;
+                joint.breakForce = 5000;
                 joint.breakTorque = 4000;
             }
         }
@@ -197,9 +193,6 @@ public class VehicleLoader : MonoBehaviour
     /// <returns></returns>
     public GameObject LoadVehicle (string file)
     {
-        float mass = 0;
-        Destroy(GameObject.Find("Vehicle"));
-        GameObject vehicleGO = new GameObject("Vehicle");
         Vehicle v;
         try
         {
@@ -209,6 +202,9 @@ public class VehicleLoader : MonoBehaviour
         {
             return null;
         }
+        float mass = 0;
+        Destroy(GameObject.Find("Vehicle"));
+        GameObject vehicleGO = new GameObject("Vehicle");
 
         foreach (Vehicle.Part part in v.parts)
         {
@@ -284,7 +280,7 @@ public class VehicleLoader : MonoBehaviour
                 joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
                 //joint.connectedAnchor = parent.transform.worldToLocalMatrix.MultiplyPoint3x4(parent.GetComponent<Collider2D>().bounds.ClosestPoint(child.transform.position));
                 //joint.autoConfigureConnectedAnchor = false;
-                joint.breakForce = 4000;
+                joint.breakForce = 5000;
                 joint.breakTorque = 4000;
             }
         }

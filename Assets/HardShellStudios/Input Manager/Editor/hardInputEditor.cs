@@ -9,13 +9,24 @@ public class hardInputEditor : Editor
 {
 
     hardManager myscript;
-    string currentVersion = "Current Version - 1.4 | Created by Haydn Comley - www.HardShellStudios.com";
+    string currentVersion = "Current Version - 2 | Created by Haydn Comley - www.HardShellStudios.com";
 
     string inputName = "";
     KeyCode keyPrime;
     KeyCode keySec;
+    hardKey.controllerMap joyPrime;
+    hardKey.controllerMap joySec;
+    bool saveable = true;
 
-    string[] axisOptions = new string[] { "Mouse & Button Press", "Mouse Axis/Wheel Up", "Mouse Axis/Wheel Down", "Mouse Axis/Position X", "Mouse Axis/Position Y" };
+    string[] axisOptions = new string[] {   "Mouse or Button Press", // 0
+                                            "Mouse Axis/Wheel Up", "Mouse Axis/Wheel Down", "Mouse Axis/Position X", "Mouse Axis/Position Y", // 1-4
+                                            "Controller Button Press", // 5
+
+                                            "Controller Axis/Right Stick/X Axis", "Controller Axis/Right Stick/Y Axis",       // 6-7
+                                            "Controller Axis/Left Stick/X Axis", "Controller Axis/Left Stick/Y Axis"};    // 8-9
+
+    string[] controllerTypes = new string[] {"Playstation 4", "Playstation 3", "Xbox One", "Xbox 360"};
+
     int axisSelected = 0;
     int axisSelected2 = 0;
     bool[] opened = new bool[0];
@@ -32,6 +43,13 @@ public class hardInputEditor : Editor
         result.Apply();
 
         return result;
+
+    }
+
+    [MenuItem("Hard Shell Studios/Unity's Input Manager")]
+    private static void NewMenuOption()
+    {
+        EditorApplication.ExecuteMenuItem("Edit/Project Settings/Input");
     }
 
     public override void OnInspectorGUI()
@@ -40,14 +58,18 @@ public class hardInputEditor : Editor
 
         myscript = (hardManager)target;
         bool anyOpen = false;
+        bool anySaved = true;
         for (int i = 0; i < myscript.inputs.Length; i++)
         {
 
             string currName = myscript.inputs[i].keyName;
             KeyCode currPrim = myscript.inputs[i].primaryKeycode;
             KeyCode currSec = myscript.inputs[i].secondaryKeycode;
+            hardKey.controllerMap currJoyPrim = myscript.inputs[i].controllerOne;
+            hardKey.controllerMap currJoySec = myscript.inputs[i].controllerTwo;
             int axisType = myscript.inputs[i].axisType;
             int axisType2 = myscript.inputs[i].axisType2;
+            bool saveKey = myscript.inputs[i].saveKey;
             bool[] hold = opened;
             opened = new bool[opened.Length + 1];
             for (int i2 = 0; i2 < hold.Length; i2++)
@@ -73,9 +95,14 @@ public class hardInputEditor : Editor
                 if (myscript.inputs[i].keyName != currName)
                     myscript.inputs[i].keyName = currName;
 
+                saveKey = EditorGUILayout.Toggle("Save In-Game Rebinds", saveKey);
+                if (myscript.inputs[i].saveKey != saveKey)
+                    myscript.inputs[i].saveKey = saveKey;
+
                 axisType = EditorGUILayout.Popup("Primary Key Type", axisType, axisOptions);
                 if (myscript.inputs[i].axisType != axisType)
                     myscript.inputs[i].axisType = axisType;
+                   
 
                 if (axisType == 0)
                 {
@@ -83,6 +110,12 @@ public class hardInputEditor : Editor
                     currPrim = (KeyCode)EditorGUILayout.EnumPopup("Primary Key", currPrim);
                     if (myscript.inputs[i].primaryKeycode != currPrim)
                         myscript.inputs[i].primaryKeycode = currPrim;
+                }
+                else if (axisType == 5)
+                {
+                    currJoyPrim = (hardKey.controllerMap)EditorGUILayout.EnumPopup("Primary Button", currJoyPrim);
+                    if (myscript.inputs[i].controllerOne != currJoyPrim)
+                        myscript.inputs[i].controllerOne = currJoyPrim;
                 }
 
                 axisType2 = EditorGUILayout.Popup("Secondary Key Type", axisType2, axisOptions);
@@ -94,6 +127,12 @@ public class hardInputEditor : Editor
                     currSec = (KeyCode)EditorGUILayout.EnumPopup("Secondary Input", currSec);
                     if (myscript.inputs[i].secondaryKeycode != currSec)
                         myscript.inputs[i].secondaryKeycode = currSec;
+                }
+                else if (axisType2 == 5 || axisType2 >= 10 && axisType2 <= 13)
+                {
+                    currJoySec = (hardKey.controllerMap)EditorGUILayout.EnumPopup("Secondary Button", currJoySec);
+                    if (myscript.inputs[i].controllerTwo != currJoySec)
+                        myscript.inputs[i].controllerTwo = currJoySec;
                 }
 
                 EditorGUILayout.Separator();
@@ -132,19 +171,45 @@ public class hardInputEditor : Editor
             }
         }
 
+        if (!anySaved)
+        {
+            GUI.color = Color.green;
+            if (GUILayout.Button("Make all keys saveable ingame"))
+            {
+                for (int i = 0; i < myscript.inputs.Length; i++)
+                {
+                    myscript.inputs[i].saveKey = true;
+                }
+            }
+            GUI.color = Color.white;
+        }
+
+
+
         EditorGUILayout.BeginVertical(colour);
         // Layout myscript.inputs For key creation
         EditorGUILayout.LabelField("Create Control");
         inputName = EditorGUILayout.TextField("Key Name", inputName);
+        saveable = EditorGUILayout.Toggle("Save In-Game Rebinds", saveable);
         axisSelected = EditorGUILayout.Popup("Primary Key Type", axisSelected, axisOptions);
         if (axisSelected == 0)
         {
             keyPrime = (KeyCode)EditorGUILayout.EnumPopup("Primary Key", keyPrime);
         }
+        else if (axisSelected == 5)
+        {
+            joyPrime = (hardKey.controllerMap)EditorGUILayout.EnumPopup("Primary Button", joyPrime);
+        }
+
         axisSelected2 = EditorGUILayout.Popup("Secondary Key Type", axisSelected2, axisOptions);
+
         if (axisSelected2 == 0)
         {
             keySec = (KeyCode)EditorGUILayout.EnumPopup("Secondary Key", keySec);
+        }
+        else if (axisSelected2 == 5)
+        {
+            joySec = (hardKey.controllerMap)EditorGUILayout.EnumPopup("Secondary Button", joySec);
         }
 
 
@@ -156,9 +221,40 @@ public class hardInputEditor : Editor
             addInput();
 
         //Remove Last Input
-        if (GUILayout.Button("Remove Input") && myscript.inputs.Length > 0)
+        if (GUILayout.Button("Remove Last Input") && myscript.inputs.Length > 0)
             removeInput();
 
+        EditorGUILayout.Separator();
+
+        bool change;
+        change = EditorGUILayout.Toggle("Allow controller", myscript.useController);
+        if (myscript.useController != change)
+        {
+            myscript.useController = change;
+            
+        }
+
+        if (myscript.useController)
+        {
+            try
+            {
+                Input.GetAxis("DPADVER");
+                Input.GetAxis("DPADHOR");
+                Input.GetAxis("STICKLHOR");
+                Input.GetAxis("STICKRHOR");
+                Input.GetAxis("STICKLVER");
+                Input.GetAxis("STICKRVER");
+            }
+            catch
+            {
+                myscript.useController = false;
+                Debug.LogError("Unity Inputs not properly configured for use with controllers.");
+                Debug.LogError("Please open the 'Readme.txt' for guidence. Video tutorial included.");
+            }
+        }
+
+        myscript.controllerType = EditorGUILayout.Popup("Controller Name Stlye", myscript.controllerType, controllerTypes);
+        myscript.saveControllerType = EditorGUILayout.Toggle("Save style as PlayerPref?", myscript.saveControllerType);
         EditorGUILayout.Separator();
 
         if (GUILayout.Button("Copy Inputs"))
@@ -180,6 +276,7 @@ public class hardInputEditor : Editor
         }
 
         EditorGUILayout.LabelField(currentVersion);
+        EditorGUILayout.LabelField("Current Platform: " + SystemInfo.operatingSystem);
     }
 
 
@@ -195,18 +292,32 @@ public class hardInputEditor : Editor
             myscript.inputs[i].primaryKeycode = savedInputs[i].primaryKeycode;
             myscript.inputs[i].secondaryKeycode = savedInputs[i].secondaryKeycode;
             myscript.inputs[i].axisType = savedInputs[i].axisType;
+            myscript.inputs[i].axisType2 = savedInputs[i].axisType2;
+            myscript.inputs[i].saveKey = savedInputs[i].saveKey;
+            myscript.inputs[i].controllerOne = savedInputs[i].controllerOne;
+            myscript.inputs[i].controllerTwo = savedInputs[i].controllerTwo;
         }
 
         myscript.inputs[myscript.inputs.Length - 1].keyName = inputName;
         myscript.inputs[myscript.inputs.Length - 1].axisType = axisSelected;
+        myscript.inputs[myscript.inputs.Length - 1].axisType2 = axisSelected2;
         myscript.inputs[myscript.inputs.Length - 1].primaryKeycode = keyPrime;
         myscript.inputs[myscript.inputs.Length - 1].secondaryKeycode = keySec;
+        myscript.inputs[myscript.inputs.Length - 1].controllerOne = joyPrime;
+        myscript.inputs[myscript.inputs.Length - 1].controllerTwo = joySec;
+        myscript.inputs[myscript.inputs.Length - 1].saveKey = saveable;
+        myscript.inputs[myscript.inputs.Length - 1].controllerOne = joyPrime;
+        myscript.inputs[myscript.inputs.Length - 1].controllerTwo = joySec;
 
         //Reset The Selection
         inputName = "";
         axisSelected = 0;
+        axisSelected2 = 0;
         keyPrime = KeyCode.None;
         keySec = KeyCode.None;
+        joyPrime = hardKey.controllerMap.None;
+        joySec = hardKey.controllerMap.None;
+        saveable = true;
 
     }
 
@@ -225,6 +336,10 @@ public class hardInputEditor : Editor
                 myscript.inputs[i].primaryKeycode = savedInputs[saved].primaryKeycode;
                 myscript.inputs[i].secondaryKeycode = savedInputs[saved].secondaryKeycode;
                 myscript.inputs[i].axisType = savedInputs[saved].axisType;
+                myscript.inputs[i].axisType2 = savedInputs[saved].axisType2;
+                myscript.inputs[i].saveKey = savedInputs[saved].saveKey;
+                myscript.inputs[i].controllerOne = savedInputs[i].controllerOne;
+                myscript.inputs[i].controllerTwo = savedInputs[i].controllerTwo;
             }
             else
             {
@@ -233,6 +348,10 @@ public class hardInputEditor : Editor
                 myscript.inputs[i].primaryKeycode = savedInputs[saved].primaryKeycode;
                 myscript.inputs[i].secondaryKeycode = savedInputs[saved].secondaryKeycode;
                 myscript.inputs[i].axisType = savedInputs[saved].axisType;
+                myscript.inputs[i].axisType2 = savedInputs[saved].axisType2;
+                myscript.inputs[i].saveKey = savedInputs[saved].saveKey;
+                myscript.inputs[i].controllerOne = savedInputs[saved].controllerOne;
+                myscript.inputs[i].controllerTwo = savedInputs[saved].controllerTwo;
             }
             saved++;
         }
@@ -259,6 +378,10 @@ public class hardInputEditor : Editor
                 myscript.inputs[i].primaryKeycode = savedInputs[i].primaryKeycode;
                 myscript.inputs[i].secondaryKeycode = savedInputs[i].secondaryKeycode;
                 myscript.inputs[i].axisType = savedInputs[i].axisType;
+                myscript.inputs[i].axisType2 = savedInputs[i].axisType2;
+                myscript.inputs[i].saveKey = savedInputs[i].saveKey;
+                myscript.inputs[i].controllerOne = savedInputs[i].controllerOne;
+                myscript.inputs[i].controllerTwo = savedInputs[i].controllerTwo;
             }
 
 

@@ -2,9 +2,11 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class FuelControl : MonoBehaviour {
-
+public class FuelControl : MonoBehaviour
+{
     public Text force;
+    public Text altitude;
+    public Text velocity;
     public Slider slider100;
     public Slider slider10;
     public Image currentFuel;
@@ -21,18 +23,20 @@ public class FuelControl : MonoBehaviour {
     Tank[] tanks;
     float slider100last = 0;
     float slider10last = 0;
+    Transform pod;
 
     void Start ()
     {
         vehicle = GameObject.Find("Vehicle");
+        pod = vehicle.transform.GetChild(0);
         tanks = vehicle.GetComponentsInChildren<Tank>();
         foreach (Tank tank in tanks)
         {
             totalFuel += tank.capacity;
         }
     }
-	
-	void FixedUpdate ()
+
+    void FixedUpdate ()
     {
         fuel = 0;
         if (tanks != null)
@@ -42,10 +46,15 @@ public class FuelControl : MonoBehaviour {
                 fuel += tank.fuel;
             }
         }
-	}
+    }
 
     void Update ()
     {
+        if (pod != null)
+        {
+            altitude.text = (pod.position.y * (5f / 3)).ToString("N0") + " m";
+            velocity.text = (pod.GetComponent<Rigidbody2D>().velocity.magnitude * (5f / 3)).ToString("N0") + " m/s";
+        }
         if (Input.GetButton("Turn Left"))
         {
             turnLeft = true;
@@ -88,7 +97,7 @@ public class FuelControl : MonoBehaviour {
         currentFuel.rectTransform.offsetMax = new Vector2(currentFuel.rectTransform.offsetMax.x, (fuel / totalFuel) * fuelHeight - fuelHeight);
         slider100last = slider100.value;
         slider10last = slider10.value;
-        
+
         if (Input.GetKeyDown(KeyCode.Return) && SceneManager.GetActiveScene().name != "Builder")
         {
             SceneManager.LoadScene("Builder");

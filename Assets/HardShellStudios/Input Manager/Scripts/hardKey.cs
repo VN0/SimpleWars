@@ -4,6 +4,8 @@ using System;
 
 public class hardKey : IComparable<hardKey> {
 
+    public enum controllerMap { None, Square, Cross, Circle, Triangle, L1, R1, L2, R2, Share, Options, LeftStick, RightStick, PSHome, Trackpad, DPadUp, DPadDown, DPadLeft, DPadRight };
+
     public string keyName;
     public KeyCode keyInput;
     public KeyCode keyInput2;
@@ -11,7 +13,9 @@ public class hardKey : IComparable<hardKey> {
     public int keyWheelState2;
     public float keyValue;
 
-    public hardKey(string keyNameGIVE, KeyCode inputKeyGIVE, KeyCode inputKey2GIVE, int keyWheelStateGIVE, int keyWheelState2GIVE)
+    public bool saveKey;
+
+    public hardKey(string keyNameGIVE, KeyCode inputKeyGIVE, KeyCode inputKey2GIVE, int keyWheelStateGIVE, int keyWheelState2GIVE, bool saveKeyGIVE)
     {
         keyName = keyNameGIVE;
         keyInput = inputKeyGIVE;
@@ -19,6 +23,7 @@ public class hardKey : IComparable<hardKey> {
         keyWheelState = keyWheelStateGIVE;
         keyWheelState2 = keyWheelState2GIVE;
         keyValue = 0;
+        saveKey = saveKeyGIVE;
     }
 
     public int CompareTo(hardKey other)
