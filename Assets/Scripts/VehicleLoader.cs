@@ -160,27 +160,19 @@ public class VehicleLoader : MonoBehaviour
             child.transform.SetParent(parent.transform);
             if (child.CompareTag("Wheel"))
             {
-                WheelJoint2D joint = child.AddComponent<WheelJoint2D>();
+                WheelJoint2D joint = child.GetComponent<WheelJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
-                joint.enableCollision = false;
                 joint.connectedAnchor = child.transform.localPosition;
-                JointSuspension2D sus = new JointSuspension2D();
-                sus.dampingRatio = 0.9f;
-                sus.frequency = 100;
-                sus.angle = 0;
-                joint.suspension = sus;
-                joint.breakForce = 5000;
+                joint.enabled = true;
             }
             else
             {
-                FixedJoint2D joint = child.AddComponent<FixedJoint2D>();
+                FixedJoint2D joint = child.GetComponent<FixedJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.enableCollision = true;
-                joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
-                //joint.connectedAnchor = parent.transform.worldToLocalMatrix.MultiplyPoint3x4(parent.GetComponent<Collider2D>().bounds.ClosestPoint(child.transform.position));
-                //joint.autoConfigureConnectedAnchor = false;
-                joint.breakForce = 5000;
-                joint.breakTorque = 4000;
+                joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(
+                    child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
+                joint.enabled = true;
             }
         }
         return vehicleGO;
@@ -261,27 +253,19 @@ public class VehicleLoader : MonoBehaviour
             child.transform.SetParent(parent.transform);
             if (child.CompareTag("Wheel"))
             {
-                WheelJoint2D joint = child.AddComponent<WheelJoint2D>();
+                WheelJoint2D joint = child.GetComponent<WheelJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
-                joint.enableCollision = false;
                 joint.connectedAnchor = child.transform.localPosition;
-                JointSuspension2D sus = new JointSuspension2D();
-                sus.dampingRatio = 0.9f;
-                sus.frequency = 100;
-                sus.angle = 0;
-                joint.suspension = sus;
-                joint.breakForce = 5000;
+                joint.enabled = true;
             }
             else
             {
-                FixedJoint2D joint = child.AddComponent<FixedJoint2D>();
+                FixedJoint2D joint = child.GetComponent<FixedJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.enableCollision = true;
-                joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
-                //joint.connectedAnchor = parent.transform.worldToLocalMatrix.MultiplyPoint3x4(parent.GetComponent<Collider2D>().bounds.ClosestPoint(child.transform.position));
-                //joint.autoConfigureConnectedAnchor = false;
-                joint.breakForce = 5000;
-                joint.breakTorque = 4000;
+                joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(
+                    child.GetComponent<Collider2D>().bounds.ClosestPoint(parent.transform.position));
+                joint.enabled = true;
             }
         }
         return vehicleGO;

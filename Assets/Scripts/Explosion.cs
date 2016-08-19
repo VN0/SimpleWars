@@ -90,6 +90,10 @@ public class Explosion : MonoBehaviour
             {
                 Destroy(gameObject);
             }
+            else
+            {
+                Destroy(GetComponent<PointEffector2D>());
+            }
         }
     }
 

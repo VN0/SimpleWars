@@ -16,7 +16,7 @@ public class ModLoader : MonoBehaviour
 
     void Awake ()
     {
-        Physics2D.gravity = Vector2.zero;
+        //Physics2D.gravity = Vector2.zero;
         if (FindObjectsOfType(GetType()).Length > 1)
         {
             Destroy(gameObject);
