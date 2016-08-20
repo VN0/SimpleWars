@@ -2,22 +2,25 @@ using UnityEngine;
 
 public class Wheel : PartFunction
 {
-    WheelJoint2D whl;
+    public float force = 200;
+    FuelControl controller;
+    Rigidbody2D rb;
 
-    void Awake ()
+    void Start ()
     {
-        //whl = GetComponent<WheelJoint2D>();
+        controller = FindObjectOfType<FuelControl>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update ()
     {
-        /*if (Input.GetKey(KeyCode.D))
+        if (controller.turnLeft)
         {
-            whl.useMotor = true;
+            //rb.AddTorque(force);
         }
-        else
+        else if (controller.turnRight)
         {
-            whl.useMotor = false;
-        }*/
+            //rb.AddTorque(-force);
+        }
     }
 }

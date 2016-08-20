@@ -81,7 +81,7 @@ public class VehicleLoader : MonoBehaviour
                 i++;
             }
             float min = Mathf.Min(bounds);
-            vehicle.transform.position = new Vector3(0, -min, 0);
+            vehicle.transform.position = new Vector3(0, -min + 0.5f, 0);
 
             SceneManager.LoadScene("Earth");
             Time.timeScale = 1f;
@@ -160,14 +160,14 @@ public class VehicleLoader : MonoBehaviour
             child.transform.SetParent(parent.transform);
             if (child.CompareTag("Wheel"))
             {
-                WheelJoint2D joint = child.GetComponent<WheelJoint2D>();
+                AnchoredJoint2D joint = child.GetComponent<AnchoredJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.connectedAnchor = child.transform.localPosition;
                 joint.enabled = true;
             }
             else
             {
-                FixedJoint2D joint = child.GetComponent<FixedJoint2D>();
+                AnchoredJoint2D joint = child.GetComponent<AnchoredJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.enableCollision = true;
                 joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(
@@ -253,14 +253,14 @@ public class VehicleLoader : MonoBehaviour
             child.transform.SetParent(parent.transform);
             if (child.CompareTag("Wheel"))
             {
-                WheelJoint2D joint = child.GetComponent<WheelJoint2D>();
+                AnchoredJoint2D joint = child.GetComponent<AnchoredJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.connectedAnchor = child.transform.localPosition;
                 joint.enabled = true;
             }
             else
             {
-                FixedJoint2D joint = child.GetComponent<FixedJoint2D>();
+                AnchoredJoint2D joint = child.GetComponent<AnchoredJoint2D>();
                 joint.connectedBody = parent.GetComponent<Rigidbody2D>();
                 joint.enableCollision = true;
                 joint.anchor = child.transform.worldToLocalMatrix.MultiplyPoint3x4(

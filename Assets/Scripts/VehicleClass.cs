@@ -494,7 +494,7 @@ public class VehicleClass : MonoBehaviour
         Vehicle v3 = VehicleSR.Load(Application.persistentDataPath, "test2.xml").ToVehicle();
         print(v3);
         v3.Save(Application.persistentDataPath, "test3.xml");
-        v3.Save(Application.persistentDataPath, "Vehicles/CannonSW.xml");
+        v3.Save(Application.persistentDataPath, "Vehicles/CannonSW2.xml");
 #endif
     }
 }

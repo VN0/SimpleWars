@@ -50,7 +50,7 @@ public class FuelControl : MonoBehaviour
 
     void Update ()
     {
-        if (pod != null)
+        if (pod != null && pod.GetComponent<Rigidbody2D>() != null)
         {
             altitude.text = (pod.position.y * (5f / 3)).ToString("N0") + " m";
             velocity.text = (pod.GetComponent<Rigidbody2D>().velocity.magnitude * (5f / 3)).ToString("N0") + " m/s";

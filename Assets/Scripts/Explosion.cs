@@ -23,9 +23,25 @@ public class Explosion : MonoBehaviour
         try
         {
             Destroy(GetComponent<SpriteRenderer>());
+        }
+        catch (System.NullReferenceException) { }
+        try
+        {
             Destroy(GetComponent<Collider2D>());
+        }
+        catch (System.NullReferenceException) { }
+        try
+        {
             Destroy(GetComponent<Joint2D>());
+        }
+        catch (System.NullReferenceException) { }
+        try
+        {
             Destroy(GetComponent<PartFunction>());
+        }
+        catch (System.NullReferenceException) { }
+        try
+        {
             Destroy(GetComponent<Rigidbody2D>());
         }
         catch (System.NullReferenceException) { }
