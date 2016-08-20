@@ -53,13 +53,14 @@ public class VehicleLoader : MonoBehaviour
         {
             start = true;
         });
-        content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 32 * files.Length);
-        int i = -16;
+        content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 52 * files.Length);
+        int i = -26;
         for (int j = 0; j < files.Length; j++)
         {
             FileInfo file = files[j];
             GameObject btn = Instantiate(Resources.Load<GameObject>("Prefabs/Button"));
-            btn.GetComponent<RectTransform>().localPosition = new Vector2(content.GetComponent<RectTransform>().rect.width / 2, i);
+            btn.GetComponent<RectTransform>().localPosition = 
+                new Vector2(content.transform.TransformPoint(content.GetComponent<RectTransform>().rect.center).x, i);
             btn.GetComponentInChildren<Text>().text = file.Name;
             btn.GetComponent<Button>().onClick.AddListener(delegate
             {
@@ -71,7 +72,7 @@ public class VehicleLoader : MonoBehaviour
                 }
             });
             btn.transform.SetParent(content.transform, true);
-            i -= 32;
+            i -= 52;
         }
     }
 
