@@ -30,7 +30,24 @@ public class VehicleLoader : MonoBehaviour
         print(appPath);
         Directory.CreateDirectory(Path.Combine(appPath, "Vehicles"));
         DirectoryInfo dirinfo = new DirectoryInfo(Path.Combine(appPath, "Vehicles"));
+#if UNITY_ANDROID
+        FileInfo[] _files = dirinfo.GetFiles();
+        FileInfo[] _filesSR;
+        try
+        {
+            DirectoryInfo dirinfoSR = new DirectoryInfo(Path.Combine(appPath, "../com.jundroo.simplewars/files/ships"));
+            _filesSR = dirinfoSR.GetFiles();
+            files = new FileInfo[_filesSR.Length + _files.Length];
+            _files.CopyTo(files, 0);
+            _filesSR.CopyTo(files, _files.Length);
+        }
+        catch
+        {
+            files = _files;
+        }
+#else
         files = dirinfo.GetFiles();
+#endif
         Time.timeScale = 0f;
         startButton.onClick.AddListener(delegate
         {
