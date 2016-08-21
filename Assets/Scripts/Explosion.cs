@@ -16,9 +16,10 @@ public class Explosion : MonoBehaviour
     PointEffector2D exploder;
     float mass;
     GameObject ex;
+    Explosion parentEx;
 
 
-    void Explode ()
+    public void Explode ()
     {
         try
         {
@@ -80,6 +81,16 @@ public class Explosion : MonoBehaviour
     }
 
 
+    void Start ()
+    {
+        try
+        {
+            parentEx = transform.parent.GetComponent<Explosion>();
+        }
+        catch (MissingComponentException) { }
+    }
+
+
     void Update ()
     {
         if (!exploded && Input.GetKeyDown(KeyCode.E))
@@ -116,9 +127,27 @@ public class Explosion : MonoBehaviour
     void OnCollisionEnter2D (Collision2D col)
     {
         float v = col.relativeVelocity.magnitude;
+        if (exploded)
+        {
+            return;
+        }
         if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
         {
             Explode();
+            return;
         }
+        try
+        {
+            float reactionForce = GetComponent<AnchoredJoint2D>().reactionForce.sqrMagnitude;
+            if (reactionForce > Mathf.Pow(forceToExplode * 2, 2))
+            {
+                Explode();
+            }
+            if (parentEx != null && reactionForce > Mathf.Pow(parentEx.forceToExplode * 2, 2))
+            {
+                parentEx.Explode();
+            }
+        }
+        catch (MissingComponentException) { }
     }
 }

@@ -60,7 +60,7 @@ public class VehicleLoader : MonoBehaviour
             FileInfo file = files[j];
             GameObject btn = Instantiate(Resources.Load<GameObject>("Prefabs/Button"));
             btn.GetComponent<RectTransform>().localPosition = 
-                new Vector2(content.transform.TransformPoint(content.GetComponent<RectTransform>().rect.center).x, i);
+                new Vector2(content.GetComponent<RectTransform>().rect.center.x + 35, i);
             btn.GetComponentInChildren<Text>().text = file.Name;
             btn.GetComponent<Button>().onClick.AddListener(delegate
             {

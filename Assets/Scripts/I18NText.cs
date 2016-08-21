@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class I18NText : MonoBehaviour
 {
     static System.EventHandler<SystemLanguageArg> _SetLanguageAll;
+    static SystemLanguage _currentLanguage = SystemLanguage.Unknown;
+    public static SystemLanguage currentLanguage { get { return _currentLanguage; } }
 
     [System.Serializable]
     public class TextPair
@@ -40,7 +42,11 @@ public class I18NText : MonoBehaviour
         {
             languageDict[pair.language] = pair.text;
         }
-        if (autoSetLanguage)
+        if (_currentLanguage != SystemLanguage.Unknown)
+        {
+            SetLanguage(_currentLanguage);
+        }
+        else if (autoSetLanguage)
         {
             SetLanguage(Application.systemLanguage);
         }
@@ -54,6 +60,7 @@ public class I18NText : MonoBehaviour
     public static void SetLanguageAll (SystemLanguage lang, SystemLanguage defaultLang = SystemLanguage.Unknown)
     {
         _SetLanguageAll(null, new SystemLanguageArg(lang, defaultLang));
+        _currentLanguage = lang;
     }
 
     /// <summary>
