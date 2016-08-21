@@ -12,7 +12,7 @@ public class Detacher : PartFunction
         {
             Debug.LogWarningFormat("Unable to destroy the joint of {0}", gameObject);
         }
-        transform.SetParent(GameObject.Find("Vehicle").transform);
+        transform.SetParent(transform.root);
         GetComponent<Rigidbody2D>().AddForce(-transform.up * 5);
         enabled = false;
     }

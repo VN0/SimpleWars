@@ -46,11 +46,10 @@ public class Explosion : MonoBehaviour
             Destroy(GetComponent<Rigidbody2D>());
         }
         catch (System.NullReferenceException) { }
-        Transform tr = gameObject.transform;
         //tr.DetachChildren ();
         for (int i = 0; i < gameObject.transform.childCount; i++)
         {
-            tr.GetChild(i).transform.SetParent(tr.parent);
+            transform.GetChild(i).transform.SetParent(transform.root);
         }
         exploded = true;
 
