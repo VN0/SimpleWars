@@ -35,7 +35,7 @@ public class VehicleLoader : MonoBehaviour
         FileInfo[] _filesSR;
         try
         {
-            DirectoryInfo dirinfoSR = new DirectoryInfo(Path.Combine(appPath, "../com.jundroo.simplewars/files/ships"));
+            DirectoryInfo dirinfoSR = new DirectoryInfo(Path.Combine(appPath, "../../com.jundroo.simplerockets/files/ships"));
             _filesSR = dirinfoSR.GetFiles();
             files = new FileInfo[_filesSR.Length + _files.Length];
             _files.CopyTo(files, 0);
