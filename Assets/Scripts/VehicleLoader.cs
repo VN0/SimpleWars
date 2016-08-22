@@ -45,6 +45,23 @@ public class VehicleLoader : MonoBehaviour
         {
             files = _files;
         }
+#elif UNITY_STANDALONE_WIN
+        FileInfo[] _files = dirinfo.GetFiles();
+        FileInfo[] _filesSR;
+        try
+        {
+            DirectoryInfo dirinfoSR = new DirectoryInfo(Path.Combine(
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments)
+                , "Jundroo/SimpleRockets/ships"));
+            _filesSR = dirinfoSR.GetFiles();
+            files = new FileInfo[_filesSR.Length + _files.Length];
+            _files.CopyTo(files, 0);
+            _filesSR.CopyTo(files, _files.Length);
+        }
+        catch
+        {
+            files = _files;
+        }
 #else
         files = dirinfo.GetFiles();
 #endif
@@ -59,12 +76,12 @@ public class VehicleLoader : MonoBehaviour
         {
             FileInfo file = files[j];
             GameObject btn = Instantiate(Resources.Load<GameObject>("Prefabs/Button"));
+            string path = file.FullName;
             btn.GetComponent<RectTransform>().localPosition = 
                 new Vector2(content.GetComponent<RectTransform>().rect.center.x + 35, i);
             btn.GetComponentInChildren<Text>().text = file.Name;
             btn.GetComponent<Button>().onClick.AddListener(delegate
             {
-                string path = Path.Combine(appPath, "Vehicles/" + btn.GetComponentInChildren<Text>().text);
                 vehicle = LoadVehicle(path);
                 if (vehicle == null)
                 {
