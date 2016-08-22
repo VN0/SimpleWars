@@ -130,6 +130,9 @@ public class VehicleLoader : MonoBehaviour
             if (!assets.TryGetValue(part.type, out prefab))
             {
                 prefab = new GameObject();
+                prefab.AddComponent<Rigidbody2D>();
+                prefab.AddComponent<BoxCollider2D>();
+                prefab.AddComponent<FixedJoint2D>();
                 Debug.LogErrorFormat("The prefab '{0}' of part '{1}' is null.", part.type, part.id);
             }
 

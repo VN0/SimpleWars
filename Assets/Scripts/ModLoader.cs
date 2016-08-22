@@ -1,4 +1,4 @@
-using UnityEngine;
+锘縰sing UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.IO;
@@ -31,7 +31,7 @@ public class ModLoader : MonoBehaviour
                 Path.Combine(Application.persistentDataPath, "ErrorLog.txt"), FileMode.OpenOrCreate);
             new BinaryWriter(file, System.Text.Encoding.UTF8).Write(
                 "The application was modified after build. Please download the official version of SimpleWars." +
-                "\n此应用在编译后被修改过。请下载简单战争的官方版本。\n");
+                "\n姝ゅ簲鐢ㄥ湪缂栬瘧鍚庤淇敼杩囥�傝涓嬭浇绠�鍗曟垬浜夌殑瀹樻柟鐗堟湰銆俓n");
             file.Close();
             Application.Quit();
         }

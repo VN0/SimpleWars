@@ -463,7 +463,7 @@ public class VehicleSR
     #endregion
 }
 
-
+/*
 //Debug
 public class VehicleClass : MonoBehaviour
 {
@@ -498,3 +498,4 @@ public class VehicleClass : MonoBehaviour
 #endif
     }
 }
+*/
