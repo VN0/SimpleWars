@@ -26,7 +26,7 @@ public class DragCamera : MonoBehaviour
             Vector3 currentPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
             currentPos = GetComponent<Camera>().ScreenToWorldPoint(currentPos);
             Vector3 movePos = dragOrigin - currentPos;
-            transform.position = transform.position + movePos;
+            transform.Translate(movePos);
         }
 
         if (Input.GetMouseButtonUp(button))

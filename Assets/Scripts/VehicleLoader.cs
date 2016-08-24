@@ -24,12 +24,14 @@ public class VehicleLoader : MonoBehaviour
 
     void Awake ()
     {
+        if (FindObjectsOfType<VehicleBuilder>().Length > 1)
+        {
+            Destroy(this);
+        }
         modLoader = FindObjectOfType<ModLoader>();
         assets = modLoader.assets;
         appPath = Application.persistentDataPath;
-        print(appPath);
-        Directory.CreateDirectory(Path.Combine(appPath, "Vehicles"));
-        DirectoryInfo dirinfo = new DirectoryInfo(Path.Combine(appPath, "Vehicles"));
+        DirectoryInfo dirinfo = Directory.CreateDirectory(Path.Combine(appPath, "Vehicles"));
 #if UNITY_ANDROID
         FileInfo[] _files = dirinfo.GetFiles();
         FileInfo[] _filesSR;
@@ -77,8 +79,8 @@ public class VehicleLoader : MonoBehaviour
             FileInfo file = files[j];
             GameObject btn = Instantiate(Resources.Load<GameObject>("Prefabs/Button"));
             string path = file.FullName;
-            btn.GetComponent<RectTransform>().localPosition = 
-                new Vector2(content.GetComponent<RectTransform>().rect.center.x + 35, i);
+            btn.GetComponent<RectTransform>().localPosition =
+                            new Vector2(content.GetComponent<RectTransform>().rect.center.x + 35, i);
             btn.GetComponentInChildren<Text>().text = file.Name;
             btn.GetComponent<Button>().onClick.AddListener(delegate
             {
@@ -156,7 +158,7 @@ public class VehicleLoader : MonoBehaviour
             go = Instantiate(
                 prefab,
                 new Vector3(part.x * 0.6f, part.y * 0.6f),
-                Quaternion.Euler(0f, 0f, Mathf.Rad2Deg * part.r)
+                Quaternion.Euler(0, 0, Mathf.Rad2Deg * part.r)
             ) as GameObject;
 
             try
@@ -243,13 +245,13 @@ public class VehicleLoader : MonoBehaviour
             if (!assets.TryGetValue(part.type, out prefab))
             {
                 prefab = new GameObject();
-                Debug.LogError("Prefab is null");
+                Debug.LogErrorFormat("The prefab '{0}' of part '{1}' is null.", part.type, part.id);
             }
 
             go = Instantiate(
                 prefab,
                 new Vector3(part.x * 0.6f, part.y * 0.6f),
-                Quaternion.Euler(0f, 0f, part.r)
+                Quaternion.Euler(0, 0, part.r)
             ) as GameObject;
 
             try
@@ -260,7 +262,7 @@ public class VehicleLoader : MonoBehaviour
             go.name = part.id.ToString();
             go.transform.SetParent(vehicleGO.transform);
             go.transform.localScale = new Vector3(
-                part.scaleX / go.transform.parent.localScale.x * (part.flipX ? -1 : 1), 
+                part.scaleX / go.transform.parent.localScale.x * (part.flipX ? -1 : 1),
                 part.scaleY / go.transform.parent.localScale.x * (part.flipX ? -1 : 1), 1);
             if (part.type.ToLower().Contains("pod"))      //If this part is the pod
             {

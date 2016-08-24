@@ -40,7 +40,7 @@ public class I18NText : MonoBehaviour
         txt = GetComponent<Text>();
         foreach (TextPair pair in texts)
         {
-            languageDict[pair.language] = pair.text;
+            languageDict[pair.language] = pair.text.Replace(@"\n", "\n").Replace(@"\t", "\t");
         }
         if (_currentLanguage != SystemLanguage.Unknown)
         {
