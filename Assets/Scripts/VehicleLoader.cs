@@ -12,6 +12,7 @@ public class VehicleLoader : MonoBehaviour
     public ModLoader modLoader;
     public Button startButton;
     public Text massText;
+    VehicleBuilder builder;
     DirectoryInfo dirinfo;
     FileInfo[] files;
     GameObject vehicle;
@@ -29,6 +30,7 @@ public class VehicleLoader : MonoBehaviour
             Destroy(this);
         }
         modLoader = FindObjectOfType<ModLoader>();
+        builder = FindObjectOfType<VehicleBuilder>();
         assets = modLoader.assets;
         appPath = Application.persistentDataPath;
         DirectoryInfo dirinfo = Directory.CreateDirectory(Path.Combine(appPath, "Vehicles"));
@@ -89,6 +91,7 @@ public class VehicleLoader : MonoBehaviour
                 {
                     vehicle = LoadVehicleSR(path);
                 }
+                builder.vehicle = vehicle;
             });
             btn.transform.SetParent(content.transform, true);
             i -= 52;
@@ -125,8 +128,23 @@ public class VehicleLoader : MonoBehaviour
         }
     }
 
+
+    public GameObject NewVehicle ()
+    {
+        Destroy(GameObject.Find("Vehicle"));
+        vehicle = LoadVehicle(Path.Combine(Application.persistentDataPath, "EmptyVehicle.xml"));
+        return vehicle;
+    }
+
+
+    public GameObject GetVehicle ()
+    {
+        return vehicle;
+    }
+
+
     /// <summary>
-    /// Load a legacy vehicle
+    /// Load a SR vehicle
     /// </summary>
     /// <param name="file">File to load</param>
     /// <returns></returns>

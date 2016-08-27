@@ -13,7 +13,7 @@ public class Examples : MonoBehaviour {
 	
 	void Update () 
 	{
-		result1 = Math.HeronsFormula (5, 2, 6, 7);
+		result1 = Basic.HeronsFormula (5, 2, 6, 7);
 		result2 = Physic.Frequency (6);
 		result3 = Mechanic.ResultantForce (500, 700);
 		result4 = TechnicalDrawing.Tolerance1 (5, 3);

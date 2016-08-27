@@ -17,6 +17,7 @@ public class Explosion : MonoBehaviour
     float mass;
     GameObject ex;
     Explosion parentEx;
+    bool firstTime = true;
 
 
     public void Explode ()
@@ -80,16 +81,6 @@ public class Explosion : MonoBehaviour
     }
 
 
-    void Start ()
-    {
-        try
-        {
-            parentEx = transform.parent.GetComponent<Explosion>();
-        }
-        catch (MissingComponentException) { }
-    }
-
-
     void Update ()
     {
         if (!exploded && Input.GetKeyDown(KeyCode.E))
@@ -101,6 +92,15 @@ public class Explosion : MonoBehaviour
 
     void FixedUpdate ()
     {
+        if (firstTime)
+        {
+            firstTime = false;
+            try
+            {
+                parentEx = transform.parent.GetComponent<Explosion>();
+            }
+            catch (MissingComponentException) { }
+        }
         if (exploded == true)
         {
             if (cRadius < size)
@@ -121,20 +121,6 @@ public class Explosion : MonoBehaviour
                 Destroy(GetComponent<PointEffector2D>());
             }
         }
-    }
-
-    void OnCollisionEnter2D (Collision2D col)
-    {
-        float v = col.relativeVelocity.magnitude;
-        if (exploded)
-        {
-            return;
-        }
-        if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
-        {
-            Explode();
-            return;
-        }
         try
         {
             float reactionForce = GetComponent<AnchoredJoint2D>().reactionForce.sqrMagnitude;
@@ -148,5 +134,37 @@ public class Explosion : MonoBehaviour
             }
         }
         catch (MissingComponentException) { }
+    }
+
+    void OnCollisionEnter2D (Collision2D col)
+    {
+        //相对速度
+        float v = col.relativeVelocity.magnitude;
+        if (exploded)
+        {
+            return;
+        }
+        ////满足自身爆炸条件
+        //if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
+        //{
+        //    Explode();
+        //    return;
+        //}
+        //try
+        //{
+        //    //关节受到的压力
+        //    float reactionForce = GetComponent<AnchoredJoint2D>().reactionForce.sqrMagnitude;
+        //    //自身爆炸条件
+        //    if (reactionForce > Mathf.Pow(forceToExplode * 2, 2))
+        //    {
+        //        Explode();
+        //    }
+        //    //被连接的部件的爆炸条件
+        //    if (parentEx != null && reactionForce > Mathf.Pow(parentEx.forceToExplode * 2, 2))
+        //    {
+        //        parentEx.Explode();
+        //    }
+        //}
+        //catch (MissingComponentException) { }
     }
 }
