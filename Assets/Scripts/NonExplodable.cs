@@ -4,6 +4,12 @@ public class NonExplodable : MonoBehaviour
 {
     Explosion parentEx;
     bool firstTime = true;
+    AnchoredJoint2D joint;
+
+    void Awake ()
+    {
+        joint = GetComponent<AnchoredJoint2D>();
+    }
     
     void FixedUpdate ()
     {
@@ -12,18 +18,18 @@ public class NonExplodable : MonoBehaviour
             firstTime = false;
             try
             {
-                parentEx = GetComponent<AnchoredJoint2D>().connectedBody.GetComponent<Explosion>();
+                parentEx = joint.connectedBody.GetComponent<Explosion>();
             }
             catch (MissingComponentException) { }
             catch (System.NullReferenceException) { }
         }
         try
         {
-            if (parentEx != null && GetComponent<AnchoredJoint2D>().reactionForce.sqrMagnitude > Mathf.Pow(parentEx.forceToExplode * 2, 2))
+            if (parentEx != null && joint.reactionForce.sqrMagnitude > Mathf.Pow(parentEx.forceToExplode * 3, 2))
             {
                 parentEx.Explode();
             }
         }
-        catch (MissingComponentException) { }
+        catch (MissingReferenceException) { }
     }
 }

@@ -18,6 +18,7 @@ public class Explosion : MonoBehaviour
     GameObject ex;
     Explosion parentEx;
     bool firstTime = true;
+    AnchoredJoint2D joint;
 
 
     public void Explode ()
@@ -78,6 +79,7 @@ public class Explosion : MonoBehaviour
         {
             rate = size;
         }
+        joint = GetComponent<AnchoredJoint2D>();
     }
 
 
@@ -97,7 +99,7 @@ public class Explosion : MonoBehaviour
             firstTime = false;
             try
             {
-                parentEx = GetComponent<AnchoredJoint2D>().connectedBody.GetComponent<Explosion>();
+                parentEx = joint.connectedBody.GetComponent<Explosion>();
             }
             catch (MissingComponentException) { }
             catch (System.NullReferenceException) { }
@@ -124,17 +126,17 @@ public class Explosion : MonoBehaviour
         }
         try
         {
-            float reactionForce = GetComponent<AnchoredJoint2D>().reactionForce.sqrMagnitude;
-            if (reactionForce > Mathf.Pow(forceToExplode * 2, 2))
+            float reactionForce = joint.reactionForce.sqrMagnitude;
+            if (reactionForce > Mathf.Pow(forceToExplode * 3, 2))
             {
                 Explode();
             }
-            if (parentEx != null && reactionForce > Mathf.Pow(parentEx.forceToExplode * 2, 2))
+            if (parentEx != null && reactionForce > Mathf.Pow(parentEx.forceToExplode * 3, 2))
             {
                 parentEx.Explode();
             }
         }
-        catch (MissingComponentException) { }
+        catch (MissingReferenceException) { }
     }
 
     void OnCollisionEnter2D (Collision2D col)
