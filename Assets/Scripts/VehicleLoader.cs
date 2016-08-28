@@ -158,8 +158,7 @@ public class VehicleLoader : MonoBehaviour
         float mass = 0;
         Destroy(GameObject.Find("Vehicle"));
         GameObject vehicleGO = new GameObject("Vehicle");
-
-        print(assets.Count);
+        
         foreach (VehicleSR.Part part in v.parts)
         {
             GameObject go;

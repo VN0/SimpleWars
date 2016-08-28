@@ -9,7 +9,8 @@ public class FollowCamera : MonoBehaviour
     //public float followSpeed = 1;
     public Transform target;
     public Vector3 offset;
-    Vector3 dragOrigin;
+    public Vector3 targetOffset;
+    Vector3 lastPos;
     bool dragging = false;
     int button = 1;
 
@@ -37,19 +38,24 @@ public class FollowCamera : MonoBehaviour
 
         if (Input.GetMouseButtonDown(button) && !EventSystem.current.IsPointerOverGameObject())
         {
-            dragOrigin = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+            lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
             dragging = true;
         }
 
         if (dragging)
         {
-            offset = Camera.main.ScreenToWorldPoint(dragOrigin) - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+            targetOffset += Camera.main.ScreenToWorldPoint(lastPos) - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+            offset.x = Mathf.SmoothStep(offset.x, targetOffset.x, 20 * Time.unscaledDeltaTime);
+            offset.y = Mathf.SmoothStep(offset.y, targetOffset.y, 20 * Time.unscaledDeltaTime);
+            lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
         }
 
-        if (Input.GetMouseButtonUp(button))
+        if (!Input.GetMouseButton(button))
         {
             dragging = false;
-            offset = Vector3.zero;
+            offset.x = Mathf.SmoothStep(offset.x, 0, 10 * Time.deltaTime);
+            offset.y = Mathf.SmoothStep(offset.y, 0, 10 * Time.deltaTime);
+            targetOffset = offset;
         }
     }
 }

@@ -97,9 +97,10 @@ public class Explosion : MonoBehaviour
             firstTime = false;
             try
             {
-                parentEx = transform.parent.GetComponent<Explosion>();
+                parentEx = GetComponent<AnchoredJoint2D>().connectedBody.GetComponent<Explosion>();
             }
             catch (MissingComponentException) { }
+            catch (System.NullReferenceException) { }
         }
         if (exploded == true)
         {
@@ -144,27 +145,11 @@ public class Explosion : MonoBehaviour
         {
             return;
         }
-        ////满足自身爆炸条件
-        //if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
-        //{
-        //    Explode();
-        //    return;
-        //}
-        //try
-        //{
-        //    //关节受到的压力
-        //    float reactionForce = GetComponent<AnchoredJoint2D>().reactionForce.sqrMagnitude;
-        //    //自身爆炸条件
-        //    if (reactionForce > Mathf.Pow(forceToExplode * 2, 2))
-        //    {
-        //        Explode();
-        //    }
-        //    //被连接的部件的爆炸条件
-        //    if (parentEx != null && reactionForce > Mathf.Pow(parentEx.forceToExplode * 2, 2))
-        //    {
-        //        parentEx.Explode();
-        //    }
-        //}
-        //catch (MissingComponentException) { }
+        //满足自身爆炸条件
+        if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
+        {
+            Explode();
+            return;
+        }
     }
 }

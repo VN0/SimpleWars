@@ -12,9 +12,10 @@ public class NonExplodable : MonoBehaviour
             firstTime = false;
             try
             {
-                parentEx = transform.parent.GetComponent<Explosion>();
+                parentEx = GetComponent<AnchoredJoint2D>().connectedBody.GetComponent<Explosion>();
             }
             catch (MissingComponentException) { }
+            catch (System.NullReferenceException) { }
         }
         try
         {

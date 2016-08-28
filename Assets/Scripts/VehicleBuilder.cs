@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using Unity.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -27,7 +28,10 @@ public class VehicleBuilder : MonoBehaviour
     bool dragging = false;
     bool firstTime;
     Vector3 lastPos;
+    Vector3 lastGridPos;
     Vector3 rawPos;
+    bool turnLeft;
+    bool turnRight;
 
     void Awake ()
     {
@@ -57,6 +61,7 @@ public class VehicleBuilder : MonoBehaviour
                 btn.transform.FindChild("Image").gameObject.GetComponent<Image>().sprite = prefab.GetComponent<SpriteRenderer>().sprite;
                 btn.GetComponentInChildren<Text>().text = type.name;
 
+                #region BeginDrag
                 EventTrigger trigger = btn.GetComponent<EventTrigger>();
                 EventTrigger.Entry beginEntry = new EventTrigger.Entry();
                 beginEntry.eventID = EventTriggerType.BeginDrag;
@@ -64,7 +69,11 @@ public class VehicleBuilder : MonoBehaviour
                 {
                     lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
                     lastPos = Camera.main.ScreenToWorldPoint(lastPos);
+                    lastGridPos = lastPos;
                     draggingObject = Instantiate(prefab, lastPos, Quaternion.Euler(0, 0, 0)) as GameObject;
+                    Color color = draggingObject.GetComponent<SpriteRenderer>().color;
+                    color.a = 0.5f;
+                    draggingObject.GetComponent<SpriteRenderer>().color = color;
                     rawPos = draggingObject.transform.position;
                     foreach (PartType partType in vehicle.transform.GetComponentsInChildren<PartType>())
                     {
@@ -74,21 +83,45 @@ public class VehicleBuilder : MonoBehaviour
                             LineRenderer lr = (Instantiate(connectionPoint,
                                 partType.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
-                            Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2 * 0.3f, 0, 0), new Vector3(point.length / 2 * 0.3f, 0, 0) };
+                            Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
-                            //Gizmos.DrawCube(Vector3.zero, new Vector3(0.2f, 0.2f, 1).Rotate(point.rotation));
-                            //Gizmos.DrawSphere(type.transform.TransformPoint(point.position), 0.15f);
+                            lr.GetComponent<AttachPoint>().reference = partType.gameObject;
+                        }
+                    }
+                    foreach (PartType partType in SceneManager.GetActiveScene().GetRootGameObjects().DescendantsAndSelf().OfComponent<PartType>())
+                    {
+                        try
+                        {
+                            if (partType.transform.IsChildOf(vehicle.transform))
+                            {
+                                continue;
+                            }
+                        }
+                        catch (System.NullReferenceException) { }
+                        PartInfos.PartInfo info = partInfos.Get(partType.type);
+                        foreach (PartInfos.AttachPoint point in info.attachPoints)
+                        {
+                            LineRenderer lr = (Instantiate(connectionPoint,
+                                partType.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
+                                Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
+                            lr.gameObject.name = "ConnectionDetached";
+                            Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
+                            lr.SetPositions(positions);
+                            lr.GetComponent<AttachPoint>().reference = partType.gameObject;
                         }
                     }
                     dragging = true;
                     firstTime = true;
                 });
                 trigger.triggers.Add(beginEntry);
+                #endregion
 
+                #region Drag
                 EventTrigger.Entry dragEntry = new EventTrigger.Entry();
                 dragEntry.eventID = EventTriggerType.Drag;
                 dragEntry.callback.AddListener(delegate (BaseEventData arg)
                 {
+                    //SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.StartsWith("ConnectionDetached")).Destroy();
                     if (!dragging)
                     {
                         return;
@@ -96,7 +129,6 @@ public class VehicleBuilder : MonoBehaviour
                     Vector3 currentPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
                     currentPos = Camera.main.ScreenToWorldPoint(currentPos);
                     Vector3 movePos = currentPos - lastPos;
-                    print(movePos.normalized.x > movePos.normalized.y);
                     if (firstTime && Mathf.Abs(movePos.x) < Mathf.Abs(movePos.y))
                     {
                         firstTime = false;
@@ -108,20 +140,41 @@ public class VehicleBuilder : MonoBehaviour
                         return;
                     }
                     rawPos += movePos;
-                    draggingObject.transform.position = SmartMath.Basic.RoundVectorToGrid(rawPos, 0.3f);
                     lastPos = currentPos;
                     firstTime = false;
+                    if (turnLeft)
+                    {
+                        turnLeft = false;
+                        draggingObject.transform.Rotate(0, 0, 90);
+                    }
+                    else if (turnRight)
+                    {
+                        turnRight = false;
+                        draggingObject.transform.Rotate(0, 0, -90);
+                    }
+                    draggingObject.transform.position = SmartMath.Basic.RoundVectorToGrid(rawPos, 0.3f);
+                    SceneManager.GetActiveScene().GetRootGameObjects()
+                    .Where(x => x.name.StartsWith("ConnectionDetached"))
+                    .Select(delegate (GameObject lr)
+                    {
+                        lr.transform.position = draggingObject.transform.position - lastGridPos;
+                        return false;
+                    });
+                    lastGridPos = draggingObject.transform.position;
                 });
                 trigger.triggers.Add(dragEntry);
+                #endregion
 
+                #region EndDrag
                 EventTrigger.Entry endEntry = new EventTrigger.Entry();
                 endEntry.eventID = EventTriggerType.EndDrag;
                 endEntry.callback.AddListener(delegate (BaseEventData arg)
                 {
                     dragging = false;
-                    SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.StartsWith("ConnectionPoint"));
+                    SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.StartsWith("Connection")).Destroy();
                 });
                 trigger.triggers.Add(endEntry);
+                #endregion
 
                 btn.transform.SetParent(partPanel, true);
                 i -= 52;
@@ -129,23 +182,23 @@ public class VehicleBuilder : MonoBehaviour
         }
     }
 
-    void OnDraawGizmos ()
+    void Update ()
     {
-        if (!vehicle)
+        if (Input.GetButtonDown("Turn Left"))
         {
-            return;
+            turnLeft = true;
         }
-        foreach (PartType type in vehicle.transform.GetComponentsInChildren<PartType>())
+        if (Input.GetButtonDown("Turn Right"))
         {
-            PartInfos.PartInfo info = partInfos.Get(type.type);
-            foreach (PartInfos.AttachPoint point in info.attachPoints)
-            {
-                Gizmos.DrawCube(type.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
-                    new Vector3(point.rotation + type.transform.rotation.eulerAngles.z == 0 ?
-                    point.length * 0.3f : 0.3f, point.rotation + type.transform.rotation.eulerAngles.z == 0 ? 0.3f : point.length * 0.3f, 1));
-                //Gizmos.DrawCube(Vector3.zero, new Vector3(0.2f, 0.2f, 1).Rotate(point.rotation));
-                //Gizmos.DrawSphere(type.transform.TransformPoint(point.position), 0.15f);
-            }
+            turnLeft = true;
+        }
+        if (Input.GetButtonUp("Turn Left"))
+        {
+            turnLeft = false;
+        }
+        if (Input.GetButtonUp("Turn Right"))
+        {
+            turnLeft = false;
         }
     }
 }
