@@ -22,12 +22,15 @@ public class Engine : PartFunction
     public SpriteRenderer flame;
     public ParticleSystem smoke;
     public AudioSource sound;
+
     float rotation = 0;
     bool active;
     Tank tank;
     FuelControl controller;
     float smokeMax;
+    float dragMax;
     float smokeSpeed;
+    ParticleSystem.ForceOverLifetimeModule drag;
     Rigidbody2D rb;
     Button leftButton;
     Button rightButton;
@@ -35,6 +38,8 @@ public class Engine : PartFunction
     void Awake ()
     {
         smokeMax = smoke.startSpeed;
+        dragMax = smoke.forceOverLifetime.z.constant;
+        drag = smoke.forceOverLifetime;
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -109,6 +114,7 @@ public class Engine : PartFunction
     {
         float allowedForce = controller.currentForce;
         smoke.startSpeed = smokeMax * allowedForce;
+        drag.z = new ParticleSystem.MinMaxCurve(dragMax * allowedForce);
         if (allowedForce > 0.01 && active)
         {
             try

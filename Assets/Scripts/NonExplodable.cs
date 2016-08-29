@@ -31,5 +31,6 @@ public class NonExplodable : MonoBehaviour
             }
         }
         catch (MissingReferenceException) { }
+        catch (System.NullReferenceException) { }
     }
 }

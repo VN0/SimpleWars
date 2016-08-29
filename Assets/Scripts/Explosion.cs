@@ -137,6 +137,7 @@ public class Explosion : MonoBehaviour
             }
         }
         catch (MissingReferenceException) { }
+        catch (System.NullReferenceException) { }
     }
 
     void OnCollisionEnter2D (Collision2D col)

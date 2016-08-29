@@ -46,8 +46,14 @@ public class Zoom : MonoBehaviour
                 distance = Vector2.Distance(touch0, touch1);
                 startDistance = distance;
             }
+            else
+            {
+                touch0 = Camera.main.ScreenToWorldPoint(touch0);
+                touch1 = Camera.main.ScreenToWorldPoint(touch1);
+            }
             zooming = true;
-            float target = distance - startDistance + Camera.main.orthographicSize;
+            float target = (distance - startDistance) + Camera.main.orthographicSize;
+            //print(new Vector2(target, Camera.main.orthographicSize));
             target = Mathf.Clamp(target, minOrtho, maxOrtho);
             Camera.main.orthographicSize = Mathf.MoveTowards(
                 Camera.main.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * Camera.main.orthographicSize / 30);

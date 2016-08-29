@@ -138,7 +138,7 @@ public class SettingsManager : MonoBehaviour
         {
             string[] resolutionArray = txt.Split(new string[] { " × " }, StringSplitOptions.RemoveEmptyEntries);
             print(resolutionArray);
-            Screen.SetResolution(Convert.ToInt32(resolutionArray[0]), Convert.ToInt32(resolutionArray[0]), false);
+            Screen.SetResolution(Convert.ToInt32(resolutionArray[0]), Convert.ToInt32(resolutionArray[1]), false);
         }
         else
         {
