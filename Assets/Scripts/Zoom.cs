@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class Zoom : MonoBehaviour
 {
     public float zoomSpeed = 1;
-    public float targetOrtho;
+    public float target;
     public float smoothSpeed = 2.0f;
     public float minOrtho = 1.0f;
     public float maxOrtho = 20.0f;
@@ -12,18 +12,16 @@ public class Zoom : MonoBehaviour
 
     Camera cam;
     float startDistance;
-    float target;
     bool zooming = true;
 
     void Awake ()
     {
-        cam = Camera.main;
-        target = cam.orthographicSize;
+        cam = GetComponent<Camera>();
     }
 
     void Start ()
     {
-        targetOrtho = cam.orthographicSize;
+        target = cam.orthographicSize;
     }
 
     void Update ()
@@ -33,12 +31,12 @@ public class Zoom : MonoBehaviour
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (scroll != 0.0f && !EventSystem.current.IsPointerOverGameObject())
             {
-                targetOrtho -= scroll * zoomSpeed * cam.orthographicSize / 30;
-                targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
+                target -= scroll * zoomSpeed * cam.orthographicSize / 30;
+                target = Mathf.Clamp(target, minOrtho, maxOrtho);
             }
 
             cam.orthographicSize = Mathf.MoveTowards(
-                cam.orthographicSize, targetOrtho, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 30);
+                cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 30);
         }
 
         if (Input.touchCount >= 2)
