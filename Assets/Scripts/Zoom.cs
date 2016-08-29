@@ -10,12 +10,20 @@ public class Zoom : MonoBehaviour
     public float maxOrtho = 20.0f;
     public float minPinchDistance = 20;
 
+    Camera cam;
     float startDistance;
+    float target;
     bool zooming = true;
+
+    void Awake ()
+    {
+        cam = Camera.main;
+        target = cam.orthographicSize;
+    }
 
     void Start ()
     {
-        targetOrtho = Camera.main.orthographicSize;
+        targetOrtho = cam.orthographicSize;
     }
 
     void Update ()
@@ -25,12 +33,12 @@ public class Zoom : MonoBehaviour
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (scroll != 0.0f && !EventSystem.current.IsPointerOverGameObject())
             {
-                targetOrtho -= scroll * zoomSpeed * Camera.main.orthographicSize / 30;
+                targetOrtho -= scroll * zoomSpeed * cam.orthographicSize / 30;
                 targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
             }
 
-            Camera.main.orthographicSize = Mathf.MoveTowards(
-                Camera.main.orthographicSize, targetOrtho, smoothSpeed * Time.unscaledDeltaTime * Camera.main.orthographicSize / 30);
+            cam.orthographicSize = Mathf.MoveTowards(
+                cam.orthographicSize, targetOrtho, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 30);
         }
 
         if (Input.touchCount >= 2)
@@ -41,27 +49,26 @@ public class Zoom : MonoBehaviour
             touch1 = Input.GetTouch(1).position;
             if (!zooming && Vector2.Distance(touch0, touch1) > minPinchDistance)
             {
-                touch0 = Camera.main.ScreenToWorldPoint(touch0);
-                touch1 = Camera.main.ScreenToWorldPoint(touch1);
+                touch0 = cam.ScreenToWorldPoint(touch0);
+                touch1 = cam.ScreenToWorldPoint(touch1);
                 distance = Vector2.Distance(touch0, touch1);
                 startDistance = distance;
             }
             else
             {
-                touch0 = Camera.main.ScreenToWorldPoint(touch0);
-                touch1 = Camera.main.ScreenToWorldPoint(touch1);
+                touch0 = cam.ScreenToWorldPoint(touch0);
+                touch1 = cam.ScreenToWorldPoint(touch1);
             }
             zooming = true;
-            float target = (distance - startDistance) + Camera.main.orthographicSize;
-            //print(new Vector2(target, Camera.main.orthographicSize));
+            target = (distance - startDistance) + cam.orthographicSize;
             target = Mathf.Clamp(target, minOrtho, maxOrtho);
-            Camera.main.orthographicSize = Mathf.MoveTowards(
-                Camera.main.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * Camera.main.orthographicSize / 30);
         }
         else
         {
             startDistance = 0;
             zooming = false;
         }
+        cam.orthographicSize = Mathf.MoveTowards(
+            cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 30);
     }
 }

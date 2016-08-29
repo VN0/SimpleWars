@@ -76,7 +76,7 @@ public class I18NText : MonoBehaviour
         }
         catch (KeyNotFoundException)
         {
-            if (defaultLang == SystemLanguage.Unknown)
+            if (defaultLang != SystemLanguage.Unknown)
             {
                 txt.text = languageDict[defaultLang];
             }
