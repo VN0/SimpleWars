@@ -11,7 +11,7 @@ public class Zoom : MonoBehaviour
 
     Camera cam;
     float startDistance;
-    bool zooming = true;
+    bool zooming = false;
 
     void Awake ()
     {
@@ -50,7 +50,7 @@ public class Zoom : MonoBehaviour
                 startDistance = distance;
             }
             zooming = true;
-            target = cam.orthographicSize + distance - startDistance;
+            target = cam.orthographicSize + startDistance - distance;
             target = Mathf.Clamp(target, minOrtho, maxOrtho);
         }
         else
