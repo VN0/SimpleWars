@@ -11,6 +11,7 @@ public class FollowCamera : MonoBehaviour
     public Vector3 offset;
     public Vector3 targetOffset;
     Vector3 lastPos;
+    int lastTouchCount = 0;
     bool dragging = false;
     int button = 1;
 
@@ -23,6 +24,12 @@ public class FollowCamera : MonoBehaviour
 
     void Update ()
     {
+        if (Input.touchCount != lastTouchCount)
+        {
+            lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+            lastTouchCount = Input.touchCount;
+            return;
+        }
         if (target)
         {
             transform.position = new Vector3(target.position.x + offset.x, target.position.y + offset.y, -10);

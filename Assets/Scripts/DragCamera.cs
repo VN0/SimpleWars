@@ -6,6 +6,7 @@ public class DragCamera : MonoBehaviour
 	Vector3 dragOrigin;
     bool dragging = false;
     int button = 1;
+    int lastTouchCount;
 
     void Awake ()
     {
@@ -14,6 +15,13 @@ public class DragCamera : MonoBehaviour
 
     void Update ()
     {
+        if (Input.touchCount != lastTouchCount)
+        {
+            dragOrigin = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+            dragOrigin = GetComponent<Camera>().ScreenToWorldPoint(dragOrigin);
+            lastTouchCount = Input.touchCount;
+            return;
+        }
         if (Input.GetMouseButtonDown(button) && !EventSystem.current.IsPointerOverGameObject())
         {
             dragOrigin = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
