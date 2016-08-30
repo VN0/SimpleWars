@@ -8,7 +8,6 @@ public class Zoom : MonoBehaviour
     public float smoothSpeed = 2.0f;
     public float minOrtho = 1.0f;
     public float maxOrtho = 20.0f;
-    public float minPinchDistance = 20;
 
     Camera cam;
     float startDistance;
@@ -43,27 +42,19 @@ public class Zoom : MonoBehaviour
         {
             Vector2 touch0, touch1;
             float distance = 0;
-            touch0 = Input.GetTouch(0).position;
-            touch1 = Input.GetTouch(1).position;
-            if (!zooming && Vector2.Distance(touch0, touch1) > minPinchDistance)
+            touch0 = cam.ScreenToWorldPoint(Input.GetTouch(0).position);
+            touch1 = cam.ScreenToWorldPoint(Input.GetTouch(1).position);
+            if (!zooming)
             {
-                touch0 = cam.ScreenToWorldPoint(touch0);
-                touch1 = cam.ScreenToWorldPoint(touch1);
                 distance = Vector2.Distance(touch0, touch1);
                 startDistance = distance;
             }
-            else
-            {
-                touch0 = cam.ScreenToWorldPoint(touch0);
-                touch1 = cam.ScreenToWorldPoint(touch1);
-            }
             zooming = true;
-            target = (distance - startDistance) + cam.orthographicSize;
+            target = cam.orthographicSize + distance - startDistance;
             target = Mathf.Clamp(target, minOrtho, maxOrtho);
         }
         else
         {
-            startDistance = 0;
             zooming = false;
         }
         cam.orthographicSize = Mathf.MoveTowards(
