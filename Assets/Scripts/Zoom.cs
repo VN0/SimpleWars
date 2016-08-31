@@ -78,6 +78,6 @@ public class Zoom : MonoBehaviour
             target = Mathf.Clamp(target, minOrtho, maxOrtho);
         }
         cam.orthographicSize = Mathf.MoveTowards(
-            cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime);
+            cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 30);
     }
 }
