@@ -24,12 +24,6 @@ public class FollowCamera : MonoBehaviour
 
     void Update ()
     {
-        if (Input.touchCount != lastTouchCount)
-        {
-            lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-            lastTouchCount = Input.touchCount;
-            return;
-        }
         if (target)
         {
             transform.position = new Vector3(target.position.x + offset.x, target.position.y + offset.y, -10);
@@ -49,20 +43,26 @@ public class FollowCamera : MonoBehaviour
             dragging = true;
         }
 
-        if (dragging)
-        {
-            targetOffset += Camera.main.ScreenToWorldPoint(lastPos) - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
-            offset.x = Mathf.SmoothStep(offset.x, targetOffset.x, 20 * Time.unscaledDeltaTime);
-            offset.y = Mathf.SmoothStep(offset.y, targetOffset.y, 20 * Time.unscaledDeltaTime);
-            lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-        }
-
         if (!Input.GetMouseButton(button))
         {
             dragging = false;
             offset.x = Mathf.SmoothStep(offset.x, 0, 10 * Time.deltaTime);
             offset.y = Mathf.SmoothStep(offset.y, 0, 10 * Time.deltaTime);
             targetOffset = offset;
+        }
+
+        if (dragging)
+        {
+            if (Input.touchCount != lastTouchCount)
+            {
+                lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+                lastTouchCount = Input.touchCount;
+                return;
+            }
+            targetOffset += Camera.main.ScreenToWorldPoint(lastPos) - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+            offset.x = Mathf.SmoothStep(offset.x, targetOffset.x, 20 * Time.unscaledDeltaTime);
+            offset.y = Mathf.SmoothStep(offset.y, targetOffset.y, 20 * Time.unscaledDeltaTime);
+            lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
         }
     }
 }
