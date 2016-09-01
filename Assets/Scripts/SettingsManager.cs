@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -86,6 +87,7 @@ public class SettingsManager : MonoBehaviour
     public Button saveButton, cancelButton;
 
     IDictionary<int, string> resolutions;
+    CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
         
 	void Awake ()
     {
@@ -118,6 +120,26 @@ public class SettingsManager : MonoBehaviour
         setFullscreen(settings.fullScreen);
         if(!settings.fullScreen)
             setResolution(resolutions[settings.resolution]);
+
+        if (Screen.height < 550 || (Screen.dpi >= 200 && !Input.mousePresent))
+        {
+            scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            GameObject.FindGameObjectWithTag("Main Canvas").GetComponent<CanvasScaler>().uiScaleMode = scaleMode;
+        }
+        SceneManager.sceneLoaded += delegate
+        {
+            GameObject.FindGameObjectWithTag("Main Canvas").GetComponent<CanvasScaler>().uiScaleMode = scaleMode;
+        };
+        SmartMathExtended.Fraction aspectRatio = new SmartMathExtended.Fraction(Screen.height, Screen.width);
+        Debug.LogFormat("Resolution= {0} x {1} , DPI= {2} , Size= {3} cm x {4} cm , Aspect Ratio= {5} : {6}",
+            Screen.width,
+            Screen.height,
+            Screen.dpi,
+            SmartMath.Converting.Length.InchToCm(Screen.width / Screen.dpi).ToString("0.0"),
+            SmartMath.Converting.Length.InchToCm(Screen.height / Screen.dpi).ToString("0.0"),
+            aspectRatio.Denominator,
+            aspectRatio.Numerator
+        );
     }
 
     IDictionary<int, string> Dropdown2dict (Dropdown dropdown)
@@ -143,6 +165,11 @@ public class SettingsManager : MonoBehaviour
         else
         {
             Screen.SetResolution(Screen.width, Screen.height, true);
+        }
+        if (Screen.height < 550 || (Screen.dpi >= 200 && !Input.mousePresent))
+        {
+            scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            GameObject.FindGameObjectWithTag("Main Canvas").GetComponent<CanvasScaler>().uiScaleMode = scaleMode;
         }
     }
 

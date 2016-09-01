@@ -53,6 +53,7 @@ public class FuelControl : MonoBehaviour
         if (Input.GetButtonDown("Cancel"))
         {
             SceneManager.LoadScene("Builder");
+            Destroy(GameObject.Find("Vehicle"));
         }
         if (pod != null && pod.GetComponent<Rigidbody2D>() != null)
         {
@@ -101,12 +102,6 @@ public class FuelControl : MonoBehaviour
         currentFuel.rectTransform.offsetMax = new Vector2(currentFuel.rectTransform.offsetMax.x, (fuel / totalFuel) * fuelHeight - fuelHeight);
         slider100last = slider100.value;
         slider10last = slider10.value;
-
-        if (Input.GetKeyDown(KeyCode.Return) && SceneManager.GetActiveScene().name != "Builder")
-        {
-            SceneManager.LoadScene("Builder");
-            Destroy(GameObject.Find("Vehicle"));
-        }
     }
 
     public void TurnLeft ()

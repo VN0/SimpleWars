@@ -152,7 +152,7 @@ public class VehicleBuilder : MonoBehaviour
                         turnRight = false;
                         draggingObject.transform.Rotate(0, 0, -90);
                     }
-                    draggingObject.transform.position = SmartMath.Basic.RoundVectorToGrid(rawPos, 0.3f);
+                    draggingObject.transform.position = SmartMathExtended.Math.RoundVectorToGrid(rawPos, 0.3f);
                     SceneManager.GetActiveScene().GetRootGameObjects()
                     .Where(x => x.name.StartsWith("ConnectionDetached"))
                     .Select(delegate (GameObject lr)

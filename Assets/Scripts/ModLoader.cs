@@ -35,16 +35,6 @@ public class ModLoader : MonoBehaviour
             file.Close();
             Application.Quit();
         }
-        Debug.LogFormat("Screen Size: {0} x {1}", Screen.width, Screen.height);
-        if (Screen.height < 550 || (Screen.dpi >= 200 && !Input.mousePresent))
-        {
-            scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            GameObject.FindGameObjectWithTag("Main Canvas").GetComponent<CanvasScaler>().uiScaleMode = scaleMode;
-        }
-        SceneManager.sceneLoaded += delegate
-        {
-            GameObject.FindGameObjectWithTag("Main Canvas").GetComponent<CanvasScaler>().uiScaleMode = scaleMode;
-        };
     }
 
     void Start ()
