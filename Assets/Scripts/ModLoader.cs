@@ -41,6 +41,11 @@ public class ModLoader : MonoBehaviour
             scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
         }
+        if (Screen.height > 1080)
+        {
+            scaleMode = CanvasScaler.ScaleMode.ConstantPhysicalSize;
+            FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
+        }
         SceneManager.sceneLoaded += delegate
         {
             FindObjectOfType<CanvasScaler>().uiScaleMode = scaleMode;
@@ -92,14 +97,6 @@ public class ModLoader : MonoBehaviour
                 }
             }
             loaded = true;
-        }
-    }
-
-    void Update ()
-    {
-        if (Input.GetButtonDown("Cancel"))
-        {
-            Application.Quit();
         }
     }
 

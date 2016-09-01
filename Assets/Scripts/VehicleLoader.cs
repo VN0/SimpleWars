@@ -101,6 +101,10 @@ public class VehicleLoader : MonoBehaviour
 
     void Update ()
     {
+        if (Input.GetButtonDown("Cancel"))
+        {
+            SceneManager.LoadScene("Menu");
+        }
         if (vehicle && (alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start))
         {
             start = false;
