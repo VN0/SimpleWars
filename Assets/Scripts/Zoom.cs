@@ -11,7 +11,6 @@ public class Zoom : MonoBehaviour
 
     Camera cam;
     float startDistance;
-    bool firstTouch = true;
 
     void Awake ()
     {
@@ -37,26 +36,6 @@ public class Zoom : MonoBehaviour
             cam.orthographicSize = Mathf.MoveTowards(
                 cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 30);
         }
-
-        //if (Input.touchCount == 2)
-        //{
-        //    Vector2 touch0, touch1;
-        //    float distance = 0;
-        //    touch0 = cam.ScreenToWorldPoint(Input.GetTouch(0).position);
-        //    touch1 = cam.ScreenToWorldPoint(Input.GetTouch(1).position);
-        //    if (firstTouch)
-        //    {
-        //        distance = Vector2.Distance(touch0, touch1);
-        //        startDistance = distance;
-        //    }
-        //    firstTouch = false;
-        //    target = cam.orthographicSize + startDistance - distance;
-        //    target = Mathf.Clamp(target, minOrtho, maxOrtho);
-        //}
-        //else
-        //{
-        //    firstTouch = true;
-        //}
         if (Input.touchCount == 2)
         {
             Touch touch0 = Input.GetTouch(0);
@@ -78,6 +57,6 @@ public class Zoom : MonoBehaviour
             target = Mathf.Clamp(target, minOrtho, maxOrtho);
         }
         cam.orthographicSize = Mathf.MoveTowards(
-            cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 15);
+            cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize);
     }
 }
