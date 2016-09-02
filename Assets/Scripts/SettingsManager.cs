@@ -130,7 +130,7 @@ public class SettingsManager : MonoBehaviour
         {
             GameObject.FindGameObjectWithTag("Main Canvas").GetComponent<CanvasScaler>().uiScaleMode = scaleMode;
         };
-        SmartMathExtended.Fraction aspectRatio = new SmartMathExtended.Fraction(Screen.height, Screen.width);
+        SmartMath.Fraction aspectRatio = new SmartMath.Fraction(Screen.height, Screen.width);
         Debug.LogFormat("Resolution= {0} x {1} , DPI= {2} , Size= {3} cm x {4} cm , Aspect Ratio= {5} : {6}",
             Screen.width,
             Screen.height,

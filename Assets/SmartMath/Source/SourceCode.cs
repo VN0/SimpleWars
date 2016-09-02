@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace SmartMathExtended
+namespace SmartMath
 {
     public class Math
     {

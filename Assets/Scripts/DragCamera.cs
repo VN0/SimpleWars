@@ -17,8 +17,22 @@ public class DragCamera : MonoBehaviour
 
     void Update ()
     {
-        if (Input.GetMouseButtonDown(button) && !EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(button))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            if (Input.touchCount > 0)
+            {
+                foreach (Touch t in Input.touches)
+                {
+                    if (EventSystem.current.IsPointerOverGameObject(t.fingerId))
+                    {
+                        return;
+                    }
+                }
+            }
             dragOrigin = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
             dragOrigin = cam.ScreenToWorldPoint(dragOrigin);
             dragging = true;
