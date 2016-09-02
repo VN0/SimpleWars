@@ -47,19 +47,12 @@ public class Zoom : MonoBehaviour
             Vector3 touch0_prevPos = touch0.position - touch0.deltaPosition;
             Vector3 touch1_prevPos = touch1.position - touch1.deltaPosition;
 
-            float prev_TouchDeltaMag = (cam.ScreenToWorldPoint(touch0_prevPos) - cam.ScreenToWorldPoint(touch1_prevPos)).magnitude;
-            float current_TouchDeltaMag = (cam.ScreenToWorldPoint(touch0_pos) - cam.ScreenToWorldPoint(touch1_pos)).magnitude;
-
-            float deltaMagDiff = prev_TouchDeltaMag - current_TouchDeltaMag;
-
             float currentDistance = Vector3.Distance(cam.ScreenToWorldPoint(touch0_pos), cam.ScreenToWorldPoint(touch1_pos));
             float lastDistance = Vector3.Distance(cam.ScreenToWorldPoint(touch0_prevPos), cam.ScreenToWorldPoint(touch1_prevPos));
 
-            float diff = lastDistance - currentDistance;
+            float delta = lastDistance - currentDistance;
 
-            Debug.LogFormat("{0} {1}", deltaMagDiff, diff);
-
-            target += deltaMagDiff;
+            target += delta;
             
             target = Mathf.Clamp(target, minOrtho, maxOrtho);
         }
