@@ -42,6 +42,22 @@ public class Setup : MonoBehaviour
         }
     }
 
+    void Update ()
+    {
+        if (Input.GetButtonUp("Cancel"))
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                AndroidJavaObject activity = new AndroidJavaClass("com.unity3d.player.UnityPlayer").GetStatic<AndroidJavaObject>("currentActivity");
+                activity.Call<bool>("moveTaskToBack", true);
+            }
+            else
+            {
+                Application.Quit();
+            }
+        }
+    }
+
     static string sha256 (string str = null, Stream stream = null)
     {
         SHA256Managed crypt = new SHA256Managed();

@@ -50,7 +50,7 @@ public class FuelControl : MonoBehaviour
 
     void Update ()
     {
-        if (Input.GetButtonDown("Cancel"))
+        if (Input.GetButtonUp("Cancel"))
         {
             SceneManager.LoadScene("Builder");
             Destroy(GameObject.Find("Vehicle"));

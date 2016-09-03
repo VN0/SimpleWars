@@ -21,9 +21,8 @@ public class Settings
     public bool fullScreen = true;
     [XmlElement("Language")]
     public SystemLanguage lang = SystemLanguage.English;
-    /*[XmlArray("Controls")]
-    [XmlArrayItem("Key")]
-    public IDictionary<string, KeyCode> controls = new Dictionary<string, KeyCode>();*/
+    [XmlElement("Keys")]
+    public SerializableDictionary keys;
 
     public static Settings Load (string dirName, string fileName = "settings.xml")
     {
@@ -55,6 +54,7 @@ public class Settings
         {
             File.Delete(Path.Combine(dirName, fileName));
             _s = new Settings();
+            _s.fullScreen = Screen.fullScreen;
         }
         return _s;
     }
@@ -119,7 +119,13 @@ public class SettingsManager : MonoBehaviour
         resolutionDropdown.value = settings.resolution;
         setFullscreen(settings.fullScreen);
         if(!settings.fullScreen)
+        {
             setResolution(resolutions[settings.resolution]);
+        }
+        else
+        {
+            resolutionDropdown.interactable = false;
+        }
 
         if (Screen.height < 550 || (Screen.dpi >= 200 && !Input.mousePresent))
         {
