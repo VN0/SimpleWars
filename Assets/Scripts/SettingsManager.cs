@@ -55,6 +55,7 @@ public class Settings
             File.Delete(Path.Combine(dirName, fileName));
             _s = new Settings();
             _s.fullScreen = Screen.fullScreen;
+            _s.quality = QualitySettings.GetQualityLevel();
         }
         return _s;
     }
@@ -84,6 +85,7 @@ public class SettingsManager : MonoBehaviour
 
     public Toggle fullScreenToggle;
     public Dropdown resolutionDropdown;
+    public Dropdown qualityDropdown;
     public Button saveButton, cancelButton;
 
     IDictionary<int, string> resolutions;
@@ -113,14 +115,26 @@ public class SettingsManager : MonoBehaviour
             setResolution(resolutions[settings.resolution]);
             print(settings);
         });
+        qualityDropdown.onValueChanged.AddListener(delegate
+        {
+            settings.quality = qualityDropdown.value;
+            QualitySettings.SetQualityLevel(settings.quality);
+            print(settings);
+        });
 
         resolutions = Dropdown2dict(resolutionDropdown);
         fullScreenToggle.isOn = settings.fullScreen;
         resolutionDropdown.value = settings.resolution;
+        qualityDropdown.value = settings.quality;
+        
+        resolutionDropdown.RefreshShownValue();
+        qualityDropdown.RefreshShownValue();
+        QualitySettings.SetQualityLevel(settings.quality);
         setFullscreen(settings.fullScreen);
+
         if(!settings.fullScreen)
         {
-            setResolution(resolutions[settings.resolution]);
+            //setResolution(resolutions[settings.resolution]);
         }
         else
         {

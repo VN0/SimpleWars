@@ -18,12 +18,22 @@ public class FuelControl : MonoBehaviour
     [HideInInspector]
     public bool turnRight;
 
+    Animator mask;
     float totalFuel = 0;
     float fuel = 0;
     Tank[] tanks;
     float slider100last = 0;
     float slider10last = 0;
     Transform pod;
+
+    void Awake ()
+    {
+        mask = GameObject.Find("SceneTransitionMask").GetComponent<Animator>();
+        StartCoroutine(VehicleLoader.Wait(0.1f, delegate
+        {
+            mask.SetBool("open", true);
+        }));
+    }
 
     void Start ()
     {
@@ -52,8 +62,12 @@ public class FuelControl : MonoBehaviour
     {
         if (Input.GetButtonUp("Cancel"))
         {
-            SceneManager.LoadScene("Builder");
-            Destroy(GameObject.Find("Vehicle"));
+            mask.SetBool("open", false);
+            StartCoroutine(SceneLoader.LoadSceneAnim(mask, delegate
+            {
+                SceneManager.LoadScene("Builder");
+                Destroy(GameObject.Find("Vehicle"));
+            }));
         }
         if (pod != null && pod.GetComponent<Rigidbody2D>() != null)
         {

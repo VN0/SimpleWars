@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,10 +9,10 @@ using UnityEngine.UI;
 public class VehicleLoader : MonoBehaviour
 {
     public GameObject content;
-    public GameObject mask;
     public ModLoader modLoader;
     public Button startButton;
     public Text massText;
+    Animator mask;
     VehicleBuilder builder;
     DirectoryInfo dirinfo;
     FileInfo[] files;
@@ -29,6 +30,7 @@ public class VehicleLoader : MonoBehaviour
         {
             Destroy(this);
         }
+        mask = GameObject.Find("SceneTransitionMask").GetComponent<Animator>();
         modLoader = FindObjectOfType<ModLoader>();
         builder = FindObjectOfType<VehicleBuilder>();
         assets = modLoader.assets;
@@ -96,6 +98,16 @@ public class VehicleLoader : MonoBehaviour
             btn.transform.SetParent(content.transform, true);
             i -= 52;
         }
+        StartCoroutine(Wait(0.1f, delegate
+        {
+            mask.SetBool("open", true);
+        }));
+    }
+
+    public static IEnumerator Wait (float seconds, System.Action func)
+    {
+        yield return new WaitForSecondsRealtime(seconds);
+        func();
     }
 
 
@@ -103,33 +115,34 @@ public class VehicleLoader : MonoBehaviour
     {
         if (Input.GetButtonUp("Cancel"))
         {
-            Time.timeScale = 1;
-            SceneManager.LoadScene("Menu");
-        }
-        if (vehicle && (alpha > 0 && alpha < 1 || Input.GetKeyDown(KeyCode.Return) || start))
-        {
-            start = false;
-            alpha += Time.unscaledDeltaTime * 2;
-            mask.SetActive(true);
-            mask.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
-        }
-        else if (alpha >= 1)
-        {
-            DontDestroyOnLoad(vehicle);
-
-            Collider2D[] cols = FindObjectsOfType(typeof(Collider2D)) as Collider2D[];
-            float[] bounds = new float[cols.Length];
-            int i = 0;
-            foreach (Collider2D col in cols)
+            mask.SetBool("open", false);
+            StartCoroutine(SceneLoader.LoadSceneAnim(mask, delegate
             {
-                bounds[i] = (col.bounds.min.y);
-                i++;
-            }
-            float min = Mathf.Min(bounds);
-            vehicle.transform.position = new Vector3(0, -min + 0.5f, 0);
+                Time.timeScale = 1;
+                SceneManager.LoadScene("Menu");
+            }));
+        }
+        if (vehicle && (Input.GetKeyDown(KeyCode.Return) || start))
+        {
+            mask.SetBool("open", false);
+            StartCoroutine(SceneLoader.LoadSceneAnim(mask, delegate
+            {
+                DontDestroyOnLoad(vehicle);
 
-            SceneManager.LoadScene("Earth");
-            Time.timeScale = 1f;
+                Collider2D[] cols = FindObjectsOfType(typeof(Collider2D)) as Collider2D[];
+                float[] bounds = new float[cols.Length];
+                int i = 0;
+                foreach (Collider2D col in cols)
+                {
+                    bounds[i] = (col.bounds.min.y);
+                    i++;
+                }
+                float min = Mathf.Min(bounds);
+                vehicle.transform.position = new Vector3(0, -min + 0.5f, 0);
+
+                SceneManager.LoadScene("Earth");
+                Time.timeScale = 1f;
+            }));
         }
     }
 
@@ -163,7 +176,7 @@ public class VehicleLoader : MonoBehaviour
         float mass = 0;
         Destroy(GameObject.Find("Vehicle"));
         GameObject vehicleGO = new GameObject("Vehicle");
-        
+
         foreach (VehicleSR.Part part in v.parts)
         {
             GameObject go;
