@@ -128,6 +128,7 @@ public class VehicleLoader : MonoBehaviour
             StartCoroutine(SceneLoader.LoadSceneAnim(mask, delegate
             {
                 DontDestroyOnLoad(vehicle);
+                SceneManager.LoadScene("Earth");
 
                 Collider2D[] cols = FindObjectsOfType(typeof(Collider2D)) as Collider2D[];
                 float[] bounds = new float[cols.Length];
@@ -140,7 +141,6 @@ public class VehicleLoader : MonoBehaviour
                 float min = Mathf.Min(bounds);
                 vehicle.transform.position = new Vector3(0, -min + 0.5f, 0);
 
-                SceneManager.LoadScene("Earth");
                 Time.timeScale = 1f;
             }));
         }
