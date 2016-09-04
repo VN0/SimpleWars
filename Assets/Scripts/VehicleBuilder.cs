@@ -71,6 +71,7 @@ public class VehicleBuilder : MonoBehaviour
                     lastPos = Camera.main.ScreenToWorldPoint(lastPos);
                     lastGridPos = lastPos;
                     draggingObject = Instantiate(prefab, lastPos, Quaternion.Euler(0, 0, 0)) as GameObject;
+                    //draggingObject.GetComponent<Rigidbody2D>().simulated = false;
                     Color color = draggingObject.GetComponent<SpriteRenderer>().color;
                     color.a = 0.5f;
                     draggingObject.GetComponent<SpriteRenderer>().color = color;
@@ -86,9 +87,10 @@ public class VehicleBuilder : MonoBehaviour
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
                             lr.GetComponent<AttachPoint>().reference = partType.gameObject;
+                            lr.GetComponent<BoxCollider2D>().size = new Vector2(0.3f * point.length, 0.3f);
                         }
                     }
-                    foreach (PartType partType in SceneManager.GetActiveScene().GetRootGameObjects().DescendantsAndSelf().OfComponent<PartType>())
+                    foreach (PartType partType in draggingObject.DescendantsAndSelf().OfComponent<PartType>())
                     {
                         try
                         {
@@ -108,6 +110,9 @@ public class VehicleBuilder : MonoBehaviour
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
                             lr.GetComponent<AttachPoint>().reference = partType.gameObject;
+                            BoxCollider2D col = lr.GetComponent<BoxCollider2D>();
+                            col.size = new Vector2(0.3f * point.length, 0.3f);
+                            col.isTrigger = true;
                         }
                     }
                     dragging = true;
@@ -153,13 +158,10 @@ public class VehicleBuilder : MonoBehaviour
                         draggingObject.transform.Rotate(0, 0, -90);
                     }
                     draggingObject.transform.position = SmartMath.Math.RoundVectorToGrid(rawPos, 0.3f);
-                    SceneManager.GetActiveScene().GetRootGameObjects()
-                    .Where(x => x.name.StartsWith("ConnectionDetached"))
-                    .Select(delegate (GameObject lr)
+                    foreach (GameObject lr in SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.StartsWith("ConnectionDetached")))
                     {
-                        lr.transform.position = draggingObject.transform.position - lastGridPos;
-                        return false;
-                    });
+                        lr.transform.position += draggingObject.transform.position - lastGridPos;
+                    }
                     lastGridPos = draggingObject.transform.position;
                 });
                 trigger.triggers.Add(dragEntry);

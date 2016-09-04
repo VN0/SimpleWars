@@ -7,22 +7,25 @@ public class AttachPoint : MonoBehaviour
 
     public GameObject reference { get; set; }
 
-    Collider2D collider2d;
+    Collider2D col;
     LineRenderer lr;
 
     void Awake ()
     {
-        collider2d = GetComponent<Collider2D>();
+        col = GetComponent<BoxCollider2D>();
         lr = GetComponent<LineRenderer>();
     }
 
-    void FixedUpdate ()
+    void Update ()
     {
-        
+        if(col.IsTouchingLayers(10))
+        {
+            print("0");
+        }
     }
-
-    void OnCollisionStay2D (Collision2D col)
+    
+    void OnTriggerEnter2D (Collider2D other)
     {
-        print(col);
+        print(other);
     }
 }
