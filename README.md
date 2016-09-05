@@ -7,6 +7,7 @@
 <!--Web Player is no longer supported
 ![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player?b)
 -->
+####[UserVoice](https://simplewars.uservoice.com/)
 __________
 <br>
 SimpleWars
