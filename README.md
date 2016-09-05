@@ -30,10 +30,14 @@ __________
 + 加入联机系统
 + 修复bug并编译移动版 (√)
 + 加入商店系统
-+ ...
++ 加入激活组/按键激活
++ 改进性能
++ 发布iOS版本
 
+<![CDATA[
 | Action            | Key | Alter Key  |
 |-------------------|-----|------------|
 | Increase Thottle  | W   | Arrow Up   |
 | Decrease Thottole | S   | Arrow Down |
 |                   |     |            |
+]]>
