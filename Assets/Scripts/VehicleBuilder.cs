@@ -71,7 +71,7 @@ public class VehicleBuilder : MonoBehaviour
                     lastPos = Camera.main.ScreenToWorldPoint(lastPos);
                     lastGridPos = lastPos;
                     draggingObject = Instantiate(prefab, lastPos, Quaternion.Euler(0, 0, 0)) as GameObject;
-                    //draggingObject.GetComponent<Rigidbody2D>().simulated = false;
+                    draggingObject.GetComponent<Rigidbody2D>().simulated = false;
                     Color color = draggingObject.GetComponent<SpriteRenderer>().color;
                     color.a = 0.5f;
                     draggingObject.GetComponent<SpriteRenderer>().color = color;
@@ -86,7 +86,7 @@ public class VehicleBuilder : MonoBehaviour
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
-                            lr.GetComponent<AttachPoint>().reference = partType.gameObject;
+                            lr.GetComponent<AttachPoint>().Reference = partType.gameObject;
                             lr.GetComponent<BoxCollider2D>().size = new Vector2(0.3f * point.length, 0.3f);
                         }
                     }
@@ -107,9 +107,10 @@ public class VehicleBuilder : MonoBehaviour
                                 partType.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
                             lr.gameObject.name = "ConnectionDetached";
+                            lr.gameObject.layer = 11;
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
-                            lr.GetComponent<AttachPoint>().reference = partType.gameObject;
+                            lr.GetComponent<AttachPoint>().Reference = partType.gameObject;
                             BoxCollider2D col = lr.GetComponent<BoxCollider2D>();
                             col.size = new Vector2(0.3f * point.length, 0.3f);
                             col.isTrigger = true;

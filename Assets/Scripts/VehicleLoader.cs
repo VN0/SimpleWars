@@ -113,6 +113,15 @@ public class VehicleLoader : MonoBehaviour
     }
 
 
+    public static IEnumerator WaitAnim (Animator anim, System.Action func)
+    {
+        yield return new WaitWhile(delegate
+        {
+            return anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1;
+        });
+        func();
+    }
+
     void Update ()
     {
         if (Input.GetButtonUp("Cancel"))
@@ -127,10 +136,11 @@ public class VehicleLoader : MonoBehaviour
         if (vehicle && (Input.GetKeyDown(KeyCode.Return) || start))
         {
             mask.SetBool("open", false);
-            StartCoroutine(SceneLoader.LoadSceneAnim(mask, delegate
+            AsyncOperation result = SceneManager.LoadSceneAsync("Earth");
+            result.allowSceneActivation = false;
+            StartCoroutine(WaitAnim(mask, delegate
             {
                 DontDestroyOnLoad(vehicle);
-                SceneManager.LoadScene("Earth");
 
                 Collider2D[] cols = FindObjectsOfType(typeof(Collider2D)) as Collider2D[];
                 float[] bounds = new float[cols.Length];
@@ -141,7 +151,12 @@ public class VehicleLoader : MonoBehaviour
                     i++;
                 }
                 float min = Mathf.Min(bounds);
-                vehicle.transform.position = new Vector3(0, -min + 0.5f, 0);
+                vehicle.transform.position = new Vector3(0, -min, 0);
+                result.allowSceneActivation = true;
+                foreach (Rigidbody2D rb in vehicle.GetComponentsInChildren<Rigidbody2D>())
+                {
+                    rb.simulated = true;
+                }
 
                 Time.timeScale = 1f;
             }));
@@ -203,6 +218,7 @@ public class VehicleLoader : MonoBehaviour
                 mass += go.GetComponent<Rigidbody2D>().mass;
             }
             catch { }
+            go.GetComponent<Rigidbody2D>().simulated = false;
             go.name = part.id.ToString();
             go.transform.SetParent(vehicleGO.transform);
             go.transform.localScale = new Vector3(
@@ -296,6 +312,7 @@ public class VehicleLoader : MonoBehaviour
                 mass += go.GetComponent<Rigidbody2D>().mass;
             }
             catch { }
+            go.GetComponent<Rigidbody2D>().simulated = false;
             go.name = part.id.ToString();
             go.transform.SetParent(vehicleGO.transform);
             go.transform.localScale = new Vector3(

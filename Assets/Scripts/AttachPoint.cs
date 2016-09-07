@@ -5,27 +5,39 @@ public class AttachPoint : MonoBehaviour
     public Material normal;
     public Material highlighted;
 
-    public GameObject reference { get; set; }
+    public GameObject Reference { get; set; }
 
     Collider2D col;
     LineRenderer lr;
+    bool placed = false;
+    GameObject target;
+    
+    public void Place ()
+    {
+        placed = true;
+    }
 
     void Awake ()
     {
+        Time.timeScale = 0;
         col = GetComponent<BoxCollider2D>();
         lr = GetComponent<LineRenderer>();
     }
-
-    void Update ()
+    
+    void OnTriggerStay2D (Collider2D other)
     {
-        if(col.IsTouchingLayers(10))
+        if (!col.bounds.Intersects(other.bounds))
         {
-            print("0");
+            lr.material = highlighted;
+        }
+        else
+        {
+            lr.material = normal;
         }
     }
-    
-    void OnTriggerEnter2D (Collider2D other)
+
+    void OnTriggerExit2D (Collider2D other)
     {
-        print(other);
+        lr.material = normal;
     }
 }
