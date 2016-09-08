@@ -135,6 +135,7 @@ public class VehicleLoader : MonoBehaviour
         }
         if (vehicle && (Input.GetKeyDown(KeyCode.Return) || start))
         {
+            start = false;
             mask.SetBool("open", false);
             AsyncOperation result = SceneManager.LoadSceneAsync("Earth");
             result.allowSceneActivation = false;
