@@ -3,6 +3,11 @@ using System.IO;
 using System.Collections;
 using System.Security.Cryptography;
 using System.Text;
+#if UNITY_STANDALONE_WIN_
+using Microsoft.Win32;
+using System.Linq;
+using System.Diagnostics;
+#endif
 
 public class Setup : MonoBehaviour
 {
@@ -19,6 +24,36 @@ public class Setup : MonoBehaviour
         {
             mask.SetBool("open", true);
         }));
+
+#if UNITY_STANDALONE_WIN && UNITY_EDITOR_
+
+        print(Directory.GetParent(Application.dataPath).FullName);
+        string exe = Path.Combine(Directory.GetParent(Application.dataPath).FullName,
+            (from file in Directory.GetFiles(Directory.GetParent(Application.dataPath).FullName)
+             where file.EndsWith(".exe")
+             select file
+        ).ToArray()[0]);
+        print(exe);
+        var p = RegistryKeyPermissionCheck.ReadWriteSubTree;
+        RegistryKey swProtocol = Registry.ClassesRoot.CreateSubKey("simplewars", p);
+        RegistryKey swExtension = Registry.ClassesRoot.CreateSubKey("SimpleWars.Mod", p);
+        if (swExtension.CreateSubKey("shell", p).CreateSubKey("open", p).CreateSubKey("command", p)
+            .GetValue("") as string != string.Format("\"{0}\" \"%1\"", exe))
+        {
+            print("Setup Registry");
+            swProtocol.SetValue("", "URL:SimpleWars Protocol");
+            swProtocol.SetValue("URL Protocol", "");
+            swProtocol.CreateSubKey("DefaultIcon", p).SetValue("", exe);
+            swProtocol.CreateSubKey("shell", p).CreateSubKey("open", p).CreateSubKey("command", p)
+                .SetValue("", string.Format("\"{0}\" \"%1\"", exe));
+            Registry.ClassesRoot.CreateSubKey(".swmod", p).SetValue("", "SimpleWars.Mod");
+            swExtension.SetValue("", "SimpleWars Mod");
+            swExtension.CreateSubKey("DefaultIcon", p).SetValue("", string.Format("\"{0}\" , 1", exe));
+            swExtension.CreateSubKey("shell", p).CreateSubKey("open", p).CreateSubKey("command", p)
+                .SetValue("", string.Format("\"{0}\" \"%1\"", exe));
+        }
+#endif
+
         emptyVehiclePath = Path.Combine(Application.persistentDataPath, "EmptyVehicle.xml");
         if (File.Exists(emptyVehiclePath))
         {
