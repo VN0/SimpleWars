@@ -133,7 +133,7 @@ public class PhotonView : Photon.MonoBehaviour
     public OwnershipOption ownershipTransfer = OwnershipOption.Fixed;
 
     public List<Component> ObservedComponents;
-    Dictionary<Component, MethodInfo> m_OnSerializeMethodInfos = new Dictionary<Component, MethodInfo>();
+    Dictionary<Component, MethodInfo> m_OnSerializeMethodInfos = new Dictionary<Component, MethodInfo>(3);
 
 #if UNITY_EDITOR
     // Suppressing compiler warning "this variable is never used". Only used in the CustomEditor, only in Editor
@@ -503,7 +503,12 @@ public class PhotonView : Photon.MonoBehaviour
 
     protected internal void ExecuteComponentOnSerialize(Component component, PhotonStream stream, PhotonMessageInfo info)
     {
-        if (component != null)
+        IPunObservable observable = component as IPunObservable;
+        if (observable != null)
+        {
+            observable.OnPhotonSerializeView(stream, info);
+        }
+        else if (component != null)
         {
             MethodInfo method = null;
             bool found = this.m_OnSerializeMethodInfos.TryGetValue(component, out method);

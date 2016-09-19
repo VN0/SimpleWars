@@ -482,7 +482,7 @@ public enum CloudRegionCode
     sa = 7,
     ///<summary>Canada East, Montreal, cae</summary>
     cae = 8,
-    
+
     /// <summary>No region selected.</summary>
     none = 4
 };
@@ -519,6 +519,34 @@ public enum ConnectionState
 }
 
 
+/// <summary>
+/// Defines how the communication gets encrypted.
+/// </summary>
+public enum EncryptionMode
+{
+    /// <summary>
+    /// This is the default encryption mode: Messages get encrypted only on demand (when you send operations with the "encrypt" parameter set to true).
+    /// </summary>
+    PayloadEncryption,
+    /// <summary>
+    /// With this encryption mode for UDP, the connection gets setup and all further datagrams get encrypted almost entirely. On-demand message encryption (like in PayloadEncryption) is skipped.
+    /// </summary>
+    DatagramEncryption = 10,
+}
 
-// Photon properties, internally set by PhotonNetwork (PhotonNetwork builtin properties)
 
+public static class EncryptionDataParameters
+{
+    /// <summary>
+    /// Key for encryption mode
+    /// </summary>
+    public const byte Mode = 0;
+    /// <summary>
+    /// Key for first secret
+    /// </summary>
+    public const byte Secret1 = 1;
+    /// <summary>
+    /// Key for second secret
+    /// </summary>
+    public const byte Secret2 = 2;
+}

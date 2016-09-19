@@ -261,8 +261,8 @@ public class PhotonPingManager
                 IPAddress ipAddress = address[index];
                 if (ipAddress != null)
                 {
-                    // checking ddressFamily.ToString() means we don't have to import System.Net.Sockets, which is not available on some platforms (Metro)
-                    if (ipAddress.AddressFamily.ToString().Contains("6"))
+                    // checking ipAddress.ToString() means we don't have to import System.Net.Sockets, which is not available on some platforms (Metro)
+                    if (ipAddress.ToString().Contains(":"))
                     {
                         return ipAddress.ToString();
                     }

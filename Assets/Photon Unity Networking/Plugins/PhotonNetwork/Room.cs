@@ -312,8 +312,10 @@ public class Room : RoomInfo
     public void ClearExpectedUsers()
     {
         Hashtable props = new Hashtable();
-        props[GamePropertyKey.ExpectedUsers] = null;
-        PhotonNetwork.networkingPeer.OpSetPropertiesOfRoom(props, expectedProperties: null, webForward: false);
+        props[GamePropertyKey.ExpectedUsers] = new string[0];
+        Hashtable expected = new Hashtable();
+        expected[GamePropertyKey.ExpectedUsers] = this.expectedUsers;
+        PhotonNetwork.networkingPeer.OpSetPropertiesOfRoom(props, expected, webForward: false);
     }
 
 

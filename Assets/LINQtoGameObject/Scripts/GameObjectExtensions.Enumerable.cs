@@ -33,11 +33,11 @@ namespace Unity.Linq
         }
 
         /// <summary>Returns a collection of GameObjects that contains the descendant GameObjects of every GameObject in the source collection.</summary>
-        public static IEnumerable<GameObject> Descendants(this IEnumerable<GameObject> source)
+        public static IEnumerable<GameObject> Descendants(this IEnumerable<GameObject> source, Func<Transform, bool> descendIntoChildren = null)
         {
             foreach (var item in source)
             {
-                var e = item.Descendants().GetEnumerator();
+                var e = item.Descendants(descendIntoChildren).GetEnumerator();
                 while (e.MoveNext())
                 {
                     yield return e.Current;
@@ -46,11 +46,11 @@ namespace Unity.Linq
         }
 
         /// <summary>Returns a collection of GameObjects that contains every GameObject in the source collection, and the descendent GameObjects of every GameObject in the source collection.</summary>
-        public static IEnumerable<GameObject> DescendantsAndSelf(this IEnumerable<GameObject> source)
+        public static IEnumerable<GameObject> DescendantsAndSelf(this IEnumerable<GameObject> source, Func<Transform, bool> descendIntoChildren = null)
         {
             foreach (var item in source)
             {
-                var e = item.DescendantsAndSelf().GetEnumerator();
+                var e = item.DescendantsAndSelf(descendIntoChildren).GetEnumerator();
                 while (e.MoveNext())
                 {
                     yield return e.Current;
@@ -86,11 +86,24 @@ namespace Unity.Linq
 
         /// <summary>Destroy every GameObject in the source collection safety(check null).</summary>
         /// <param name="useDestroyImmediate">If in EditMode, should be true or pass !Application.isPlaying.</param>
-        public static void Destroy(this IEnumerable<GameObject> source, bool useDestroyImmediate = false)
+        /// <param name="detachParent">set to parent = null.</param>
+        public static void Destroy(this IEnumerable<GameObject> source, bool useDestroyImmediate = false, bool detachParent = false)
         {
-            foreach (var item in source)
+            if (detachParent)
             {
-                item.Destroy(useDestroyImmediate, false); // doesn't detach.
+                var l = new List<GameObject>(source); // avoid halloween problem
+                var e = l.GetEnumerator(); // get struct enumerator for avoid unity's compiler bug(avoid boxing)
+                while (e.MoveNext())
+                {
+                    e.Current.Destroy(useDestroyImmediate, true);
+                }
+            }
+            else
+            {
+                foreach (var item in source)
+                {
+                    item.Destroy(useDestroyImmediate, false); // doesn't detach.
+                }
             }
         }
 

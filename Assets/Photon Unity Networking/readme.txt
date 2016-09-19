@@ -12,7 +12,7 @@ PUN & PUN+
 
 Android and iOS Exports
 	See "PUN & PUN+"
-    iOS:    Set the stripping level to "Strip Bytecode" and use "DotNet 2.0 Subset" in the player settings. 
+    iOS:    Set the stripping level to "Strip Bytecode" and use ".Net 2.0" in the player settings. 
             More aggressive stripping will break the runtime and you can't connect anymore with PUN Free.
 
 

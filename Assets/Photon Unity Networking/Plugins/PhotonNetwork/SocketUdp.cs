@@ -160,9 +160,9 @@ namespace ExitGames.Client.Photon
                     this.sock = new Socket(ipAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
                     this.sock.Connect(ipAddress, this.ServerPort);
 
+                    this.AddressResolvedAsIpv6 = (ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6);
                     this.State = PhotonSocketState.Connected;
-
-                    this.peerBase.SetInitIPV6Bit(ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6);
+                    
                     this.peerBase.OnConnect();
                 }
             }

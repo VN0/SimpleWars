@@ -1,5 +1,37 @@
+v1.75 (23. August 2016)
+Fixed: The Photon assemblies (.dll) to support IPv6 correctly again. This was broken temporarily in v1.74.
+Fixed: UWP assembly. It now contains Photon's Hashtable, as all other libraries do. This fixes Windows 10 UWP exports.
+Changed: PhotonMessageInfo is now a struct (was a class). This is less garbage to collect.
+Changed: Demo script "ColorPerPlayer" to use less resources. When entering a room, it ignores property-changes until an initial check is done "on join".
+Changed: Internally, the ServerSettings class now contains a VoiceAppId field. This allows easier merging with PUN Voice.
+Changed: Internally, OnSerializeRead() now re-uses a stream object and just applies new, incoming values to it. This saves a bit of garbage.
+Fixed: Compatibility with Unity 5.4, where OnLevelWasLoaded is obsolete and SceneManagement.SceneManager.sceneLoaded should be used to register "on loaded" callbacks.
+Updated: To Photon assemblies v4.1.1.1.
 
-v1.73 ()
+
+v1.74 (15. August 2016)
+Fixed: PUN+ is now compatible with Unity 4.x Free again and can export to iOS and Android as expected. If you have Unity 5.x or 4.x Mobile Pro, you were not affected.
+Fixed: TCP Socket for Windows Store 8.1 and UWP.
+Changed: Due to upcoming new encryption options, exports now must use API Compatibility Level ".Net 2.0" instead of ".Net 2.0 Subset". We hope this is a minor issue. Let us know if not.
+Note: When the Bytecode Stripper fails, see the note above about Compatibility Level.
+Added: Optimization if a observed component implements IPunObservable. If so, we use a shortcut to call OnPhotonSerializeView(). This can speed up observed component calling in PhotonViews.
+Fixed: NetworkingPeer.HandleEventLeave() inactive state missing masterClient assignement during first leave call (A second leave call will be made after playerTtl expires).
+Improved: DemoChat : Exposed FriendsList to the inspector to prevent hardcoded friends references, and allow for easier testing without code modification
+Fixed: PhotonEditor.cs: Pun+ plugins libs paths discovery. For Unity 4.7.2, the wizard window detect PUN+ correctly again.
+Internal: Changed the workflow for setting up protocols. One method aggregates this now.
+Internal: NetworkingPeer.SetupProtocol(). Gets called before each PhotonPeer.Connect().
+Changed: PhotonNetwork constructor no longer sets protocols for special cases.
+Updated: The IPhotonSocket implementations to set their "IPv6-resolved" state.
+Updated: To new library build with new internal workflow for the "Init Request".
+Improved: PhotonPlayer.cs: Implemented IComparable and IEquatable.
+Fixed: NetworkingPeer.cs: Check for null view before adding view's GameObject.
+Fixed: Room.ClearExpectedUsers() is now sending it's current, local "expected users" to update the server with "CAS" (Check and Swap). This gives the client an update when the values become valid (which updates the local cache after the roundtrip).
+Added: link.xml file to preserve some classes from being stripped. This is in Assets\Photon Unity Networking\.
+Changed: The name/string of the "OnPhotonInstantiate" callback is now cached once, instead of using enum.ToString() each time. This is a minor performance improvement.
+Changed: The initial Dictionary size used in a PhotonView. This stores the the observed components and their methods to call.
+Fixed: Compatibility with Unity 5.4 by not adding a MonoBehaviour as Component. Instead, a derived class is used.
+
+v1.73 (26. July 2016)
 Changed: Some variable and field names. PeerState is now ClientState. 
 Renamed: mAppId is now simply AppId. mAppVersion is now AppVersion.
 Renamed: networkingPeer.server is now networkingPeer.Server (uppercase, being public).
@@ -13,7 +45,6 @@ PunTurnManager API:
     Added: OnTurnTimeEnds interface callback properly implemented
     Fixed: RpsCore edited to account for PunTurnManager api changes and additions.
 Fixed: NetworkingPeer.RunViewUpdate(), which was sending messages, even if no new updates were written. This got introduced in v1.70 and caused more messages than necessary.
-
 
 v1.72 (22. June 2016)
 Fixed: When the server address resolves to both, IPv6 and IPv4 addresses, the client will prefer IPv6, matching Apple's requirements.

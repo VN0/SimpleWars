@@ -28,7 +28,7 @@ using System.IO;
 public static class PhotonNetwork
 {
     /// <summary>Version number of PUN. Also used in GameVersion to separate client version from each other.</summary>
-    public const string versionPUN = "1.73";
+    public const string versionPUN = "1.75";
 
     /// <summary>Version string for your this build. Can be used to separate incompatible clients. Sent during connect.</summary>
     /// <remarks>This is only sent when you connect so that is also the place you set it usually (e.g. in ConnectUsingSettings).</remarks>
@@ -726,7 +726,7 @@ public static class PhotonNetwork
         {
             if (value > sendRate)
             {
-                Debug.LogError("Error, can not set the OnSerialize SendRate more often then the overall SendRate");
+                Debug.LogError("Error: Can not set the OnSerialize rate higher than the overall SendRate.");
                 value = sendRate;
             }
 
@@ -1080,10 +1080,9 @@ public static class PhotonNetwork
     static PhotonNetwork()
     {
         #if UNITY_EDITOR
-
         if (PhotonServerSettings == null)
         {
-            // create pss
+            // create PhotonServerSettings
             CreateSettings();
         }
 
@@ -1120,17 +1119,21 @@ public static class PhotonNetwork
 
         // Set up the NetworkingPeer and use protocol of PhotonServerSettings
         ConnectionProtocol protocol = PhotonNetwork.PhotonServerSettings.Protocol;
-#if UNITY_WEBGL
-        if (protocol != ConnectionProtocol.WebSocket && protocol != ConnectionProtocol.WebSocketSecure)
-        {
-			Debug.Log("WebGL only supports WebSocket protocol. Overriding PhotonServerSettings.");
-	        protocol = ConnectionProtocol.WebSocketSecure;
-		}
-#endif
-
         networkingPeer = new NetworkingPeer(string.Empty, protocol);
         networkingPeer.QuickResendAttempts = 2;
         networkingPeer.SentCountAllowance = 7;
+
+
+        #if UNITY_XBOXONE
+        Debug.Log("UNITY_XBOXONE is defined: Using AuthMode 'AuthOnceWss' and EncryptionMode 'DatagramEncryption'.");
+        if (!PhotonPeer.NativeDatagramEncrypt)
+        {
+            Debug.LogError("XB1 builds need a Photon3Unity3d.dll which uses the native PhotonEncryptorPlugin. This dll does not!");
+        }
+
+        networkingPeer.AuthMode = AuthModeOption.AuthOnceWss;
+        networkingPeer.EncryptionMode = EncryptionMode.DatagramEncryption;
+        #endif
 
         if (UsePreciseTimer)
         {
@@ -1166,44 +1169,8 @@ public static class PhotonNetwork
     /// <param name="cp">Network protocol to use as low level connection. UDP is default. TCP is not available on all platforms (see remarks).</param>
     public static void SwitchToProtocol(ConnectionProtocol cp)
     {
-#if UNITY_WEBGL
-        if (cp != ConnectionProtocol.WebSocket && cp != ConnectionProtocol.WebSocketSecure)
-        {
-			Debug.Log("WebGL only supports WebSocket protocol. Overriding PhotonServerSettings.");
-	        cp = ConnectionProtocol.WebSocketSecure;
-		}
-#endif
-
-        if (networkingPeer.UsedProtocol == cp)
-        {
-            return;
-        }
-        try
-        {
-            networkingPeer.Disconnect();
-            networkingPeer.StopThread();
-        }
-        catch
-        {
-
-        }
-
-        // set up a new NetworkingPeer
-        NetworkingPeer newPeer = new NetworkingPeer(String.Empty, cp);
-        newPeer.AuthValues = networkingPeer.AuthValues;
-        newPeer.PlayerName= networkingPeer.PlayerName;
-        newPeer.LocalPlayer = networkingPeer.LocalPlayer;
-        newPeer.DebugOut = networkingPeer.DebugOut;
-        newPeer.CrcEnabled = networkingPeer.CrcEnabled;
-        newPeer.QuickResendAttempts = networkingPeer.QuickResendAttempts;
-        newPeer.DisconnectTimeout = networkingPeer.DisconnectTimeout;
-        newPeer.lobby = networkingPeer.lobby;
-        newPeer.LimitOfUnreliableCommands = networkingPeer.LimitOfUnreliableCommands;
-        newPeer.SentCountAllowance = networkingPeer.SentCountAllowance;
-        newPeer.TrafficStatsEnabled = networkingPeer.TrafficStatsEnabled;
-
-        networkingPeer = newPeer;
-        Debug.LogWarning("Protocol switched to: " + cp + ".");
+        Debug.Log("SwitchToProtocol: " + cp + " PhotonNetwork.connected: " + PhotonNetwork.connected);
+        networkingPeer.TransportProtocol = cp;
     }
 
 
@@ -1219,7 +1186,7 @@ public static class PhotonNetwork
     /// To ignore the config file and connect anywhere call: PhotonNetwork.ConnectToMaster.
     ///
     /// To connect to the Photon Cloud, a valid AppId must be in the settings file (shown in the Photon Cloud Dashboard).
-    /// https://www.exitgames.com/dashboard
+    /// https://www.photonengine.com/dashboard
     ///
     /// Connecting to the Photon Cloud might fail due to:
     /// - Invalid AppId (calls: OnFailedToConnectToPhoton(). check exact AppId value)
@@ -1287,7 +1254,7 @@ public static class PhotonNetwork
     /// <summary>Connect to a Photon Master Server by address, port, appID and game(client) version.</summary>
     /// <remarks>
     /// To connect to the Photon Cloud, a valid AppId must be in the settings file (shown in the Photon Cloud Dashboard).
-    /// https://www.exitgames.com/dashboard
+    /// https://www.photonengine.com/dashboard
     ///
     /// Connecting to the Photon Cloud might fail due to:
     /// - Invalid AppId (calls: OnFailedToConnectToPhoton(). check exact AppId value)
@@ -1425,7 +1392,7 @@ public static class PhotonNetwork
     ///
     /// The PUN Setup Wizard stores your appID in a settings file and applies a server address/port.
     /// To connect to the Photon Cloud, a valid AppId must be in the settings file (shown in the Photon Cloud Dashboard).
-    /// https://www.exitgames.com/dashboard
+    /// https://www.photonengine.com/dashboard
     ///
     /// Connecting to the Photon Cloud might fail due to:
     /// - Invalid AppId (calls: OnFailedToConnectToPhoton(). check exact AppId value)

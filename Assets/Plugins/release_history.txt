@@ -1,5 +1,5 @@
 * release_history.txt
-* Release history for the DotNet Photon Client Library (DotNet / Unity / Windows Store / Windows Phone)
+* Release history for the DotNet Photon Client Library (DotNet / Unity / Windows Store 8.1 and 10)
 (C) 2016 Exit Games GmbH, http://www.photonengine.com
 
 Questions? Visit:
@@ -8,6 +8,33 @@ https://doc.photonengine.com
 http://forum.photonengine.com
 
 
+
+*** Version 4.1.1.1 (22. August 2016 - rev3551)
+    Fixed: IPv6 support. The init-message was missing it in v4.1.1.0.
+    Fixed: UWP build for Unity now has (Photon-)Hashtable class once more. Unlike Windows RT, UWP does support Hashtable (again). But in Unity, we always use ours.
+        
+
+*** Version 4.1.1.0 (15. August 2016 - rev3536)
+    Changed: Unity exports now need to set the API Compatibility to ".Net 2.0". The ".Net 2.0 Subset" won't work anymore, due to need of some features for a new encryption mode.
+    Fixed: Windows Store implementation of TCP Socket. This is now compatible with 8.1 and 10 and the locally configured timeout is also applied while connecting initially.
+    Fixed: OpWebRPC documentation.
+LoadBalancing:
+	Fixed: Room.ClearExpectedUsers() is now sending it's current, local "expected users" to update the server with "CAS" (Check and Swap). This gives the client an update when the values become valid (which updates the local cache after the roundtrip).
+	Added: Support for the 'Server Side Master Client' feature. The Room will read master client updates from the server accordingly. Room.SetMasterClient() enables you to override the server's selection (provided it did not change before your operation gets executed).
+    Changed: Option for bool WebForward into the new "WebFlags". This allows fine control of which data is being sent to WebHooks. This affects all SetProperties, OpWebRPC and the RaiseEventOptions.
+    Added: WebRPC.cs to the LoadBalancing API folder (was available separately before). It contains WebFlags and WebRpcResponse.
+Internal:
+	Changed: Instead of Windows Phone 8.0 support, we now have a Windows 8.1 Universal library ("Metro") and one for Windows 10 Universal ("UWP").
+    Changed: Changed initialization of PhotonPeer and related classes. 
+	Changed: Workflow to send Init command.
+	Added: Option for "Datagram Encryption" and a new Authentication Workflow ("AuthOnce" and "AuthOnceWss"). This is part of the LoadBalancing API.
+    Added: ClientSdkId, which is used internally for reference.
+
+*** Version 4.1.0.6 (30. June 2016 - rev3400)
+    Changed: ExchangeKeysForEncryption() and internally called DeriveSharedKey() can now be executed in their own Thread.
+    Added: static PhotonPeer.AsyncKeyExchange to define if encryption calculations are done in parallel.
+Internal:
+    Changed: NetworkSimulationSet.IsSimulationEnabled only does any work, if the value gets changed (saving some surplus work).
 
 *** Version 4.1.0.6 (21. June 2016 - rev3376)
 Internal: 
@@ -20,7 +47,6 @@ Internal:
 LoadBalancing:
 	Fixed: LoadBalancingPeer.OpRaiseEvent(...) to send operations (and events) unencrypted again. 
     
-
 *** Version 4.1.0.4 (19. May 2016 - rev3322)
 Internal:
     Updated: For Unity, the usage of the optional "native sockets" library is now compatible with IPv6 addresses, as required by Apple.

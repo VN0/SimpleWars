@@ -478,7 +478,7 @@ namespace Photon
         /// public PhotonView networkView
         /// </remarks>
         [Obsolete("Use a photonView")]
-        new public PhotonView networkView
+        public new PhotonView networkView
         {
             get
             {
@@ -875,22 +875,11 @@ namespace Photon
 /// Container class for info about a particular message, RPC or update.
 /// </summary>
 /// \ingroup publicApi
-public class PhotonMessageInfo
+public struct PhotonMessageInfo
 {
-    private int timeInt;
-    public PhotonPlayer sender;
-    public PhotonView photonView;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PhotonMessageInfo"/> class.
-    /// To create an empty messageinfo only!
-    /// </summary>
-    public PhotonMessageInfo()
-    {
-        this.sender = PhotonNetwork.player;
-        this.timeInt = (int)(PhotonNetwork.time * 1000);
-        this.photonView = null;
-    }
+    private readonly int timeInt;
+    public readonly PhotonPlayer sender;
+    public readonly PhotonView photonView;
 
     public PhotonMessageInfo(PhotonPlayer player, int timestamp, PhotonView view)
     {
@@ -970,6 +959,13 @@ public class PhotonStream
         {
             this.readData = incomingData;
         }
+    }
+
+    public void SetReadStream(object[] incomingData, byte pos = 0)
+    {
+        this.readData = incomingData;
+        this.currentItem = pos;
+        this.write = false;
     }
 
     internal void ResetWriteStream()

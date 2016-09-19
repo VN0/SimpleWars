@@ -601,8 +601,11 @@ public class PhotonEditor : EditorWindow
 
     protected internal static bool CheckPunPlus()
     {
-        androidLibExists = File.Exists("Assets/Plugins/Android/libPhotonSocketPlugin.so");
-        iphoneLibExists = File.Exists("Assets/Plugins/IPhone/libPhotonSocketPlugin.a");
+		androidLibExists = 	File.Exists("Assets/Plugins/Android/armeabi-v7a/libPhotonSocketPlugin.so") && 
+							File.Exists("Assets/Plugins/Android/x86/libPhotonSocketPlugin.so");
+
+
+        iphoneLibExists = File.Exists("Assets/Plugins/IOS/libPhotonSocketPlugin.a");
 
         isPunPlus = androidLibExists || iphoneLibExists;
         return isPunPlus;

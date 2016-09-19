@@ -39,35 +39,42 @@ public class ColorPerPlayer : PunBehaviour
 
     public bool ColorPicked { get; set; }
 
+    private bool afterOnJoinedRoom;	// enables this script to skip all property updates until the client joined a room
 
     public override void OnJoinedRoom()
     {
-        SelectColor();
+        this.afterOnJoinedRoom = true;
+        this.SelectColor();
     }
 
     public override void OnPhotonPlayerDisconnected(PhotonPlayer otherPlayer)
     {
-        SelectColor();
+        this.SelectColor();
     }
 
     public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
-        // important: SelectColor() might cause a call to OnPhotonPlayerPropertiesChanged().
-        // to avoid endless recursion (and a crash), we skip calling SelectColor() if this player changed props.
-        // we could also check which props changed and skip all changes, aside from color-selection.
-        PhotonPlayer player = playerAndUpdatedProps[0] as PhotonPlayer;
-        if (player != null && player.isLocal)
+        // when we join a room, OnPhotonPlayerPropertiesChanged usually gets called for all players. 
+        // we can skip this and check those in OnJoined and when props change later on.
+        if (this.afterOnJoinedRoom)
         {
-            return;
-        }
+            // important: SelectColor() might cause a call to OnPhotonPlayerPropertiesChanged().
+            // to avoid endless recursion (and a crash), we skip calling SelectColor() if this player changed props.
+            // we could also check which props changed and skip all changes, aside from color-selection.
+            PhotonPlayer player = playerAndUpdatedProps[0] as PhotonPlayer;
+            if (player != null && player.isLocal)
+            {
+                return;
+            }
 
-        SelectColor();
+            this.SelectColor();
+        }
     }
 
     public override void OnLeftRoom()
     {
         // colors are select per room.
-        Reset();
+        this.Reset();
     }
 
     /// <summary>
@@ -76,7 +83,8 @@ public class ColorPerPlayer : PunBehaviour
     public void Reset()
     {
         this.MyColor = Color.grey;
-        ColorPicked = false;
+        this.ColorPicked = false;
+        this.afterOnJoinedRoom = false;
 
         // colors are select per room. to reset, we have to clean the locally cached property in PhotonPlayer, too
         Hashtable colorProp = new Hashtable();
@@ -88,7 +96,7 @@ public class ColorPerPlayer : PunBehaviour
     // simple UI to show color
     private void OnGUI()
     {
-        if (!ColorPicked || !this.ShowColorLabel)
+        if (!this.ColorPicked || !this.ShowColorLabel)
         {
             return;
         }
@@ -120,7 +128,7 @@ public class ColorPerPlayer : PunBehaviour
     /// </remarks>
     public void SelectColor()
     {
-        if (ColorPicked)
+        if (this.ColorPicked)
         {
             return;
         }
@@ -133,7 +141,7 @@ public class ColorPerPlayer : PunBehaviour
             if (player.customProperties.ContainsKey(ColorProp))
             {
                 int picked = (int)player.customProperties[ColorProp];
-                Debug.Log("Taken color index: " + picked);
+                //Debug.Log("Taken color index: " + picked);
                 takenColors.Add(picked);
             }
             else
@@ -142,13 +150,13 @@ public class ColorPerPlayer : PunBehaviour
                 // we will wait to avoid clashes when 2 players join soon after another. we don't want a color picked twice!
                 if (player.ID < PhotonNetwork.player.ID)
                 {
-                    Debug.Log("Can't select a color yet. This player has to pick one first: " + player);
+                    //Debug.Log("Can't select a color yet. This player has to pick one first: " + player);
                     return;
                 }
             }
         }
 
-        //Debug.Log("Taken colors: " + takenColors.Count);
+        ////Debug.Log("Taken colors: " + takenColors.Count);
 
         if (takenColors.Count == this.Colors.Length)
         {
@@ -170,8 +178,8 @@ public class ColorPerPlayer : PunBehaviour
                 colorProp.Add(ColorProp, index);
                 PhotonNetwork.player.SetCustomProperties(colorProp); // this goes to the server asap.
 
-                Debug.Log("Selected my color: " + this.MyColor);
-                ColorPicked = true;
+                //Debug.Log("Selected my color: " + this.MyColor);
+                this.ColorPicked = true;
                 break; // one color selected. break this loop.
             }
         }

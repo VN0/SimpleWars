@@ -34,6 +34,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 {
     public string ChatAppId;                    // set in inspector. Your Chat AppId (don't mix it with Realtime/Turnbased Apps).
     public string[] ChannelsToJoinOnConnect;    // set in inspector. Demo channels to join automatically.
+	public string[] friends;
     public int HistoryLengthToFetch;            // set in inspector. Up to a certain degree, previously sent messages can be fetched for context.
     public bool DemoPublishOnSubscribe;         // set in inspector. For demo purposes, we publish a default text to any subscribed channel.
 
@@ -344,7 +345,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
             this.chatClient.Subscribe(this.ChannelsToJoinOnConnect, this.HistoryLengthToFetch);
         }
 
-        this.chatClient.AddFriends(new string[] {"tobi", "ilya"});          // Add some users to the server-list to get their status updates
+		this.chatClient.AddFriends(friends);//new string[] {"tobi", "ilya"});          // Add some users to the server-list to get their status updates
         this.chatClient.SetOnlineStatus(ChatUserStatus.Online);             // You can set your online state (without a mesage).
     }
 
