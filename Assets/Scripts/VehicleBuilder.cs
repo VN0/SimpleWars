@@ -32,6 +32,8 @@ public class VehicleBuilder : MonoBehaviour
     Vector3 rawPos;
     bool turnLeft;
     bool turnRight;
+    List<GameObject> ConnectionList = new List<GameObject>();
+    List<GameObject> DConnectionList = new List<GameObject>();
 
     void Awake ()
     {
@@ -84,6 +86,7 @@ public class VehicleBuilder : MonoBehaviour
                             LineRenderer lr = (Instantiate(connectionPoint,
                                 partType.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
+                            ConnectionList.Add(lr.gameObject);
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
                             lr.GetComponent<AttachPoint>().Reference = partType.gameObject;
@@ -106,6 +109,7 @@ public class VehicleBuilder : MonoBehaviour
                             LineRenderer lr = (Instantiate(connectionPoint,
                                 partType.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
+                            DConnectionList.Add(lr.gameObject);
                             lr.gameObject.name = "ConnectionDetached";
                             lr.gameObject.layer = 11;
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
@@ -174,7 +178,10 @@ public class VehicleBuilder : MonoBehaviour
                 endEntry.callback.AddListener(delegate (BaseEventData arg)
                 {
                     dragging = false;
-                    SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.StartsWith("Connection")).Destroy();
+                    ConnectionList.Destroy();
+                    DConnectionList.Destroy();
+                    ConnectionList.Clear();
+                    DConnectionList.Clear();
                 });
                 trigger.triggers.Add(endEntry);
                 #endregion
