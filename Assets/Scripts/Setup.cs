@@ -57,12 +57,10 @@ public class Setup : MonoBehaviour
         emptyVehiclePath = Path.Combine(Application.persistentDataPath, "EmptyVehicle.xml");
         if (File.Exists(emptyVehiclePath))
         {
-            SHA256Managed sha2 = new SHA256Managed();
             FileStream stream = File.OpenRead(emptyVehiclePath);
-            sha2.ComputeHash(stream);
-            string hash = sha256(stream: stream);
+            string hash = GetMD5(stream: stream);
             print(hash);
-            if (hash == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+            if (hash == "f00974d668b360246e19dc4bed8b03d3")
             {
                 print("EmptyVehicle.xml is valid.");
                 return;
@@ -101,9 +99,10 @@ public class Setup : MonoBehaviour
         }
     }
 
-    static string sha256 (string str = null, Stream stream = null)
+    static string GetMD5 (string str = null, Stream stream = null)
     {
-        SHA256Managed crypt = new SHA256Managed();
+        //SHA256Managed crypt = new SHA256Managed();
+        MD5 crypt = MD5.Create();
         StringBuilder hash = new StringBuilder();
         byte[] crypto = null;
 
