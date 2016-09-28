@@ -34,6 +34,8 @@ public class VehicleBuilder : MonoBehaviour
     bool turnRight;
     List<GameObject> ConnectionList = new List<GameObject>();
     List<GameObject> DConnectionList = new List<GameObject>();
+    List<GameObject> DraggingList = new List<GameObject>();
+    GameObject detachedParts;
 
     void Awake ()
     {
@@ -44,6 +46,7 @@ public class VehicleBuilder : MonoBehaviour
         loader = FindObjectOfType<VehicleLoader>();
         partInfos = FindObjectOfType<ObjectReference>().obj as PartInfos;
         modLoader = FindObjectOfType<ModLoader>();
+        detachedParts = new GameObject("DetachedParts");
         createButton.onClick.AddListener(delegate
         {
             vehicle = loader.NewVehicle();
@@ -72,7 +75,7 @@ public class VehicleBuilder : MonoBehaviour
                     lastPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
                     lastPos = Camera.main.ScreenToWorldPoint(lastPos);
                     lastGridPos = lastPos;
-                    draggingObject = Instantiate(prefab, lastPos, Quaternion.Euler(0, 0, 0)) as GameObject;
+                    draggingObject = Instantiate(prefab, lastPos, Quaternion.Euler(0, 0, 0), detachedParts.transform) as GameObject;
                     draggingObject.GetComponent<Rigidbody2D>().simulated = false;
                     Color color = draggingObject.GetComponent<SpriteRenderer>().color;
                     color.a = 0.5f;
@@ -85,7 +88,8 @@ public class VehicleBuilder : MonoBehaviour
                         {
                             LineRenderer lr = (Instantiate(connectionPoint,
                                 partType.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
-                                Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
+                                Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)
+                            ) as GameObject).GetComponent<LineRenderer>();
                             ConnectionList.Add(lr.gameObject);
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
@@ -93,13 +97,18 @@ public class VehicleBuilder : MonoBehaviour
                             lr.GetComponent<BoxCollider2D>().size = new Vector2(0.3f * point.length, 0.3f);
                         }
                     }
-                    foreach (PartType partType in draggingObject.DescendantsAndSelf().OfComponent<PartType>())
+                    foreach (PartType partType in detachedParts.DescendantsAndSelf().OfComponent<PartType>())
                     {
+                        bool isDragging = false;
                         try
                         {
                             if (partType.transform.IsChildOf(vehicle.transform))
                             {
                                 continue;
+                            }
+                            if (partType.transform.IsChildOf(draggingObject.transform) && partType.gameObject == draggingObject)
+                            {
+                                isDragging = true;
                             }
                         }
                         catch (System.NullReferenceException) { }
@@ -110,7 +119,6 @@ public class VehicleBuilder : MonoBehaviour
                                 partType.transform.TransformPoint(new Vector3(point.position.x, point.position.y, 0)),
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
                             DConnectionList.Add(lr.gameObject);
-                            lr.gameObject.name = "ConnectionDetached";
                             lr.gameObject.layer = 11;
                             Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
                             lr.SetPositions(positions);
@@ -118,6 +126,10 @@ public class VehicleBuilder : MonoBehaviour
                             BoxCollider2D col = lr.GetComponent<BoxCollider2D>();
                             col.size = new Vector2(0.3f * point.length, 0.3f);
                             col.isTrigger = true;
+                            if (isDragging)
+                            {
+                                DraggingList.Add(lr.gameObject);
+                            }
                         }
                     }
                     dragging = true;
@@ -163,7 +175,7 @@ public class VehicleBuilder : MonoBehaviour
                         draggingObject.transform.Rotate(0, 0, -90);
                     }
                     draggingObject.transform.position = SmartMath.Math.RoundVectorToGrid(rawPos, 0.3f);
-                    foreach (GameObject lr in SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.StartsWith("ConnectionDetached")))
+                    foreach (GameObject lr in DraggingList)
                     {
                         lr.transform.position += draggingObject.transform.position - lastGridPos;
                     }
@@ -182,6 +194,7 @@ public class VehicleBuilder : MonoBehaviour
                     DConnectionList.Destroy();
                     ConnectionList.Clear();
                     DConnectionList.Clear();
+                    DraggingList.Clear();
                 });
                 trigger.triggers.Add(endEntry);
                 #endregion
