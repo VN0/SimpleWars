@@ -124,7 +124,7 @@ public class VehicleLoader : MonoBehaviour
 
     void Update ()
     {
-        if (Input.GetButtonUp("Cancel"))
+        if (hardInput.GetKeyUp("Quit"))
         {
             mask.SetBool("open", false);
             StartCoroutine(SceneLoader.LoadSceneAnim(mask, delegate
@@ -133,7 +133,7 @@ public class VehicleLoader : MonoBehaviour
                 SceneManager.LoadScene("Menu");
             }));
         }
-        if (vehicle && (Input.GetKeyDown(KeyCode.Return) || start))
+        if (vehicle && (hardInput.GetKeyUp("Start Game") || start))
         {
             start = false;
             mask.SetBool("open", false);
@@ -225,7 +225,7 @@ public class VehicleLoader : MonoBehaviour
             go.transform.localScale = new Vector3(
                 (part.flipX ? -1 : 1) / go.transform.parent.localScale.x,
                 (part.flipY ? -1 : 1) / go.transform.parent.localScale.y, 1);
-            if (part.type.ToLower().Contains("pod"))      //If this part is the pod
+            if (part.type.ToLower().Contains("pod"))
             {
                 go.tag = "Player";
                 ActivationGroups ag = go.AddComponent<ActivationGroups>();

@@ -26,6 +26,14 @@ public class hardInput : MonoBehaviour
     {
         return hardManager.singleton.GetKeyDown(keyName);
     }
+    
+    ///<summary>
+    ///Returns true if the key has been released.
+    ///</summary>
+    public static bool GetKeyUp (string keyName)
+    {
+        return hardManager.singleton.GetKeyUp(keyName);
+    }
 
     ///<summary>
     ///Returns a float value between two keys (a positive and a negative) when held down, between -1 and 1.

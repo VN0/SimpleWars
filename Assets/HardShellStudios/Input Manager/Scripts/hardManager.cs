@@ -281,6 +281,106 @@ namespace HardShellStudios.InputManager
 
         }
 
+        public bool GetKeyUp (string keyName)
+        {
+            bool isPressed = false;
+
+            // Check primary key
+            if (keyMaps[keyName].keyWheelState == 0 || keyMaps[keyName].keyWheelState == 5)
+            {
+                if (Input.GetKeyUp(keyMaps[keyName].keyInput))
+                    isPressed = true;
+            }
+            else if (keyMaps[keyName].keyWheelState == 1)
+            {
+                if (Input.mouseScrollDelta.y > 0)
+                    isPressed = true;
+            }
+            else if (keyMaps[keyName].keyWheelState == 2)
+            {
+                if (Input.mouseScrollDelta.y < 0)
+                    isPressed = true;
+            }
+            else if (keyMaps[keyName].keyWheelState == 10)
+            {
+                if (Input.GetAxis("DPADVER") == 1 && Input.GetAxis("DPADVER") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADVER");
+            }
+            else if (keyMaps[keyName].keyWheelState == 11)
+            {
+                if (Input.GetAxis("DPADVER") == -1 && Input.GetAxis("DPADVER") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADVER");
+            }
+            else if (keyMaps[keyName].keyWheelState == 12)
+            {
+                if (Input.GetAxis("DPADHOR") == 1 && Input.GetAxis("DPADHOR") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADHOR");
+            }
+            else if (keyMaps[keyName].keyWheelState == 13)
+            {
+                if (Input.GetAxis("DPADHOR") == -1 && Input.GetAxis("DPADHOR") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADHOR");
+            }
+            // End first
+
+            // Check secondary key
+            if (keyMaps[keyName].keyWheelState2 == 0 || keyMaps[keyName].keyWheelState2 == 5)
+            {
+                if (Input.GetKeyUp(keyMaps[keyName].keyInput2))
+                    isPressed = true;
+            }
+            else if (keyMaps[keyName].keyWheelState2 == 1)
+            {
+                if (Input.mouseScrollDelta.y > 0)
+                    isPressed = true;
+            }
+            else if (keyMaps[keyName].keyWheelState2 == 2)
+            {
+                if (Input.mouseScrollDelta.y < 0)
+                    isPressed = true;
+            }
+            else if (keyMaps[keyName].keyWheelState2 == 10 && useController)
+            {
+                if (Input.GetAxis("DPADVER") == 1 && Input.GetAxis("DPADVER") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADVER");
+            }
+            else if (keyMaps[keyName].keyWheelState2 == 11 && useController)
+            {
+                if (Input.GetAxis("DPADVER") == -1 && Input.GetAxis("DPADVER") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADVER");
+            }
+            else if (keyMaps[keyName].keyWheelState2 == 12 && useController)
+            {
+                if (Input.GetAxis("DPADHOR") == 1 && Input.GetAxis("DPADHOR") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADHOR");
+            }
+            else if (keyMaps[keyName].keyWheelState2 == 13 && useController)
+            {
+                if (Input.GetAxis("DPADHOR") == -1 && Input.GetAxis("DPADHOR") != keyMaps[keyName].keyValue)
+                    isPressed = true;
+
+                keyMaps[keyName].keyValue = Input.GetAxis("DPADHOR");
+            }
+            // End all
+
+            return isPressed;
+
+        }
+
         public bool GetKey(string keyName)
         {
             bool isPressed = false;
@@ -635,7 +735,7 @@ namespace HardShellStudios.InputManager
                     string[] parsed = PlayerPrefs.GetString("settings_bindings_" + e.Current.Value.keyName).Split('^');
                     int axis = int.Parse(parsed[1]);
 
-                    if (useController || (!useController && (axis <= 10 && axis >= 13)))
+                    if (useController || (!useController && (axis <= 10 || axis >= 13)))
                     {
                         keyMaps[e.Current.Value.keyName].keyInput = (KeyCode)System.Enum.Parse(typeof(KeyCode), parsed[0]);
                         keyMaps[e.Current.Value.keyName].keyWheelState = int.Parse(parsed[1]);
@@ -661,7 +761,7 @@ namespace HardShellStudios.InputManager
                     string[] parsed2 = PlayerPrefs.GetString("settings_bindings_sec_" + e.Current.Value.keyName).Split('^');
                     int axis = int.Parse(parsed2[1]);
 
-                    if (useController || (!useController && (axis <= 10 && axis >= 13)))
+                    if (useController || (!useController && (axis <= 10 || axis >= 13)))
                     {
                         keyMaps[e.Current.Value.keyName].keyInput2 = (KeyCode)System.Enum.Parse(typeof(KeyCode), parsed2[0]);
                         keyMaps[e.Current.Value.keyName].keyWheelState2 = int.Parse(parsed2[1]);

@@ -164,12 +164,12 @@ public class VehicleBuilder : MonoBehaviour
                     rawPos += movePos;
                     lastPos = currentPos;
                     firstTime = false;
-                    if (turnLeft)
+                    if (hardInput.GetKey("Turn Left"))
                     {
                         turnLeft = false;
                         draggingObject.transform.Rotate(0, 0, 90);
                     }
-                    else if (turnRight)
+                    else if (hardInput.GetKey("Turn Right"))
                     {
                         turnRight = false;
                         draggingObject.transform.Rotate(0, 0, -90);
@@ -202,26 +202,6 @@ public class VehicleBuilder : MonoBehaviour
                 btn.transform.SetParent(partPanel, true);
                 i -= 52;
             }
-        }
-    }
-
-    void Update ()
-    {
-        if (Input.GetButtonDown("Turn Left"))
-        {
-            turnLeft = true;
-        }
-        if (Input.GetButtonDown("Turn Right"))
-        {
-            turnLeft = true;
-        }
-        if (Input.GetButtonUp("Turn Left"))
-        {
-            turnLeft = false;
-        }
-        if (Input.GetButtonUp("Turn Right"))
-        {
-            turnLeft = false;
         }
     }
 }

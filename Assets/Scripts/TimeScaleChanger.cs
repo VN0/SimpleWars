@@ -10,7 +10,7 @@ public class TimeScaleChanger : MonoBehaviour {
 		});
 	}
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.P)) {
+		if (hardInput.GetKeyDown("Pause")) {
 			if (Time.timeScale > 0f) {
 				Time.timeScale = 0f;
 			} else {

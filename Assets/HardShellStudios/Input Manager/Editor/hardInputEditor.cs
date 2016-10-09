@@ -17,7 +17,7 @@ namespace HardShellStudios.InputManager
 
         // Btw you can change this if you really want, all it will do is change the colour scheme and images shown... It wont actually allow you to download the early updates if you havent purchased
         // it on the asset store. :)
-        bool earlyUpdate = false;
+        bool earlyUpdate = true;
 
         string inputName = "";
         KeyCode keyPrime;
@@ -119,7 +119,7 @@ namespace HardShellStudios.InputManager
         {
             if (earlyUpdate)
             {
-                return "header-paid";
+                return "header-default";
             }
             else
             {

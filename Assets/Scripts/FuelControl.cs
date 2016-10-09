@@ -60,7 +60,7 @@ public class FuelControl : MonoBehaviour
 
     void Update ()
     {
-        if (Input.GetButtonUp("Cancel"))
+        if (hardInput.GetKeyUp("Quit"))
         {
             mask.SetBool("open", false);
             StartCoroutine(SceneLoader.LoadSceneAnim(mask, delegate
@@ -74,19 +74,19 @@ public class FuelControl : MonoBehaviour
             altitude.text = (pod.position.y * (5f / 3)).ToString("N0") + " m";
             velocity.text = (pod.GetComponent<Rigidbody2D>().velocity.magnitude * (5f / 3)).ToString("N0") + " m/s";
         }
-        if (Input.GetButton("Turn Left"))
+        if (hardInput.GetKey("Turn Left"))
         {
             turnLeft = true;
         }
-        if (Input.GetButtonUp("Turn Left"))
+        else if (hardInput.GetKeyUp("Turn Left"))
         {
             turnLeft = false;
         }
-        if (Input.GetButton("Turn Right"))
+        if (hardInput.GetKey("Turn Right"))
         {
             turnRight = true;
         }
-        if (Input.GetButtonUp("Turn Right"))
+        else if (hardInput.GetKeyUp("Turn Right"))
         {
             turnRight = false;
         }
@@ -100,13 +100,13 @@ public class FuelControl : MonoBehaviour
             currentForce = slider10.value / 10;
             slider100.value = Mathf.RoundToInt(currentForce * 100);
         }
-        else if (Input.GetButtonDown("Increase Thottle") && currentForce < 0.99)
+        else if (hardInput.GetKeyDown("Increase Throttle") && currentForce < 0.99)
         {
             currentForce += 0.1f;
             slider10.value = Mathf.RoundToInt(currentForce * 10);
             slider100.value = Mathf.RoundToInt(currentForce * 100);
         }
-        else if (Input.GetButtonDown("Decrease Thottle") && currentForce > 0.01)
+        else if (hardInput.GetKeyDown("Decrease Throttle") && currentForce > 0.01)
         {
             currentForce -= 0.1f;
             slider10.value = Mathf.RoundToInt(currentForce * 10);

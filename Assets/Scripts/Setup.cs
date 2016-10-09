@@ -93,7 +93,7 @@ public class Setup : MonoBehaviour
 
     void Update ()
     {
-        if (Input.GetButtonUp("Cancel"))
+        if (hardInput.GetKeyUp("Quit"))
         {
             Application.Quit();
         }
