@@ -210,7 +210,7 @@ public class VehicleLoader : MonoBehaviour
 
             go = Instantiate(
                 prefab,
-                new Vector3(part.x * 0.6f, part.y * 0.6f),
+                new Vector3(part.x, part.y),
                 Quaternion.Euler(0, 0, Mathf.Rad2Deg * part.r)
             ) as GameObject;
 
@@ -304,7 +304,7 @@ public class VehicleLoader : MonoBehaviour
 
             go = Instantiate(
                 prefab,
-                new Vector3(part.x * 0.6f, part.y * 0.6f),
+                new Vector3(part.x, part.y),
                 Quaternion.Euler(0, 0, part.r)
             ) as GameObject;
 

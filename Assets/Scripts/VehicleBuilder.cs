@@ -91,10 +91,10 @@ public class VehicleBuilder : MonoBehaviour
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)
                             ) as GameObject).GetComponent<LineRenderer>();
                             ConnectionList.Add(lr.gameObject);
-                            Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
+                            Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 4f, 0, 0), new Vector3(point.length / 4f, 0, 0) };
                             lr.SetPositions(positions);
                             lr.GetComponent<AttachPoint>().Reference = partType.gameObject;
-                            lr.GetComponent<BoxCollider2D>().size = new Vector2(0.3f * point.length, 0.3f);
+                            lr.GetComponent<BoxCollider2D>().size = new Vector2(0.5f * point.length, 0.5f);
                         }
                     }
                     foreach (PartType partType in detachedParts.DescendantsAndSelf().OfComponent<PartType>())
@@ -120,11 +120,11 @@ public class VehicleBuilder : MonoBehaviour
                                 Quaternion.Euler(0, 0, point.rotation + partType.transform.rotation.eulerAngles.z)) as GameObject).GetComponent<LineRenderer>();
                             DConnectionList.Add(lr.gameObject);
                             lr.gameObject.layer = 11;
-                            Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 2f * 0.3f, 0, 0), new Vector3(point.length / 2f * 0.3f, 0, 0) };
+                            Vector3[] positions = new Vector3[2] { new Vector3(-point.length / 4f, 0, 0), new Vector3(point.length / 4f, 0, 0) };
                             lr.SetPositions(positions);
                             lr.GetComponent<AttachPoint>().Reference = partType.gameObject;
                             BoxCollider2D col = lr.GetComponent<BoxCollider2D>();
-                            col.size = new Vector2(0.3f * point.length, 0.3f);
+                            col.size = new Vector2(0.5f * point.length, 0.5f);
                             col.isTrigger = true;
                             if (isDragging)
                             {
@@ -174,7 +174,7 @@ public class VehicleBuilder : MonoBehaviour
                         turnRight = false;
                         draggingObject.transform.Rotate(0, 0, -90);
                     }
-                    draggingObject.transform.position = SmartMath.Math.RoundVectorToGrid(rawPos, 0.3f);
+                    draggingObject.transform.position = SmartMath.Math.RoundVectorToGrid(rawPos, 0.5f);
                     foreach (GameObject lr in DraggingList)
                     {
                         lr.transform.position += draggingObject.transform.position - lastGridPos;
