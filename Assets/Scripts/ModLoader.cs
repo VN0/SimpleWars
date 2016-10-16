@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using System.IO;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 public class ModLoader : MonoBehaviour
@@ -14,7 +12,6 @@ public class ModLoader : MonoBehaviour
     
     AssetBundle mod;
     bool loaded = false;
-    CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
 
     void Awake ()
     {

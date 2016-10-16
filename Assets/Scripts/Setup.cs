@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Security.Cryptography;
 using System.Text;
+using DigitalRuby.SoundManagerNamespace;
 #if UNITY_STANDALONE_WIN_
 using Microsoft.Win32;
 using System.Linq;
@@ -11,14 +12,13 @@ using System.Diagnostics;
 
 public class Setup : MonoBehaviour
 {
-    public AudioSource music;
+    public AudioSource BGM;
     Animator mask;
     string emptyVehiclePath;
 
     void Awake ()
     {
         mask = GameObject.Find("SceneTransitionMask").GetComponent<Animator>();
-        DontDestroyOnLoad(music);
         DontDestroyOnLoad(mask.transform.root);
         StartCoroutine(Wait(0.1f, delegate
         {
@@ -89,6 +89,12 @@ public class Setup : MonoBehaviour
     {
         yield return new WaitForSeconds(seconds);
         func();
+    }
+
+    void Start ()
+    {
+        SoundManager.PlayLoopingMusic(BGM, 100, 2, true);
+        //DontDestroyOnLoad(music);
     }
 
     void Update ()

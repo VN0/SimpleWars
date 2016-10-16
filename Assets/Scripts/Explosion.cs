@@ -69,6 +69,13 @@ public class Explosion : MonoBehaviour
         exploder.forceSource = EffectorSelection2D.Collider;
         exploder.forceVariation = force / 5;
         ex = Instantiate(explosion, transform.position, Quaternion.Euler(0, 0, Random.Range(0, 360))) as GameObject;
+        //ex = Lean.LeanPool.Spawn(ex);
+        //ParticleSystem ps = ex.GetComponent<ParticleSystem>();
+        //ps.Clear();
+        //ps.Play();
+        //ex.GetComponent<AudioSource>().Play(0);
+        //ex.transform.position = transform.position;
+        //ex.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
         ex.transform.SetParent(transform);
     }
 
@@ -117,6 +124,7 @@ public class Explosion : MonoBehaviour
             }
             else if (!ex.GetComponent<ParticleSystem>().IsAlive() && !ex.GetComponent<AudioSource>().isPlaying)
             {
+                //Lean.LeanPool.Despawn(ex);
                 Destroy(gameObject);
             }
             else
@@ -142,13 +150,11 @@ public class Explosion : MonoBehaviour
 
     void OnCollisionEnter2D (Collision2D col)
     {
-        //相对速度
         float v = col.relativeVelocity.magnitude;
         if (exploded)
         {
             return;
         }
-        //满足自身爆炸条件
         if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
         {
             Explode();

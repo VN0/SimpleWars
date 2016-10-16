@@ -6,13 +6,7 @@ public class FloatingOrigin : MonoBehaviour
 {
     public float threshold = 100.0f;
     public float physicsThreshold = 1000.0f; // Set to zero to disable
-
-#if OLD_PHYSICS
-    public float defaultSleepVelocity = 0.14f;
-    public float defaultAngularVelocity = 0.14f;
-#else
     public float defaultSleepThreshold = 0.14f;
-#endif
 
     ParticleSystem.Particle[] parts = null;
 
