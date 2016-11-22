@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SimpleWars
+namespace SimpleWars.Parts
 {
     public class NonExplosive : MonoBehaviour
     {
