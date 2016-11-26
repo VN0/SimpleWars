@@ -10,7 +10,7 @@ namespace SimpleWars
 
         new void Awake ()
         {
-            CDebug.Log(Application.persistentDataPath);
+            Unbug.Log(Application.persistentDataPath);
         }
 
         void Start ()

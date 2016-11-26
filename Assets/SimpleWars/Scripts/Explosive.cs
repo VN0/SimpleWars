@@ -24,31 +24,11 @@ namespace SimpleWars.Parts
 
         public void Explode ()
         {
-            try
-            {
-                Destroy(GetComponent<SpriteRenderer>());
-            }
-            catch (System.NullReferenceException) { }
-            try
-            {
-                Destroy(GetComponent<Collider2D>());
-            }
-            catch (System.NullReferenceException) { }
-            try
-            {
-                Destroy(GetComponent<Joint2D>());
-            }
-            catch (System.NullReferenceException) { }
-            try
-            {
-                Destroy(GetComponent<PartFunction>());
-            }
-            catch (System.NullReferenceException) { }
-            try
-            {
-                Destroy(GetComponent<Rigidbody2D>());
-            }
-            catch (System.NullReferenceException) { }
+            Unbug.SafeDestroy(GetComponent<SpriteRenderer>());
+            Unbug.SafeDestroy(GetComponent<Collider2D>());
+            Unbug.SafeDestroy(GetComponent<Joint2D>());
+            Unbug.SafeDestroy(GetComponent<PartFunction>());
+            Unbug.SafeDestroy(GetComponent<Rigidbody2D>());
             //tr.DetachChildren ();
             for (int i = 0; i < gameObject.transform.childCount; i++)
             {
@@ -70,13 +50,6 @@ namespace SimpleWars.Parts
             exploder.forceSource = EffectorSelection2D.Collider;
             exploder.forceVariation = force / 5;
             ex = Instantiate(explosion, transform.position, Quaternion.Euler(0, 0, Random.Range(0, 360))) as GameObject;
-            //ex = Lean.LeanPool.Spawn(ex);
-            //ParticleSystem ps = ex.GetComponent<ParticleSystem>();
-            //ps.Clear();
-            //ps.Play();
-            //ex.GetComponent<AudioSource>().Play(0);
-            //ex.transform.position = transform.position;
-            //ex.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
             ex.transform.SetParent(transform);
         }
 

@@ -10,7 +10,9 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Source Han Sans CN
+  - 'MSYH
+
+    Noto Sans CJK'
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
