@@ -16,7 +16,7 @@ public class SceneLoader : Singleton<SceneLoader>
     static AsyncOperation loadingScene;
     static Action _callback;
     static bool loading;
-    static short loadState = 1;
+    static float loadState = 0.75f;
 
     public static bool LoadScene (string scene, LoadSceneMode mode = LoadSceneMode.Single, bool fade = true, Action callback = null)
     {
@@ -38,7 +38,7 @@ public class SceneLoader : Singleton<SceneLoader>
         else
         {
             SceneManager.LoadScene(scene, mode);
-            callback();
+            (callback ?? (() => { }))();
         }
         return true;
     }
@@ -54,13 +54,13 @@ public class SceneLoader : Singleton<SceneLoader>
                 loadingScene.allowSceneActivation = true;
                 if (loadingScene.isDone == true)
                 {
-                    loadState = -1;
+                    loadState = -1.25f;
                     _callback();
                 }
             }
             else if (color.a <= 0)
             {
-                loadState = 1;
+                loadState = 0.75f;
                 loading = false;
                 Destroy(canvas);
             }

@@ -7,7 +7,6 @@ namespace SimpleWars
     public class Zoom : MonoBehaviour
     {
         public float zoomSpeed = 1;
-        public float pinchZoomSpeed = 1;
         public float target;
         public float smoothSpeed = 2.0f;
         public float minOrtho = 1.0f;
@@ -42,26 +41,23 @@ namespace SimpleWars
             }
             if (Input.touchCount == 2)
             {
-                // Store both touches.
-                Touch touchZero = Input.GetTouch(0);
-                Touch touchOne = Input.GetTouch(1);
+                Touch touch0 = Input.GetTouch(0);
+                Touch touch1 = Input.GetTouch(1);
 
-                // Find the position in the previous frame of each touch.
-                Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
-                Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+                Vector3 touch0_pos = touch0.position;
+                Vector3 touch1_pos = touch1.position;
 
-                // Find the magnitude of the vector (the distance) between the touches in each frame.
-                float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
-                float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+                Vector3 touch0_prevPos = touch0.position - touch0.deltaPosition;
+                Vector3 touch1_prevPos = touch1.position - touch1.deltaPosition;
 
-                // Find the difference in the distances between each frame.
-                float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+                float currentDistance = Vector3.Distance(cam.ScreenToWorldPoint(touch0_pos), cam.ScreenToWorldPoint(touch1_pos));
+                float lastDistance = Vector3.Distance(cam.ScreenToWorldPoint(touch0_prevPos), cam.ScreenToWorldPoint(touch1_prevPos));
 
-                // ... change the orthographic size based on the change in distance between the touches.
-                cam.orthographicSize += deltaMagnitudeDiff * pinchZoomSpeed;
+                float delta = lastDistance - currentDistance;
 
-                // Make sure the orthographic size never drops below zero.
-                cam.orthographicSize = Mathf.Max(cam.orthographicSize, 0.1f);
+                target += delta;
+
+                target = Mathf.Clamp(target, minOrtho, maxOrtho);
             }
             cam.orthographicSize = Mathf.MoveTowards(
                 cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize);

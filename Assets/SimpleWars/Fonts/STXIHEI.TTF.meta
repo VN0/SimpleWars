@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: fe3aa93060b3f1b46a7135ec0719481a
-timeCreated: 1471343186
+guid: 23878935646d4f5418bfcd619c34948b
+timeCreated: 1480250442
 licenseType: Free
 TrueTypeFontImporter:
   serializedVersion: 4
@@ -10,9 +10,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - 'MSYH
-
-    Noto Sans CJK'
+  - STXihei
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

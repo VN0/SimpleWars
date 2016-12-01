@@ -6,22 +6,31 @@ namespace SimpleWars
     {
         protected Manager () { }
 
+        protected int _randomSeed = 0;
+        public int RandomSeed
+        {
+            get
+            {
+                return _randomSeed;
+            }
+            set
+            {
+                _randomSeed = value;
+                Random.InitState(value);
+            }
+        }
+
         public bool modEnabled = false;
 
         new void Awake ()
         {
             Unbug.Log(Application.persistentDataPath);
+            RandomSeed = SystemInfo.deviceUniqueIdentifier.GetHashCode();
         }
 
-        void Start ()
+        private void Start()
         {
-            StartCoroutine(Coroutines.ExecuteAfter(2, delegate
-            {
-                SceneLoader.LoadScene("Menu", callback: delegate
-                {
-                    SceneLoader.instance.fadeDuration = 0.5f;
-                });
-            }));
+            SceneLoader.LoadScene("Menu", callback: () => { SceneLoader.instance.fadeDuration = 0.5f; });
         }
     }
 }

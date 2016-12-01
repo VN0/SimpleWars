@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 80916c892274a35458052fa6fd2cdf54
-timeCreated: 1471687080
+timeCreated: 1480260586
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -52,7 +52,10 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline: []
+    outline:
+    - - {x: 0, y: 256}
+      - {x: 221.7025, y: -128.00002}
+      - {x: -221.70251, y: -127.99998}
   spritePackingTag: UISprites
   userData: 
   assetBundleName: 
