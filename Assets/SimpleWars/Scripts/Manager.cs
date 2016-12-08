@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using EazyTools.SoundManager;
+using Lean.Localization;
 
 namespace SimpleWars
 {
@@ -21,11 +23,14 @@ namespace SimpleWars
         }
 
         public bool modEnabled = false;
+        public AudioClip bgm;
 
         new void Awake ()
         {
             Unbug.Log(Application.persistentDataPath);
             RandomSeed = SystemInfo.deviceUniqueIdentifier.GetHashCode();
+            SoundManager.PlayMusic(bgm, 0.2f, true, true, 0, 0);
+            LeanLocalization.CurrentLanguage = Application.systemLanguage.ToString();
         }
 
         private void Start()

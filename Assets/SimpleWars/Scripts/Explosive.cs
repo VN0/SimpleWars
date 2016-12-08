@@ -124,12 +124,12 @@ namespace SimpleWars.Parts
 
         void OnCollisionEnter2D (Collision2D col)
         {
-            float v = col.relativeVelocity.magnitude;
+            float v = col.relativeVelocity.sqrMagnitude;
             if (exploded)
             {
                 return;
             }
-            if (v * Mathf.Pow(mass + (col.rigidbody != null ? col.rigidbody.mass : 5), 2) / 2 > forceToExplode)
+            if (v * (mass + (col.rigidbody != null ? col.rigidbody.mass : 0)) > forceToExplode * 2)
             {
                 Explode();
                 return;
