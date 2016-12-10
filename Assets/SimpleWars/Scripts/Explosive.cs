@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace SimpleWars.Parts
 {
@@ -121,7 +122,7 @@ namespace SimpleWars.Parts
             catch (MissingReferenceException) { }
             catch (System.NullReferenceException) { }
         }
-
+        
         void OnCollisionEnter2D (Collision2D col)
         {
             float v = col.relativeVelocity.sqrMagnitude;
