@@ -4,33 +4,10 @@
 ![Linux desktop Universal](http://simplewars.pythonanywhere.com/get_badge/Linux%20desktop%20Universal?e)
 ![Android](http://simplewars.pythonanywhere.com/get_badge/Android?e)
 ![WebGL](http://simplewars.pythonanywhere.com/get_badge/WebGL?e)
-<!--Web Player is no longer supported
-![Web Player](http://simplewars.pythonanywhere.com/get_badge/Web%20Player?b)
--->
-####[UserVoice](https://simplewars.uservoice.com/)
-__________
-<br>
+
 SimpleWars
 ==========
-A multiplayer sandbox game inspired by _[SimpleRockets](http://jundroo.com/app/simplerockets/)_<br>
-_Made with **[Unity](http://unity3d.com/)**_
-__________
-Coming soon! ^_^
-__________
-<br><br>
-
-简单战争
-==========
-源于 _[简单火箭](http://jundroo.com/app/simplerockets/)_ 的联机沙盒游戏<br>
-_Made with **[Unity](http://unity3d.com/)**_
-__________
-
-计划：
+A 2d physics simulation game
 ----------
-- [X] 加入载具建造系统
-- [ ] 加入联机系统
-- [X] 修复bug并编译移动版
-- [ ] 加入商店系统
-- [ ] 加入激活组/按键激活
-- [X] 改进性能
-- [ ] 发布iOS版本
+   
+P.S. : Please help me complete the readme :D
