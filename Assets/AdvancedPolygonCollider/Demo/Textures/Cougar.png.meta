@@ -1,0 +1,269 @@
+fileFormatVersion: 2
+guid: 334653c90da783545bbe0593e563d68f
+timeCreated: 1450555775
+licenseType: Store
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: AnimatedSprite_0
+    21300002: AnimatedSprite_1
+    21300004: AnimatedSprite_2
+    21300006: AnimatedSprite_3
+    21300008: AnimatedSprite_4
+    21300010: AnimatedSprite_5
+    21300012: AnimatedSprite_6
+    21300014: AnimatedSprite_7
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: -1
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 1
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 50
+  alphaIsTransparency: 1
+  textureType: 5
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: AnimatedSprite_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 220, y: 9}
+        - {x: -220, y: 71}
+        - {x: -251, y: 71}
+        - {x: -254, y: 66}
+        - {x: -254, y: -87}
+        - {x: -41, y: -93}
+        - {x: 87, y: -128}
+        - {x: 152, y: -128}
+        - {x: 164, y: -115}
+        - {x: 241, y: -127}
+        - {x: 241, y: -81}
+    - name: AnimatedSprite_1
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 256
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 186, y: -126}
+        - {x: 189, y: -122}
+        - {x: 191, y: -115}
+        - {x: 179, y: -108}
+        - {x: 203, y: -77}
+        - {x: 203, y: -3}
+        - {x: -13, y: 51}
+        - {x: -113, y: 61}
+        - {x: -209, y: 61}
+        - {x: -209, y: 4}
+        - {x: -149, y: -119}
+        - {x: -124, y: -127}
+        - {x: 73, y: -127}
+        - {x: 74, y: -126}
+        - {x: 69, y: -109}
+        - {x: 152, y: -127}
+        - {x: 175, y: -127}
+    - name: AnimatedSprite_2
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 256
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -34, y: 58}
+        - {x: -205, y: 39}
+        - {x: -205, y: 8}
+        - {x: -197, y: -5}
+        - {x: -121, y: -27}
+        - {x: -84, y: -110}
+        - {x: -50, y: -128}
+        - {x: 154, y: -128}
+        - {x: 202, y: -70}
+        - {x: 202, y: 13}
+        - {x: 58, y: 58}
+    - name: AnimatedSprite_3
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 256
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 6, y: 70}
+        - {x: -183, y: 36}
+        - {x: -184, y: 35}
+        - {x: -184, y: 19}
+        - {x: -160, y: -5}
+        - {x: -30, y: -76}
+        - {x: -4, y: -75}
+        - {x: 5, y: -69}
+        - {x: -5, y: -79}
+        - {x: -10, y: -96}
+        - {x: 87, y: -96}
+        - {x: 201, y: -65}
+        - {x: 201, y: 48}
+        - {x: 71, y: 70}
+    - name: AnimatedSprite_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -48, y: 68}
+        - {x: -192, y: 39}
+        - {x: -192, y: 28}
+        - {x: -190, y: 20}
+        - {x: -156, y: 11}
+        - {x: -124, y: -25}
+        - {x: 5, y: -110}
+        - {x: 176, y: -110}
+        - {x: 201, y: -84}
+        - {x: 201, y: 60}
+        - {x: 99, y: 68}
+    - name: AnimatedSprite_5
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -202, y: 52}
+        - {x: -202, y: 11}
+        - {x: -74, y: -36}
+        - {x: -77, y: -111}
+        - {x: -48, y: -128}
+        - {x: 85, y: -128}
+        - {x: 201, y: -18}
+        - {x: 201, y: 51}
+        - {x: 200, y: 52}
+    - name: AnimatedSprite_6
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 104, y: -40}
+        - {x: 104, y: -34}
+        - {x: 103, y: -30}
+        - {x: 104, y: -32}
+        - {x: 105, y: -35}
+        - {x: 110, y: -40}
+        - {x: 123, y: -47}
+        - {x: 140, y: -77}
+        - {x: 157, y: -89}
+        - {x: 199, y: -41}
+        - {x: 201, y: -34}
+        - {x: 201, y: 65}
+        - {x: 30, y: 65}
+        - {x: -242, y: 37}
+        - {x: -242, y: 25}
+        - {x: -237, y: 15}
+        - {x: -212, y: 10}
+        - {x: -153, y: -120}
+        - {x: -137, y: -125}
+        - {x: -121, y: -125}
+        - {x: -114, y: -110}
+        - {x: -50, y: -125}
+        - {x: -6, y: -125}
+        - {x: 2, y: -122}
+        - {x: 93, y: -58}
+        - {x: 101, y: -47}
+    - name: AnimatedSprite_7
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 51, y: 79}
+        - {x: -255, y: 79}
+        - {x: -255, y: -81}
+        - {x: -232, y: -86}
+        - {x: -150, y: -52}
+        - {x: -149, y: -51}
+        - {x: -147, y: -51}
+        - {x: -149, y: -51}
+        - {x: -153, y: -55}
+        - {x: -156, y: -55}
+        - {x: -159, y: -57}
+        - {x: -196, y: -102}
+        - {x: -176, y: -126}
+        - {x: 86, y: -126}
+        - {x: 226, y: -96}
+        - {x: 226, y: -39}
+        - {x: 218, y: 40}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

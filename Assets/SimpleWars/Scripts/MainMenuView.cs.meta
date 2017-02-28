@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 55a7f4367beaaf645aba179810822c03
+timeCreated: 1488212076
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - LayoutParent: {instanceID: 0}
+  - Parent: {instanceID: 0}
+  - Content: {instanceID: 0}
+  - GameObject: {instanceID: 0}
+  - Transform: {instanceID: 0}
+  - RectTransform: {instanceID: 0}
+  - ImageComponent: {instanceID: 0}
+  - font: {fileID: 12800000, guid: 23878935646d4f5418bfcd619c34948b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

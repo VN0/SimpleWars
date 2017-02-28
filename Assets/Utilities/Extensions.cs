@@ -5,14 +5,14 @@ static public class ExtensionMethods
 {
     /// <summary>
     /// Gets or add a component. Usage example:
-    /// BoxCollider boxCollider = transform.GetOrAddComponent<BoxCollider>();
+    /// BoxCollider boxCollider = gameObject.GetOrAddComponent<BoxCollider>();
     /// </summary>
-    static public T GetOrAddComponent<T> (this Component child) where T : Component
+    static public T GetOrAddComponent<T> (this GameObject go) where T : Component
     {
-        T result = child.GetComponent<T>();
+        T result = go.GetComponent<T>();
         if (result == null)
         {
-            result = child.gameObject.AddComponent<T>();
+            result = go.gameObject.AddComponent<T>();
         }
         return result;
     }

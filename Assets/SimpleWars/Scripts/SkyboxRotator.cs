@@ -7,9 +7,9 @@ namespace SimpleWars
     {
         public float speed = 5;
 
-        void FixedUpdate ()
+        private void Awake ()
         {
-            transform.Rotate(new Vector3(0, speed * Time.deltaTime, 0));
+            GetComponent<Rigidbody>().angularVelocity = new Vector3(0, speed/60, 0);
         }
     }
 }

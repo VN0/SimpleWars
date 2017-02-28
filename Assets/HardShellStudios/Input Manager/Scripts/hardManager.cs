@@ -635,7 +635,7 @@ namespace HardShellStudios.InputManager
                     string[] parsed = PlayerPrefs.GetString("settings_bindings_" + e.Current.Value.keyName).Split('^');
                     int axis = int.Parse(parsed[1]);
 
-                    if (useController || (!useController && (axis <= 10 || axis >= 13)))
+                    if (useController || (!useController && (axis <= 10 && axis >= 13)))
                     {
                         keyMaps[e.Current.Value.keyName].keyInput = (KeyCode)System.Enum.Parse(typeof(KeyCode), parsed[0]);
                         keyMaps[e.Current.Value.keyName].keyWheelState = int.Parse(parsed[1]);
@@ -661,7 +661,7 @@ namespace HardShellStudios.InputManager
                     string[] parsed2 = PlayerPrefs.GetString("settings_bindings_sec_" + e.Current.Value.keyName).Split('^');
                     int axis = int.Parse(parsed2[1]);
 
-                    if (useController || (!useController && (axis <= 10 || axis >= 13)))
+                    if (useController || (!useController && (axis <= 10 && axis >= 13)))
                     {
                         keyMaps[e.Current.Value.keyName].keyInput2 = (KeyCode)System.Enum.Parse(typeof(KeyCode), parsed2[0]);
                         keyMaps[e.Current.Value.keyName].keyWheelState2 = int.Parse(parsed2[1]);
@@ -757,16 +757,16 @@ namespace HardShellStudios.InputManager
                 else
                     hardRebind(currentRebind, KeyCode.None, 2);
             }
-            else if ((useController) && Input.GetAxis("DPADVER") != 0)
+            else if (Input.GetAxis("DPADVER") != 0)
             {
-                if ((useController) && Input.GetAxis("DPADVER") > 0)
+                if (Input.GetAxis("DPADVER") > 0)
                     hardRebind(currentRebind, KeyCode.None, 10);
                 else
                     hardRebind(currentRebind, KeyCode.None, 11);
             }
-            else if ((useController) && Input.GetAxis("DPADHOR") != 0)
+            else if (Input.GetAxis("DPADHOR") != 0)
             {
-                if ((useController) && Input.GetAxis("DPADHOR") > 0)
+                if (Input.GetAxis("DPADHOR") > 0)
                     hardRebind(currentRebind, KeyCode.None, 12);
                 else
                     hardRebind(currentRebind, KeyCode.None, 13);

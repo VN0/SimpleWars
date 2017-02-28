@@ -1,0 +1,36 @@
+<MainMenuView xmlns="MarkLight">
+  
+  <Group Spacing="10px">
+    
+    <Label Text="SimpleWars" TextAlignment="Center" 
+           FontSize="80" Font="Assets/SimpleWars/Fonts/Avalon_Plain.ttf" />
+
+    <Label Text="{@Loc.SimpleWars}" TextAlignment="Center"
+           FontSize="20" Font="Assets/SimpleWars/Fonts/Avalon_Plain.ttf" />
+    
+    <Group Spacing="10px" Alpha="0.8" Alignment="Center">
+
+      <Button Id="b0" Text="{@Loc.Sandbox}" Click="LoadBuilder" BackgroundColor="#ffffff" Width="30%"
+              FontColor="#222222" FontSize="25" Font="Assets/SimpleWars/Fonts/Avalon_Plain.ttf" />
+
+      <Button Id="b1" Text="{@Loc.Options}" BackgroundColor="#ffffff" Width="30%" 
+              FontColor="#222222" FontSize="25" Font="Assets/SimpleWars/Fonts/Avalon_Plain.ttf" />
+
+      <Button Id="b2" Text="{@Loc.Quit}" Click="Quit" BackgroundColor="#ffffff" Width="30%" 
+              FontColor="#222222" FontSize="25" Font="Assets/SimpleWars/Fonts/Avalon_Plain.ttf" />
+      
+    </Group>
+    
+  </Group>
+
+  <ViewAnimation Id="b0Hover">
+    <Animate Field="b0.Width" To="40%" Duration="200ms" EasingFunction="CircularEaseInOut" />
+  </ViewAnimation>
+  <ViewAnimation Id="b1Hover">
+    <Animate Field="b1.Width" To="40%" Duration="200ms" EasingFunction="CircularEaseInOut" />
+  </ViewAnimation>
+  <ViewAnimation Id="b2Hover">
+    <Animate Field="b2.Width" To="40%" Duration="200ms" EasingFunction="CircularEaseInOut" />
+  </ViewAnimation>
+  
+</MainMenuView>

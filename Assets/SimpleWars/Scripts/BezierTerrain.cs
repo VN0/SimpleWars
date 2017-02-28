@@ -26,7 +26,7 @@ namespace SimpleWars.Planets
         {
 
         }
-        
+
         void Update ()
         {
 

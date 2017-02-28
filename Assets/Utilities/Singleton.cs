@@ -4,7 +4,7 @@ public class Singleton<T> : MonoBehaviour
 {
     public static T instance;
 
-    protected virtual void Awake ()
+    protected void Awake ()
     {
         if (FindObjectsOfType(typeof(T)).Length > 1)
         {

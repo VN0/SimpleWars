@@ -1,0 +1,22 @@
+<ResourceDictionary Name="Loc" xmlns="MarkLight">
+  <ResourceGroup Key="SimpleWars">
+    <Resource Language="en" Value="" />
+    <Resource Language="fr" Value="" />
+    <Resource Language="zh" Value="简单战争" />
+  </ResourceGroup>
+  <ResourceGroup Key="Sandbox">
+    <Resource Language="en" Value="Sandbox" />
+    <Resource Language="fr" Value="Sandbox" />
+    <Resource Language="zh" Value="沙盒" />
+  </ResourceGroup>
+  <ResourceGroup Key="Options">
+    <Resource Language="en" Value="Options" />
+    <Resource Language="fr" Value="Options" />
+    <Resource Language="zh" Value="选项" />
+  </ResourceGroup>
+  <ResourceGroup Key="Quit">
+    <Resource Language="en" Value="Quit" />
+    <Resource Language="fr" Value="Quitter" />
+    <Resource Language="zh" Value="退出" />
+  </ResourceGroup>
+</ResourceDictionary>

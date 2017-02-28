@@ -1,0 +1,29 @@
+<BuilderView xmlns="MarkLight">
+
+  <Group Width="50" Spacing="2" Alignment="TopLeft" ContentAlignment="Top" Alpha="0.9">
+    <Group Width="50" Spacing="10" BackgroundColor="#202020">
+      <Button Width="50" Height="50" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Menu.png"
+              Click="ShowSaves"/>
+      <Button Width="50" Height="50" Margin="7, 7, 7, 7" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Close.png"/>
+    </Group>
+    <Group Width="50" Spacing="5" BackgroundColor="#202020">
+      <Button Width="50" Height="50" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Add.png"/>
+      <Button Width="50" Height="50" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Staging.png"/>
+    </Group>
+    <Group Width="50" Spacing="5" BackgroundColor="#202020">
+      <Button Width="50" Height="50" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Play.png"
+              Click="LoadPlanet"/>
+    </Group>
+  </Group>
+
+  <Region Alignment="TopLeft" Width="210" Offset="50, 0">
+    <Panel Id="SavesPanel" HorizontalScrollbarVisibility="Hidden" VerticalScrollbarVisibility="AutoHideAndExpandViewport" ContentAlignment="Top"
+           VerticalScrollbarColor="grey" VerticalScrollbarHandleColor="#d0d0d0" Alpha="0.9" CanScrollHorizontally="false" VerticalScrollbarValue="0">
+      <List Id="SavesList" Items="{=files}" Spacing="1">
+        <ListItem IsTemplate="True" Text="{=#Item.Name}" Click="SaveSelected"
+                  BackgroundColor="#202020" FontColor="white" Font="Avalon_Plain.ttf" BaseDirectory="Assets/SimpleWars/Fonts/"/>
+      </List>
+    </Panel>
+  </Region>
+
+</BuilderView>

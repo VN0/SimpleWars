@@ -1,0 +1,6 @@
+<BuilderScene xmlns="MarkLight">
+  <UserInterface>
+    <BuilderView />
+  </UserInterface>
+  <EventSystem />
+</BuilderScene>

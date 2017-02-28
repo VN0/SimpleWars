@@ -25,8 +25,14 @@ namespace HardShellStudios.InputManager
         hardKey.controllerMap joyPrime;
         hardKey.controllerMap joySec;
         bool saveable = true;
+        bool showAll = false;
 
-        string[] axisOptions = new string[] {   "Mouse or Button Press", // 0
+        string[] axisOptions;
+
+        string[] axisOptionsBASE = new string[] {   "Mouse or Button Press", // 0
+                                            "Mouse Axis/Wheel Up", "Mouse Axis/Wheel Down", "Mouse Axis/Position X", "Mouse Axis/Position Y"};
+
+        string[] axisOptionsFULL = new string[] {   "Mouse or Button Press", // 0
                                             "Mouse Axis/Wheel Up", "Mouse Axis/Wheel Down", "Mouse Axis/Position X", "Mouse Axis/Position Y", // 1-4
                                             "Controller Button Press", // 5
 
@@ -103,30 +109,6 @@ namespace HardShellStudios.InputManager
             EditorApplication.ExecuteMenuItem("Edit/Project Settings/Input");
         }
 
-        Color[] isPaid()
-        {
-            if (earlyUpdate)
-            {
-                return new Color[] { new Color(ColorConv(255), ColorConv(184), ColorConv(29), 1f), new Color(ColorConv(27), ColorConv(21), ColorConv(7), 0.4f) };
-            }
-            else
-            {
-                return new Color[] { new Color(0.4f, 0.66f, 0.34f, 1f), new Color(0.35f, 0.55f, 0.65f, 1f) };
-            }
-        }
-
-        string isPaidName()
-        {
-            if (earlyUpdate)
-            {
-                return "header-default";
-            }
-            else
-            {
-                return "header-default";
-            }
-        }
-
         float ColorConv(float value)
         {
             return value / 255;
@@ -135,17 +117,22 @@ namespace HardShellStudios.InputManager
         public override void OnInspectorGUI()
         {
             //Begin
-
             myscript = (hardManager)target;
-            bool anyOpen = false;
-            bool anySaved = true;
 
-            Texture headerImg = (Texture)Resources.Load(isPaidName());
+            bool anySaved = true;
+            if (myscript.useController) { axisOptions = axisOptionsFULL; } else { axisOptions = axisOptionsBASE; }
+            Texture headerImg = (Texture)Resources.Load("header-default");
             var centered = GUI.skin.GetStyle("Label");
             centered.alignment = TextAnchor.UpperCenter;
             GUILayout.Label(headerImg, centered);
 
-            GUILayout.Space(10);
+            if (!showAll)
+            {
+                if (GUILayout.Button("Hide All Keys"))
+                {
+                    showAll = true;
+                }
+            }
 
             for (int i = 0; i < myscript.inputs.Length; i++)
             {
@@ -167,12 +154,17 @@ namespace HardShellStudios.InputManager
 
 
                 // Alternating Color Scheme
-                Color[] colors = isPaid();
+                Color[] colors = new Color[] { new Color32(170, 36, 143, 255), new Color32(97, 97, 97, 255) };
                 GUIStyle style = new GUIStyle();
                 style.normal.background = MakeTex(600, 1, colors[i % 2]);
                 EditorGUILayout.BeginVertical(style);
 
                 //GUIStyle styleFoldout = new GUIStyle();
+
+                if (showAll)
+                {
+                    opened[i] = false;
+                }
 
                 opened[i] = EditorGUILayout.Foldout(opened[i], currName);
 
@@ -227,43 +219,19 @@ namespace HardShellStudios.InputManager
 
                     if (GUILayout.Button("Delete Key"))
                         deleteSelected(i);
-                    anyOpen = true;
                 }
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Separator();
             }
 
+            showAll = false;
+
 
 
             // Alternating Color Scheme
             GUIStyle colour = new GUIStyle();
-            if (earlyUpdate)
-                colour.normal.background = MakeTex(600, 1, isPaid()[0]);
-            else
-                colour.normal.background = MakeTex(600, 1, new Color(0.65f, 0.35f, 0.35f, 1));
-
-
-            if (anyOpen)
-            {
-                if (GUILayout.Button("Hide All Keys"))
-                {
-                    for (int i = 0; i < opened.Length; i++)
-                    {
-                        opened[i] = false;
-                    }
-                }
-            }
-            else
-            {
-                if (GUILayout.Button("Show All Keys"))
-                {
-                    for (int i = 0; i < opened.Length; i++)
-                    {
-                        opened[i] = true;
-                    }
-                }
-            }
+            colour.normal.background = MakeTex(600, 1, new Color32(170, 36, 143, 255));
 
             if (!anySaved)
             {
@@ -347,8 +315,12 @@ namespace HardShellStudios.InputManager
                 }
             }
 
-            myscript.controllerType = EditorGUILayout.Popup("Controller Name Stlye", myscript.controllerType, controllerTypes);
-            myscript.saveControllerType = EditorGUILayout.Toggle("Save controller name style?", myscript.saveControllerType);
+            if (myscript.useController)
+            {
+
+                myscript.controllerType = EditorGUILayout.Popup("Controller Name Stlye", myscript.controllerType, controllerTypes);
+                myscript.saveControllerType = EditorGUILayout.Toggle("Save controller name style?", myscript.saveControllerType);
+            }
             EditorGUILayout.Separator();
 
             if (GUILayout.Button("Copy Inputs"))
