@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class Bezier : Object
+public class BezierCurve : Object
 {
     public Vector2 v0, v1, v2, v3;
 
-    public Bezier (Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+    public BezierCurve (Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
     {
         v0 = p0;
         v1 = p1;

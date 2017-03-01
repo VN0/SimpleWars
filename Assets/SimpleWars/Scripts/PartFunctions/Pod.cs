@@ -4,7 +4,7 @@ namespace SimpleWars.Parts
 {
     public class Pod : PartFunction
     {
-        new void ActiveStart ()
+        void ActiveStart ()
         {
             print("Hello World");
         }

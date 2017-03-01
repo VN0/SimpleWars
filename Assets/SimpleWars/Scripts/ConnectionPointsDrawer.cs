@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using EPPZ.Lines;
 
 namespace SimpleWars
 {
-    public class ConnectionPointsDrawer : MonoBehaviour
+    public class ConnectionPointsDrawer : DirectLineRenderer
     {
+        public Material mat;
 
         // Use this for initialization
         void Start ()
@@ -18,16 +20,9 @@ namespace SimpleWars
 
         }
 
-        void OnPostRender ()
+        protected override void OnDraw ()
         {
-            GL.LoadOrtho();
-            GL.Begin(GL.QUADS);
-            GL.Color(Color.red);
-            GL.Vertex3(0, 0.5F, 0);
-            GL.Vertex3(0.5F, 1, 0);
-            GL.Vertex3(1, 0.5F, 0);
-            GL.Vertex3(0.5F, 0, 0);
-            GL.Color(Color.cyan);
+            DrawLine(new Vector2(-1, -1), new Vector2(1, 1), Color.red);
         }
     }
 
