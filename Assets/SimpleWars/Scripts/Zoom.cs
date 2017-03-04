@@ -33,12 +33,12 @@ namespace SimpleWars
                 float scroll = Input.GetAxis("Mouse ScrollWheel");
                 if (scroll != 0.0f && !EventSystem.current.IsPointerOverGameObject())
                 {
-                    target -= scroll * zoomSpeed * cam.orthographicSize / 30;
+                    target -= scroll * zoomSpeed * cam.orthographicSize / 20;
                     target = Mathf.Clamp(target, minOrtho, maxOrtho);
                 }
 
                 cam.orthographicSize = Mathf.MoveTowards(
-                    cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 30);
+                    cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 20);
             }
             if (Input.touchCount == 2)
             {
