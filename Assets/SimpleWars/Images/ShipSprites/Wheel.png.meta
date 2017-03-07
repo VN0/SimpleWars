@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: e7cfc8b4dd0a364439453888a4045813
-timeCreated: 1470951166
+timeCreated: 1488635165
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -34,7 +34,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 3
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -125,7 +125,27 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline: []
+    outline:
+    - - {x: 0, y: 60}
+      - {x: 18.54102, y: 57.063393}
+      - {x: 35.267113, y: 48.54102}
+      - {x: 48.54102, y: 35.267113}
+      - {x: 57.063393, y: 18.541018}
+      - {x: 60, y: -0.0000026226833}
+      - {x: 57.06339, y: -18.541021}
+      - {x: 48.54102, y: -35.267113}
+      - {x: 35.267113, y: -48.541023}
+      - {x: 18.541008, y: -57.063396}
+      - {x: -0.000019550482, y: -60}
+      - {x: -18.541046, y: -57.06338}
+      - {x: -35.267143, y: -48.541}
+      - {x: -48.541046, y: -35.267082}
+      - {x: -57.063408, y: -18.540972}
+      - {x: -60, y: 0.000057935948}
+      - {x: -57.06337, y: 18.541082}
+      - {x: -48.540977, y: 35.267174}
+      - {x: -35.26705, y: 48.541065}
+      - {x: -18.540936, y: 57.063416}
   spritePackingTag: SRParts
   userData: 
   assetBundleName: 

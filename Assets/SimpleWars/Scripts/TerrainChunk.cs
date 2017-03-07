@@ -25,7 +25,8 @@ namespace SimpleWars.Planets
         public enum Algorithm
         {
             Perlin = 0,
-            Simplex = 1
+            Simplex = 1,
+            Flat = 2
         }
 
         private void Awake ()
@@ -43,6 +44,9 @@ namespace SimpleWars.Planets
                     break;
                 case Algorithm.Simplex:
                     algo = Simplex.Generate;
+                    break;
+                case Algorithm.Flat:
+                    algo = Flat;
                     break;
             }
 
@@ -109,6 +113,11 @@ namespace SimpleWars.Planets
             }
 
             return lst.ToArray();
+        }
+
+        public static float Flat (float x)
+        {
+            return 0;
         }
     }
 }

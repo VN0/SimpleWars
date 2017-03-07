@@ -78,6 +78,7 @@ namespace SimpleWars
 
         private void Awake ()
         {
+            useGUILayout = false;
             Refresh();
         }
 
@@ -89,13 +90,10 @@ namespace SimpleWars
             //    material.color = color;
             //    lastColor = color;
             //}
-            foreach (var quad in quads)
-            {
-                DrawRectangle(quad.pts, quad.offset, quad.color);
-            }
+            DrawQuads(quads);
         }
 
-        void DrawRectangle (IEnumerable<Vector2> positions, Vector2 offset, Color color)
+        void DrawQuads (IEnumerable<Quad> quads)
         {
             // We shouldn't draw until we are told to do so.
             if (Event.current.type != EventType.Repaint)
@@ -113,11 +111,16 @@ namespace SimpleWars
             // Optimization hint: 
             // Consider Graphics.DrawMeshNow
             GL.Begin(GL.QUADS);
-            GL.Color(color);
-            foreach (Vector2 v in positions)
+            foreach (Quad quad in quads)
             {
-                var vec = cam.WorldToScreenPoint(v + offset);
-                GL.Vertex3(vec.x, screenHeight - vec.y, 0);
+                GL.Color(quad.color);
+                var positions = quad.pts;
+                var offset = quad.offset;
+                foreach (Vector2 v in positions)
+                {
+                    var vec = cam.WorldToScreenPoint(v + offset);
+                    GL.Vertex3(vec.x, screenHeight - vec.y, 0);
+                }
             }
 
             GL.End();
