@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using EazyTools.SoundManager;
 using Lean.Localization;
 using MarkLight;
 using UnityEngine;
+using DG.DeAudio;
 
 namespace SimpleWars
 {
@@ -29,6 +29,7 @@ namespace SimpleWars
         }
 
         public bool modEnabled = false;
+        public GameObject audioManager;
         public AudioClip bgm;
 
         public static FileInfo[] GetSaves ()
@@ -46,7 +47,7 @@ namespace SimpleWars
         {
             Unbug.Log(Application.persistentDataPath);
             RandomSeed = SystemInfo.deviceUniqueIdentifier.GetHashCode();
-            SoundManager.PlayMusic(bgm, 0.2f, true, true, 0, 0);
+            Instantiate(audioManager);
             LeanLocalization.CurrentLanguage = Application.systemLanguage.ToString();
             ResourceDictionary.SetConfiguration(LanguageHelper.Get2LetterISOCodeFromSystemLanguage());
             ResourceDictionary.NotifyObservers();
@@ -72,6 +73,9 @@ namespace SimpleWars
 
         void Start ()
         {
+            var audio = new DeAudioClipData(DeAudioGroupId.Ambient, true);
+            audio.clip = bgm;
+            DeAudioManager.Play(audio);
             SceneLoader.LoadScene("Menu", callback: () => { SceneLoader.instance.fadeDuration = 0.5f; });
         }
     }

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using EazyTools.SoundManager;
+using DG.DeAudio;
 
 namespace SimpleWars
 {
@@ -11,17 +11,17 @@ namespace SimpleWars
 
         public void PlayMouseClick (float volume = 1)
         {
-            SoundManager.PlayUISound(mClick, volume);
+            DeAudioManager.Play(mClick, volume);
         }
 
         public void PlayMouseEnter(float volume = 1)
         {
-            SoundManager.PlayUISound(mEnter, volume);
+            DeAudioManager.Play(mEnter, volume);
         }
 
         public void PlayMousExit(float volume = 1)
         {
-            SoundManager.PlayUISound(mExit, volume);
+            DeAudioManager.Play(mExit, volume);
         }
     }
 }

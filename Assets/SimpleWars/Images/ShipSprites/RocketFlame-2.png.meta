@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: f53cc199848742e4898652bd49d75ad2
-timeCreated: 1470951161
+timeCreated: 1491442671
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -125,7 +125,11 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline: []
+    outline:
+    - - {x: -41, y: 89}
+      - {x: 0, y: -113}
+      - {x: 41, y: 88}
+      - {x: 0, y: 113}
   spritePackingTag: SRParts
   userData: 
   assetBundleName: 

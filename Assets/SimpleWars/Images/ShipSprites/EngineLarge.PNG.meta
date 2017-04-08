@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 2bab324e4afbf6d4da98a67425233573
-timeCreated: 1470951152
+timeCreated: 1491430772
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -43,7 +43,7 @@ TextureImporter:
   spritePixelsToUnits: 60
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: -1
+  spriteTessellationDetail: 0
   textureType: 8
   textureShape: 1
   maxTextureSizeSet: 0
@@ -125,7 +125,11 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline: []
+    outline:
+    - - {x: -60, y: 120}
+      - {x: -37, y: -120}
+      - {x: 37, y: -120}
+      - {x: 60, y: 120}
   spritePackingTag: SRParts
   userData: 
   assetBundleName: 

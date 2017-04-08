@@ -6,6 +6,8 @@ Also call the OverridableMonoBehaviour.Awake() function on the first line of you
 You'll have to replace your Update method to public override void UpdateMe()
 Once you've done that you'll be able to use this package.
 
+If you're using the FixedUpdate and or the LateUpdate, you can use the FixedUpdateMe() method and or the LateUpdateMe() method.
+
 To remove objects from your UpdateManager, all you need to do is all the methods UpdateManager.RemoveSpecificItem or UpdateManager.RemoveSpecificItemAndDestroyIt
 These method names should speak for themselves.
 

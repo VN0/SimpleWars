@@ -8,13 +8,37 @@ namespace SimpleWars
     {
         public float zoomSpeed = 1;
         public float pinchZoomSpeed = 1;
-        public float target;
+        public bool exact = false;
+        [DG.DeInspektor.Attributes.DeConditional("exact", false)]
         public float smoothSpeed = 2.0f;
+        [DG.DeInspektor.Attributes.DeConditional("exact", false)]
+        public float target;
         public float minOrtho = 1.0f;
         public float maxOrtho = 20.0f;
 
         Camera cam;
         float startDistance;
+
+        // Ortographic camera zoom towards a point (in world coordinates). Negative amount zooms in, positive zooms out
+        public void ZoomOrthoCamera (Vector3 zoomTowards, float amount)
+        {
+            float size = cam.orthographicSize;
+            if ((amount > 0 && size <= minOrtho + Mathf.Epsilon) || (amount < 0 && size >= maxOrtho - Mathf.Epsilon))
+            {
+                return;
+            }
+            // Calculate how much we will have to move towards the zoomTowards position
+            float multiplier = (1.0f / cam.orthographicSize * amount);
+
+            // Move camera
+            transform.position += (zoomTowards - transform.position) * multiplier;
+
+            // Zoom camera
+            size -= amount;
+
+            // Limit zoom
+            cam.orthographicSize = Mathf.Clamp(size, minOrtho, maxOrtho);
+        }
 
         void Awake ()
         {
@@ -33,12 +57,20 @@ namespace SimpleWars
                 float scroll = Input.GetAxis("Mouse ScrollWheel");
                 if (scroll != 0.0f && !EventSystem.current.IsPointerOverGameObject())
                 {
+                    if (exact)
+                    {
+                        ZoomOrthoCamera(cam.ScreenToWorldPoint(Input.mousePosition), zoomSpeed * scroll * cam.orthographicSize / 20);
+                        return;
+                    }
                     target -= scroll * zoomSpeed * cam.orthographicSize / 20;
                     target = Mathf.Clamp(target, minOrtho, maxOrtho);
                 }
 
-                cam.orthographicSize = Mathf.MoveTowards(
-                    cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 20);
+                //if (!exact)
+                //{
+                //    cam.orthographicSize = Mathf.MoveTowards(
+                //        cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize / 20);
+                //}
             }
             if (Input.touchCount == 2)
             {
@@ -63,8 +95,11 @@ namespace SimpleWars
                 // Make sure the orthographic size never drops below zero.
                 cam.orthographicSize = Mathf.Max(cam.orthographicSize, 0.1f);
             }
-            cam.orthographicSize = Mathf.MoveTowards(
+            if (!exact)
+            {
+                cam.orthographicSize = Mathf.MoveTowards(
                 cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize);
+            }
         }
     }
 }

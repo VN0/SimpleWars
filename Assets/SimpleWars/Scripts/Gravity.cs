@@ -11,7 +11,7 @@ namespace SimpleWars.Planets
 
         public static float Force (float dist, float m1, float m2)
         {
-            /*F = G m1*m2 / r^2  
+            /*F = G m1*m2 / r^2
              G = gravitational constant | G = 6.67300 × 10^−11
              m1 = mass 1 (kg)
              m2 = mass 2 (kg)
@@ -19,21 +19,27 @@ namespace SimpleWars.Planets
 
             //find the distance between the x y and z pairs
 
-            //calculate the distance between the two objects r^2 = x^2 + y^2 + z^2 
+            //calculate the distance between the two objects r^2 = x^2 + y^2 + z^2
 
             return G * ((m1 * m2) / (dist * dist));
         }
-        
+
+        /// <summary>
+        /// Get gravity acceleration by distance and mass.
+        /// </summary>
+        /// <param name="dist">The distance between planet center and the object.</param>
+        /// <param name="mass">The mass of planet.</param>
+        /// <returns>Acceleration in newton</returns>
         public static float Acceleration (float dist, float mass)
         {
             return G * (mass / (dist * dist));
         }
 
-        public static Vector2 VectorForce (Vector2 planet, Vector2 target, float mass)
+        public static Vector2 VectorAcceleration (Vector2 planet, Vector2 target, float mass)
         {
             var diff = planet - target;
-            float dist = diff.magnitude;
-            return diff.normalized * (G * ((mass * mass) / (dist * dist)));
+            float sqrDist = diff.sqrMagnitude;
+            return diff.normalized * (G * (mass / sqrDist));
         }
 
         private void Awake ()
@@ -43,8 +49,8 @@ namespace SimpleWars.Planets
 
         private void OnTriggerStay2D (Collider2D other)
         {
-            var f = VectorForce(transform.position, other.transform.position, planetMass);
-            other.attachedRigidbody.AddForce(f);
+            var f = VectorAcceleration(transform.position, other.transform.position, planetMass);
+            other.attachedRigidbody.velocity += f;
             print(f);
         }
     }

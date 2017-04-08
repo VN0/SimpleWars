@@ -20,7 +20,6 @@ namespace SimpleWars.Planets
         public float coefficient = 1;
         public float heightCoefficient = 1;
         public int seed = 0;
-        public Algorithm algorithm = Algorithm.Perlin;
 
         public enum Algorithm
         {
@@ -29,36 +28,19 @@ namespace SimpleWars.Planets
             Flat = 2
         }
 
-        private void Awake ()
+        public void Generate (System.Func<float, float> algorithm)
         {
-            if (seed != 0)
-            {
-                Simplex.Seed = seed;
-            }
-
-            System.Func<float, float> algo = Perlin.Generate;
-            switch (algorithm)
-            {
-                case Algorithm.Perlin:
-                    algo = Perlin.Generate;
-                    break;
-                case Algorithm.Simplex:
-                    algo = Simplex.Generate;
-                    break;
-                case Algorithm.Flat:
-                    algo = Flat;
-                    break;
-            }
-
+            gameObject.layer = 8;
+            points = new List<Vector2>((int)(Mathf.Abs(end - start) / space));
             float distPerDeg = radius * 2 * Mathf.PI / 360;
 
             for (float i = start; i < end; i += space)
             {
                 var angle = Vector2FromAngle(i + 90);
-                points.Add(angle * (algo(i * distPerDeg * coefficient) * heightCoefficient + radius));
+                points.Add(angle * (algorithm(i * distPerDeg * coefficient) * heightCoefficient + radius));
             }
             var _angle = Vector2FromAngle(end + 90);
-            points.Add(_angle * (algo(end * distPerDeg * coefficient) * heightCoefficient + radius));
+            points.Add(_angle * (algorithm(end * distPerDeg * coefficient) * heightCoefficient + radius));
 
             col = gameObject.GetOrAddComponent<EdgeCollider2D>();
             col.points = points.ToArray();

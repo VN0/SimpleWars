@@ -4,114 +4,161 @@
 /// Made by Feiko Joosten
 /// 
 /// I have based this code on this blogpost. Decided to give it more functionality. http://blogs.unity3d.com/2015/12/23/1k-update-calls/
-/// Use this to speed up your performance when you have a lot of update calls in your scene
+/// Use this to speed up your performance when you have a lot of update, fixed update and or late update calls in your scene
 /// Let the object you want to give increased performance inherit from OverridableMonoBehaviour
-/// Replace your void Update() for public abstract void UpdateMe()
+/// Replace your void Update() for public override void UpdateMe()
+/// Or replace your void FixedUpdate() for public override void FixedUpdateMe()
+/// Or replace your void LateUpdate() for public override void LateUpdateMe()
 /// OverridableMonoBehaviour will add the object to the update manager
 /// UpdateManager will handle all of the update calls
 /// </summary>
 
 public class UpdateManager : MonoBehaviour
 {
-    private static UpdateManager instance;
+	private static UpdateManager instance;
 
-    private int count = 0;
-    private OverridableMonoBehaviour[] array;
+	private int regularUpdateArrayCount = 0;
+	private int fixedUpdateArrayCount = 0;
+	private int lateUpdateArrayCount = 0;
+	private OverridableMonoBehaviour[] regularArray = new OverridableMonoBehaviour[0];
+	private OverridableMonoBehaviour[] fixedArray = new OverridableMonoBehaviour[0];
+	private OverridableMonoBehaviour[] lateArray = new OverridableMonoBehaviour[0];
 
-    public UpdateManager ()
-    {
-        instance = this;
-    }
+	public UpdateManager()
+	{
+		instance = this;
+	}
 
-    public static void AddItem (OverridableMonoBehaviour behaviour)
-    {
-        instance.AddItemToArray(behaviour);
-    }
+	public static void AddItem(OverridableMonoBehaviour behaviour)
+	{
+		instance.AddItemToArray(behaviour);
+	}
 
-    public static void RemoveSpecificItem (OverridableMonoBehaviour behaviour)
-    {
-        instance.RemoveSpecificItemFromArray(behaviour);
-    }
+	public static void RemoveSpecificItem(OverridableMonoBehaviour behaviour)
+	{
+		instance.RemoveSpecificItemFromArray(behaviour);
+	}
 
-    public static void RemoveSpecificItemAndDestroyIt (OverridableMonoBehaviour behaviour)
-    {
-        instance.RemoveSpecificItemFromArray(behaviour);
+	public static void RemoveSpecificItemAndDestroyIt(OverridableMonoBehaviour behaviour)
+	{
+		instance.RemoveSpecificItemFromArray(behaviour);
 
-        Destroy(behaviour.gameObject);
-    }
+		Destroy(behaviour.gameObject);
+	}
 
-    private void AddItemToArray (OverridableMonoBehaviour behaviour)
-    {
-        if (array == null)
-        {
-            array = new OverridableMonoBehaviour[1];
-        }
-        else
-        {
-            System.Array.Resize(ref array, array.Length + 1);
-        }
-        array[array.Length - 1] = behaviour;
-        count = array.Length;
-    }
+	private void AddItemToArray(OverridableMonoBehaviour behaviour)
+	{
+		if (behaviour.GetType().GetMethod("UpdateMe").DeclaringType != typeof(OverridableMonoBehaviour))
+		{
+			regularArray = ExtendAndAddItemToArray(regularArray, behaviour);
+			regularUpdateArrayCount++;
+		}
 
-    private void RemoveSpecificItemFromArray (OverridableMonoBehaviour behaviour)
-    {
-        int addAt = 0;
-        OverridableMonoBehaviour[] tempArray = new OverridableMonoBehaviour[array.Length - 1];
+		if (behaviour.GetType().GetMethod("FixedUpdateMe").DeclaringType != typeof(OverridableMonoBehaviour))
+		{
+			fixedArray = ExtendAndAddItemToArray(fixedArray, behaviour);
+			fixedUpdateArrayCount++;
+		}
 
-        for (int i = 0; i < array.Length; i++)
-        {
-            if (array[i] == null)
-            {
-                continue;
-            }
-            else if (array[i] == behaviour)
-            {
-                continue;
-            }
-            tempArray[addAt] = array[i];
-            addAt++;
-        }
+		if (behaviour.GetType().GetMethod("LateUpdateMe").DeclaringType == typeof(OverridableMonoBehaviour))
+			return;
 
-        array = new OverridableMonoBehaviour[tempArray.Length];
+		lateArray = ExtendAndAddItemToArray(lateArray, behaviour);
+		lateUpdateArrayCount++;
+	}
 
-        for (int i = 0; i < tempArray.Length; i++)
-        {
-            array[i] = tempArray[i];
-        }
+	public OverridableMonoBehaviour[] ExtendAndAddItemToArray(OverridableMonoBehaviour[] original, OverridableMonoBehaviour itemToAdd)
+	{
+		int size = original.Length;
+		OverridableMonoBehaviour[] finalArray = new OverridableMonoBehaviour[size + 1];
+		for (int i = 0; i < size; i++)
+		{
+			finalArray[i] = original[i];
+		}
+		finalArray[finalArray.Length - 1] = itemToAdd;
+		return finalArray;
+	}
 
-        count = array.Length;
-    }
+	private void RemoveSpecificItemFromArray(OverridableMonoBehaviour behaviour)
+	{
+		if (CheckIfArrayContainsItem(regularArray, behaviour))
+		{
+			regularArray = ShrinkAndRemoveItemToArray(regularArray, behaviour);
+			regularUpdateArrayCount--;
+		}
 
-    private void Update ()
-    {
-        if (count > 0)
-        {
-            for (var i = 0; i < array.Length; i++)
-            {
-                if (array[i] == null)
-                {
-                    continue;
-                }
-                array[i].UpdateMe();
-            }
-        }
-    }
+		if (CheckIfArrayContainsItem(fixedArray, behaviour))
+		{
+			fixedArray = ShrinkAndRemoveItemToArray(fixedArray, behaviour);
+			fixedUpdateArrayCount--;
+		}
 
-    private void FixedUpdate ()
-    {
-        if (count > 0)
-        {
-            for (var i = 0; i < array.Length; i++)
-            {
-                if (array[i] == null)
-                {
-                    continue;
-                }
-                array[i].FixedUpdateMe();
-            }
-        }
-    }
+		if (!CheckIfArrayContainsItem(lateArray, behaviour)) return;
+
+		lateArray = ShrinkAndRemoveItemToArray(lateArray, behaviour);
+		lateUpdateArrayCount--;
+	}
+
+	public bool CheckIfArrayContainsItem(OverridableMonoBehaviour[] arrayToCheck, OverridableMonoBehaviour objectToCheckFor)
+	{
+		int size = arrayToCheck.Length;
+
+		for (int i = 0; i < size; i++)
+		{
+			if (objectToCheckFor == arrayToCheck[i]) return true;
+		}
+
+		return false;
+	}
+
+	public OverridableMonoBehaviour[] ShrinkAndRemoveItemToArray(OverridableMonoBehaviour[] original, OverridableMonoBehaviour itemToRemove)
+	{
+		int size = original.Length;
+		OverridableMonoBehaviour[] finalArray = new OverridableMonoBehaviour[size - 1];
+		for (int i = 0; i < size; i++)
+		{
+			if (original[i] == itemToRemove) continue;
+
+			finalArray[i] = original[i];
+		}
+		return finalArray;
+	}
+
+	private void Update()
+	{
+		if (regularUpdateArrayCount == 0) return;
+
+		for (int i = 0; i < regularUpdateArrayCount; i++)
+		{
+			if (regularArray[i] == null) continue;
+
+			regularArray[i].UpdateMe();
+		}
+	}
+
+	private void FixedUpdate()
+	{
+		if (fixedUpdateArrayCount == 0) return;
+
+		for (int i = 0; i < fixedUpdateArrayCount; i++)
+		{
+			if (fixedArray[i] == null) continue;
+
+			fixedArray[i].FixedUpdateMe();
+		}
+	}
+
+	private void LateUpdate()
+	{
+		if (lateUpdateArrayCount == 0) return;
+
+		for (int i = 0; i < lateUpdateArrayCount; i++)
+		{
+			if (lateArray[i] == null) continue;
+
+			lateArray[i].LateUpdateMe();
+		}
+	}
 }
 
 
