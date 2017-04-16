@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 
-public class Singleton<T> : MonoBehaviour
+public abstract class Singleton<T> : MonoBehaviour
 {
     public static T instance;
+
+    protected virtual void Initialize () { }
 
     protected void Awake ()
     {
@@ -13,5 +15,6 @@ public class Singleton<T> : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         instance = gameObject.GetComponent<T>();
+        Initialize();
     }
 }

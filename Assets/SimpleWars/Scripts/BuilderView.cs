@@ -14,11 +14,13 @@ public sealed class BuilderView : UIView
     public ObservableList<FileInfo> files = new ObservableList<FileInfo>();
     public _int screenHeight;
     public FileInfo selectedSave;
+    UISoundPlayer sound;
 
     bool sPanelActive = false;
 
     public void Awake ()
     {
+        sound = UISoundPlayer.instance;
         screenHeight.Value = Screen.height;
         SavesPanel.Offset.Value = new ElementMargin(0, -screenHeight.Value);
 
@@ -46,6 +48,7 @@ public sealed class BuilderView : UIView
         var f = SavesList.SelectedItem.Value as FileInfo;
         if (f == selectedSave)
         {
+            MClick();
             print("Loading save " + f.FullName);
         }
         selectedSave = f;
@@ -63,5 +66,23 @@ public sealed class BuilderView : UIView
         files.Replace(Manager.GetSaves());
         files.ItemsModified();
         ExpandPanel.StartAnimation();
+    }
+
+    public void Quit ()
+    {
+        Application.Quit();
+    }
+
+    public void MEnter ()
+    {
+        sound.PlayMouseEnter(0.25f);
+    }
+    public void MExit ()
+    {
+        sound.PlayMouseExit();
+    }
+    public void MClick ()
+    {
+        sound.PlayMouseClick();
     }
 }

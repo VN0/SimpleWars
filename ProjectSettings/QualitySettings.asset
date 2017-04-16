@@ -112,22 +112,10 @@ QualitySettings:
     excludedTargetPlatforms: []
   m_PerPlatformDefaultQuality:
     Android: 1
-    BlackBerry: 1
-    GLES Emulation: 3
-    Nintendo 3DS: 3
-    PS3: 3
-    PS4: 3
-    PSM: 3
-    PSP2: 1
-    Samsung TV: 1
+    Samsung TV: 2
     Standalone: 2
     Tizen: 1
-    WP8: 3
-    Web: 1
-    WebGL: 0
-    WiiU: 3
+    WebGL: 1
     Windows Store Apps: 2
-    XBOX360: 3
-    XboxOne: 3
     iPhone: 1
-    tvOS: 3
+    tvOS: 2

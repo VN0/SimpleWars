@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
 namespace SimpleWars
 {
-    public class LineDrawer : MonoBehaviour
+    public class LineDrawer : Singleton<LineDrawer>
     {
         // Please assign a material that is using position and color.
+        public static List<Quad> quads = new List<Quad>();
         public Material material;
-        public List<Quad> quads = new List<Quad>();
+        public bool clearOnSceneUnloaded = true;
+        public bool noCache = false;
         Camera cam;
         float screenHeight;
 
@@ -17,20 +20,23 @@ namespace SimpleWars
             public Vector2[] pts = new Vector2[4];
             public Vector2 offset;
             public Color color = Color.white;
+            public bool onScreen;
 
-            public Quad (Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, Color? color = null, Vector2? offset = null)
+            public Quad (Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, Color? color = null, bool screenSpace = false, Vector2? offset = null)
             {
                 pts[0] = p0;
                 pts[1] = p1;
                 pts[2] = p2;
                 pts[3] = p3;
+                onScreen = screenSpace;
                 this.offset = offset ?? Vector2.zero;
                 this.color = color ?? Color.white;
             }
 
-            public Quad (Vector2 start, Vector2 end, float width = 1, Color? color = null, Vector2? offset = null)
+            public Quad (Vector2 start, Vector2 end, float width = 1, Color? color = null, bool screenSpace = false, Vector2? offset = null)
             {
                 FromLine(start, end, width);
+                onScreen = screenSpace;
                 this.offset = offset ?? Vector2.zero;
                 this.color = color ?? Color.white;
             }
@@ -76,10 +82,21 @@ namespace SimpleWars
             screenHeight = Screen.height;
         }
 
-        private void Awake ()
+        protected override void Initialize ()
         {
             useGUILayout = false;
             Refresh();
+            if (clearOnSceneUnloaded)
+            {
+                SceneManager.sceneUnloaded += delegate (Scene s)
+                {
+                    quads.Clear();
+                };
+            }
+            SceneManager.sceneLoaded += delegate (Scene s, LoadSceneMode mode)
+            {
+                cam = Camera.main;
+            };
         }
 
         void OnGUI ()
@@ -91,6 +108,10 @@ namespace SimpleWars
             //    lastColor = color;
             //}
             DrawQuads(quads);
+            if (noCache)
+            {
+                quads.Clear();
+            }
         }
 
         void DrawQuads (IEnumerable<Quad> quads)
@@ -108,7 +129,7 @@ namespace SimpleWars
 
             material.SetPass(0);
 
-            // Optimization hint: 
+            // Optimization hint:
             // Consider Graphics.DrawMeshNow
             GL.Begin(GL.QUADS);
             foreach (Quad quad in quads)
@@ -118,7 +139,15 @@ namespace SimpleWars
                 var offset = quad.offset;
                 foreach (Vector2 v in positions)
                 {
-                    var vec = cam.WorldToScreenPoint(v + offset);
+                    Vector2 vec;
+                    if (!quad.onScreen)
+                    {
+                        vec = cam.WorldToScreenPoint(v + offset);
+                    }
+                    else
+                    {
+                        vec = v + offset;
+                    }
                     GL.Vertex3(vec.x, screenHeight - vec.y, 0);
                 }
             }

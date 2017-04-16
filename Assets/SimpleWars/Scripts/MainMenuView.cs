@@ -2,18 +2,20 @@ using UnityEngine;
 using MarkLight;
 using MarkLight.Views;
 using MarkLight.Views.UI;
-using System.Globalization;
+using SimpleWars;
 
 public sealed class MainMenuView : UIView
 {
     public ViewAnimation b0Hover, b1Hover, b2Hover;
     public Button b0, b1, b2;
     bool l0, l1, l2;
+    UISoundPlayer sound;
 
     private void Awake ()
     {
         print(ResourceDictionary.Language);
         ResourceDictionary.NotifyObservers();
+        sound = UISoundPlayer.instance;
     }
 
     private void Update ()
@@ -46,5 +48,18 @@ public sealed class MainMenuView : UIView
     public void Quit ()
     {
         Application.Quit();
+    }
+
+    public void MEnter ()
+    {
+        sound.PlayMouseEnter(0.25f);
+    }
+    public void MExit ()
+    {
+        sound.PlayMouseExit();
+    }
+    public void MClick ()
+    {
+        sound.PlayMouseClick();
     }
 }

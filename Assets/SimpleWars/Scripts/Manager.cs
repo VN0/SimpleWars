@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.IO;
 using Lean.Localization;
 using MarkLight;
 using UnityEngine;
 using DG.DeAudio;
+using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 namespace SimpleWars
 {
@@ -29,8 +32,15 @@ namespace SimpleWars
         }
 
         public bool modEnabled = false;
+        public float sceneFadeDuration = 1;
         public GameObject audioManager;
-        public AudioClip bgm;
+        public AudioClip[] ambient;
+        public DeAudioSource source;
+        public bool fadeAmbient = true;
+
+        System.Random rand;
+        bool waiting = false;
+        int currentIndex;
 
         public static FileInfo[] GetSaves ()
         {
@@ -43,14 +53,27 @@ namespace SimpleWars
             return dirinfo.GetFiles();
         }
 
-        new void Awake ()
+        public DeAudioSource PlayAmbient (int? index = null)
         {
+            currentIndex = index ?? Mathf.Clamp(currentIndex - 1, rand.Next(0, ambient.Length), currentIndex + 1);
+            var audio = new DeAudioClipData(DeAudioGroupId.Ambient, true);
+            audio.clip = ambient[currentIndex];
+            var audioSource = DeAudioManager.Play(audio);
+            return audioSource;
+        }
+
+        protected override void Initialize ()
+        {
+            RenderSettings.fog = false;
+            rand = new System.Random();
             Unbug.Log(Application.persistentDataPath);
             RandomSeed = SystemInfo.deviceUniqueIdentifier.GetHashCode();
             Instantiate(audioManager);
             LeanLocalization.CurrentLanguage = Application.systemLanguage.ToString();
-            ResourceDictionary.SetConfiguration(LanguageHelper.Get2LetterISOCodeFromSystemLanguage());
-            ResourceDictionary.NotifyObservers();
+            string iso = LanguageHelper.Get2LetterISOCodeFromSystemLanguage();
+            ResourceDictionary.SetConfiguration(iso);
+            ResourceDictionary.Language = iso;
+            ResourceDictionary.NotifyObservers(true);
 
             var v = new Vehicle();
             v.globalData.Add("foo", "Bar");
@@ -73,10 +96,46 @@ namespace SimpleWars
 
         void Start ()
         {
-            var audio = new DeAudioClipData(DeAudioGroupId.Ambient, true);
-            audio.clip = bgm;
-            DeAudioManager.Play(audio);
-            SceneLoader.LoadScene("Menu", callback: () => { SceneLoader.instance.fadeDuration = 0.5f; });
+            source = PlayAmbient();
+            SceneLoader.LoadScene("Menu", callback: () => { SceneLoader.instance.fadeDuration = sceneFadeDuration; });
+        }
+
+        void Update ()
+        {
+            if (!waiting && fadeAmbient)
+            {
+                waiting = true;
+                StartCoroutine(Loop());
+            }
+            if (Input.GetKeyUp(KeyCode.Escape))
+            {
+                int index = SceneManager.GetActiveScene().buildIndex - 1;
+                if (index <= 0)
+                {
+                    return;
+                }
+                try
+                {
+                    SceneLoader.LoadScene(index);
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+        IEnumerator Loop ()
+        {
+            yield return new WaitForSecondsRealtime(rand.Next(20, 60));
+            var _source = PlayAmbient();
+            _source.volume = 0;
+            source.FadeOut(10);
+            yield return new WaitForSecondsRealtime(3);
+            _source.Seek(source.time);
+            _source.FadeIn(10);
+            source = _source;
+            waiting = false;
         }
     }
 }

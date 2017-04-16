@@ -3,7 +3,7 @@ using DG.DeAudio;
 
 namespace SimpleWars
 {
-    public class UISoundPlayer : MonoBehaviour
+    public class UISoundPlayer : Singleton<UISoundPlayer>
     {
         public AudioClip mClick;
         public AudioClip mEnter;
@@ -11,17 +11,17 @@ namespace SimpleWars
 
         public void PlayMouseClick (float volume = 1)
         {
-            DeAudioManager.Play(mClick, volume);
+            DeAudioManager.Play(DeAudioGroupId.UI, mClick, volume);
         }
 
         public void PlayMouseEnter(float volume = 1)
         {
-            DeAudioManager.Play(mEnter, volume);
+            DeAudioManager.Play(DeAudioGroupId.UI, mEnter, volume);
         }
 
-        public void PlayMousExit(float volume = 1)
+        public void PlayMouseExit(float volume = 1)
         {
-            DeAudioManager.Play(mExit, volume);
+            DeAudioManager.Play(DeAudioGroupId.UI, mExit, volume);
         }
     }
 }

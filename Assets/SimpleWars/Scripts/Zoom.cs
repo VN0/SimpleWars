@@ -97,8 +97,8 @@ namespace SimpleWars
             }
             if (!exact)
             {
-                cam.orthographicSize = Mathf.MoveTowards(
-                cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime * cam.orthographicSize);
+                cam.orthographicSize = Mathf.SmoothStep(
+                    cam.orthographicSize, target, smoothSpeed * Time.unscaledDeltaTime);
             }
         }
     }

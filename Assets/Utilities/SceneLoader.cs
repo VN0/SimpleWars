@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityStandardAssets.ImageEffects;
 using System;
 
 public class SceneLoader : Singleton<SceneLoader>
@@ -9,6 +10,7 @@ public class SceneLoader : Singleton<SceneLoader>
 
     public GameObject mask;
     public float fadeDuration = 0.5f;
+    public Shader blurShader;
 
     static GameObject canvas;
     static Image _mask;
@@ -16,7 +18,10 @@ public class SceneLoader : Singleton<SceneLoader>
     static AsyncOperation loadingScene;
     static Action _callback;
     static bool loading;
-    static float loadState = 0.75f;
+    static bool reverse = false;
+    static BlurOptimized blur;
+    static Shader _blurShader;
+    static float startTime = 0;
 
     public static bool LoadScene (string scene, LoadSceneMode mode = LoadSceneMode.Single, bool fade = true, Action callback = null)
     {
@@ -34,6 +39,32 @@ public class SceneLoader : Singleton<SceneLoader>
             DontDestroyOnLoad(canvas);
             loadingScene = SceneManager.LoadSceneAsync(scene, mode);
             loadingScene.allowSceneActivation = false;
+            AddBlur();
+        }
+        else
+        {
+            SceneManager.LoadScene(scene, mode);
+            (callback ?? (() => { }))();
+        }
+        return true;
+    }
+    public static bool LoadScene (int scene, LoadSceneMode mode = LoadSceneMode.Single, bool fade = true, Action callback = null)
+    {
+        if (loading)
+        {
+            return false;
+        }
+        else if (fade)
+        {
+            loading = true;
+            _callback = callback ?? (() => { });
+            canvas = Instantiate(instance.mask);
+            _mask = canvas.GetComponentInChildren<Image>();
+            color = _mask.color;
+            DontDestroyOnLoad(canvas);
+            loadingScene = SceneManager.LoadSceneAsync(scene, mode);
+            loadingScene.allowSceneActivation = false;
+            AddBlur();
         }
         else
         {
@@ -43,27 +74,62 @@ public class SceneLoader : Singleton<SceneLoader>
         return true;
     }
 
+    protected override void Initialize ()
+    {
+        _blurShader = blurShader;
+    }
+
     void Update ()
     {
         if (loading)
         {
-            color.a += 1 / fadeDuration * loadState * Time.deltaTime;
-            _mask.color = color;
-            if (color.a >= 1)
+            float unscaledTime = Time.unscaledTime;
+            if (startTime == 0)
             {
+                startTime = unscaledTime;
+            }
+            float time = unscaledTime - startTime;
+            float value = Mathf.SmoothStep(0, 1, time / fadeDuration);
+            if (reverse)
+            {
+                value = 1 - value;
+            }
+            color.a = value;
+            if (blur != null)
+            {
+                blur.blurSize = value * 10;
+            }
+            _mask.color = color;
+            if (color.a >= 1 && !reverse)
+            {
+                Destroy(blur);
                 loadingScene.allowSceneActivation = true;
                 if (loadingScene.isDone == true)
                 {
-                    loadState = -1.25f;
+                    reverse = true;
                     _callback();
+                    startTime = Time.unscaledTime;
+                    //AddBlur();
                 }
             }
-            else if (color.a <= 0)
+            else if (color.a <= 0 && reverse)
             {
-                loadState = 0.75f;
+                startTime = 0;
+                reverse = false;
                 loading = false;
                 Destroy(canvas);
+                Destroy(blur);
             }
         }
+    }
+
+    static void AddBlur ()
+    {
+        blur = Camera.main.gameObject.AddComponent<BlurOptimized>();
+        blur.blurShader = _blurShader;
+        blur.blurType = BlurOptimized.BlurType.SgxGauss;
+        blur.blurIterations = 1;
+        blur.downsample = 1;
+        blur.blurSize = 0;
     }
 }

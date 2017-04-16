@@ -4,7 +4,7 @@ using UnityEngine;
 public static class Unbug
 {
     [Conditional("DEBUG")]
-    public static void Log (string message)
+    public static void Log (object message)
     {
         UnityEngine.Debug.Log(message);
     }
@@ -16,13 +16,13 @@ public static class Unbug
     }
 
     [Conditional("DEBUG")]
-    public static void LogWarning (string message)
+    public static void LogWarning (object message)
     {
         UnityEngine.Debug.LogWarning(message);
     }
 
     [Conditional("DEBUG")]
-    public static void LogError (string message)
+    public static void LogError (object message)
     {
         UnityEngine.Debug.LogError(message);
     }

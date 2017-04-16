@@ -3,7 +3,7 @@
   <Group Width="50" Spacing="2" Alignment="TopLeft" ContentAlignment="Top" Alpha="0.9">
     <Group Width="50" Spacing="10" BackgroundColor="#202020">
       <Button Width="50" Height="50" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Menu.png"
-              Click="ShowSaves"/>
+              Click="ShowSaves" MouseEnter="MEnter" MouseExit="MExit" MouseDown="MClick"/>
       <Button Width="50" Height="50" Margin="7, 7, 7, 7" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Close.png"/>
     </Group>
     <Group Width="50" Spacing="5" BackgroundColor="#202020">
@@ -12,7 +12,7 @@
     </Group>
     <Group Width="50" Spacing="5" BackgroundColor="#202020">
       <Button Width="50" Height="50" BackgroundImagePreserveAspect="true" BackgroundColor="white" BackgroundImageOverrideSprite="Play.png"
-              Click="LoadPlanet"/>
+              Click="LoadPlanet" MouseEnter="MEnter" MouseExit="MExit" MouseDown="MClick"/>
     </Group>
   </Group>
 
