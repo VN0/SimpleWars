@@ -10,4 +10,4 @@ SimpleWars
 A 2d physics simulation game
 ----------
    
-P.S. : Please help me complete the readme :D
+P.S. : Temporarily abandoned / 暂时弃坑
